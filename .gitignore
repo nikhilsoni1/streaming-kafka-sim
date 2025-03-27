@@ -1,0 +1,6 @@
+.venv/
+*.json
+__pycache__/
+scratch_download_logs.py
+scratch.ipynb
+.env

@@ -1,0 +1,6 @@
+rich
+requests
+black
+alembic
+psycopg2-binary
+redis
