@@ -4,3 +4,4 @@ black
 alembic
 psycopg2-binary
 redis
+sqlacodegen
