@@ -5,3 +5,7 @@ alembic
 psycopg2-binary
 redis
 sqlacodegen
+pytz
+pandas
+dbt-core
+dbt-postgres

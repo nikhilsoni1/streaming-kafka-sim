@@ -1,0 +1,39 @@
+version: 2
+
+sources:
+  - name: dbinfo
+    schema: dbinfo
+    description: >
+      Raw schema containing ingested flight log payloads. Data in `raw_dbinfo` is untransformed,
+      directly stored from the data pipeline, and used as the source for all downstream processing.
+
+    tables:
+      - name: raw_dbinfo
+        description: >
+          Raw ingested flight report logs. Each row represents a single uploaded payload
+          from a flight log, potentially in JSON format. This table is write-optimized
+          and not suitable for direct analysis.
+
+        columns:
+          - name: id
+            description: >
+              Auto-incrementing primary key used to uniquely identify each raw ingestion record.
+
+          - name: log_ts_utc
+            description: >
+              UTC timestamp when the data was ingested or logged. Used for tracing ingestion timelines.
+
+          - name: hash_sha256
+            description: >
+              SHA-256 hash of the raw payload. Ensures uniqueness and is used for de-duplication
+              of incoming logs.
+
+          - name: raw_json
+            description: >
+              Parsed JSON content from the flight log file. This field typically contains an array
+              of JSON objects, each representing a single flight report.
+
+          - name: raw_json_b64
+            description: >
+              Base64-encoded version of the original payload. Preserved for audit and reprocessing
+              purposes if decoding/parsing fails or requires fallback.

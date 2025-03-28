@@ -4,3 +4,4 @@ __pycache__/
 scratch_download_logs.py
 scratch.ipynb
 .env
+logs/
