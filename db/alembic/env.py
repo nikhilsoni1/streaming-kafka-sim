@@ -19,13 +19,9 @@ db_pass = os.environ["POSTGRES_PASSWORD"]
 db_host = os.environ["POSTGRES_HOST"]
 db_port = os.environ["POSTGRES_PORT"]
 db_name = os.environ["POSTGRES_DB"]
-
-# Construct SQLAlchemy connection string
+# Construct the database URL
 db_url = f"postgresql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
-
-# Inject the connection string into Alembic config
 config.set_main_option("sqlalchemy.url", db_url)
-
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
