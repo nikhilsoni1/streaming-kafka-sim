@@ -24,8 +24,7 @@ build/
 # ===============================
 .venv/
 venv/
-*.env  # dotenv environment file
-
+**/*.env
 # ===============================
 # 🧪 Test artifacts and coverage reports
 # ===============================
