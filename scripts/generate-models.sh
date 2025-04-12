@@ -37,15 +37,3 @@ DB_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${PO
 echo "Generating models for schema '$SCHEMA_NAME'..."
 sqlacodegen "$DB_URL" --schema "$SCHEMA_NAME" --outfile "$OUTPUT_FILE"
 echo "Models written to: $OUTPUT_FILE"
-
-# Ensure __init__.py exists
-touch "$INIT_FILE"
-
-# Add import if not already present
-IMPORT_LINE="from .${SCHEMA_NAME} import *"
-if ! grep -Fxq "$IMPORT_LINE" "$INIT_FILE"; then
-  echo "$IMPORT_LINE" >> "$INIT_FILE"
-  echo "Updated __init__.py with: $IMPORT_LINE"
-else
-  echo "__init__.py already includes import for '$SCHEMA_NAME'"
-fi
