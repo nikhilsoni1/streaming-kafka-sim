@@ -1,0 +1,12 @@
+# Include all Python source files
+recursive-include db *.py
+
+# Exclude Python cache and compiled files
+global-exclude __pycache__ *.py[cod]
+
+# Exclude Alembic migration files and config
+exclude db/alembic.ini
+prune db/alembic
+
+# Optionally exclude tests (you may keep this if not needed in sdist)
+prune db/tests

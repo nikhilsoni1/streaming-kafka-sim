@@ -1,7 +1,50 @@
-.venv/
-*.json
+# ===============================
+# 🚫 IDE and OS-specific junk
+# ===============================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ===============================
+# 🐍 Python cache and compiled files
+# ===============================
 __pycache__/
+*.py[cod]
+
+# ===============================
+# 📦 Build artifacts (setuptools, wheel, etc.)
+# ===============================
+dist/
+build/
+*.egg-info/
+
+# ===============================
+# 🔁 Virtual environments
+# ===============================
+.venv/
+venv/
+.env  # dotenv environment file
+
+# ===============================
+# 🧪 Test artifacts and coverage reports
+# ===============================
+.cache/
+.coverage
+htmlcov/
+pytestdebug.log
+
+# ===============================
+# 📂 Logs and temporary files
+# ===============================
+logs/
+*.log
+
+# ===============================
+# 🔬 Scratch or exploratory files
+# ===============================
 scratch*.py
 scratch*.ipynb
-.env
-logs/
+*.json
+*.txt
+*.zip

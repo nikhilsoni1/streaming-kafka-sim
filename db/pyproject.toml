@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "db"
+version = "0.1.0"
+description = "Data access layer with models and repositories"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.8"
+dependencies = [
+    "sqlalchemy"
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["db"]
+
+[tool.setuptools.exclude-package-data]
+"db" = [
+    "alembic.ini",
+    "alembic/*",
+    "**/__pycache__"
+]

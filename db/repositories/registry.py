@@ -1,14 +1,12 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from db import LogsDlReg
-from db import t_clean_dbinfo
+from db.models.registry import LogsDlReg
+from db.models.transformed_data import t_clean_dbinfo
 import datetime
 from typing import Optional
 from pytz import UTC
-from db import SessionLocal
 from sqlalchemy import select
 from sqlalchemy.orm import aliased
-import random
 
 def get_utc_now(str=False):
     utc_now = datetime.datetime.now(UTC).replace(tzinfo=None)
