@@ -11,14 +11,14 @@ class Base(DeclarativeBase):
 class LogsDlReg(Base):
     __tablename__ = 'logs_dl_reg'
     __table_args__ = (
-        PrimaryKeyConstraint('id', name='logs_dl_reg_pkey'),
+        PrimaryKeyConstraint('log_id', name='logs_dl_reg_pkey'),
         {'schema': 'registry'}
     )
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    log_id: Mapped[str] = mapped_column(Text, primary_key=True)
+    id: Mapped[Optional[int]] = mapped_column(Integer)
     log_ts_utc: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
     upd_ts_utc: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
-    log_id: Mapped[Optional[str]] = mapped_column(Text)
     status: Mapped[Optional[str]] = mapped_column(Text)
     file_s3_path: Mapped[Optional[str]] = mapped_column(Text)
     file_sha256: Mapped[Optional[str]] = mapped_column(Text)

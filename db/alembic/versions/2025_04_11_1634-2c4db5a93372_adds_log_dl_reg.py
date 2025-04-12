@@ -22,10 +22,10 @@ def upgrade() -> None:
     """Upgrade schema."""
     op.create_table(
         "logs_dl_reg",
-        sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
+        sa.Column("id", sa.Integer, autoincrement=True, primary_key=True),
         sa.Column("log_ts_utc", sa.DateTime(), nullable=True),
         sa.Column("upd_ts_utc", sa.DateTime(), nullable=True),
-        sa.Column("log_id", sa.Text, nullable=True),
+        sa.Column("log_id", sa.Text, primary_key=True),
         sa.Column("status", sa.Text, nullable=True),
         sa.Column("file_s3_path", sa.Text, nullable=True),
         sa.Column("file_sha256", sa.Text, nullable=True),
