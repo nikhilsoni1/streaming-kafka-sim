@@ -14,11 +14,11 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Get environment variables directly
-db_user = os.environ["POSTGRES_USER"]
-db_pass = os.environ["POSTGRES_PASSWORD"]
-db_host = os.environ["POSTGRES_HOST"]
-db_port = os.environ["POSTGRES_PORT"]
-db_name = os.environ["POSTGRES_DB"]
+db_user = os.environ["DATABASE_USER"]
+db_pass = os.environ["DATABASE_PASSWORD"]
+db_host = os.environ["DATABASE_HOST"]
+db_port = os.environ["DATABASE_PORT"]
+db_name = os.environ["DATABASE_NAME"]
 # Construct the database URL
 db_url = f"postgresql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
 config.set_main_option("sqlalchemy.url", db_url)

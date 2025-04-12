@@ -24,7 +24,8 @@ build/
 # ===============================
 .venv/
 venv/
-**/*.env
+.env
+scripts/cloud-db/cloud-dev.env
 # ===============================
 # 🧪 Test artifacts and coverage reports
 # ===============================

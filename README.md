@@ -16,3 +16,10 @@ python -m build --sdist
 ```sh
 ./scripts/cloud-db/refresh-env.sh scripts/cloud-db/cloud-dev.env
 ```
+
+## Setting up env
+```sh
+source scripts/set_env.sh .env
+source scripts/set_env.sh scripts/cloud-db/cloud-dev.env
+env | grep ^DATABASE_
+```

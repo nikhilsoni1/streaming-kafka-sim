@@ -20,34 +20,40 @@ else
 fi
 
 # Required env variables
-: "${DB_USER:?Missing DB_USER}"
-: "${DB_PASSWORD:?Missing DB_PASSWORD}"
-: "${DB_HOST:?Missing DB_HOST}"
-: "${DB_PORT:?Missing DB_PORT}"
-: "${DB_NAME:?Missing DB_NAME}"
+: "${DATABASE_USER:?Missing DATABASE_USER}"
+: "${DATABASE_PASSWORD:?Missing DATABASE_PASSWORD}"
+: "${DATABASE_HOST:?Missing DATABASE_HOST}"
+: "${DATABASE_PORT:?Missing DATABASE_PORT}"
+: "${DATABASE_NAME:?Missing DATABASE_NAME}"
 
 # Export for psql
-export PGPASSWORD="$DB_PASSWORD"
+export PGPASSWORD="$DATABASE_PASSWORD"
 
-echo "🔍 Checking connection to $DB_HOST:$DB_PORT/$DB_NAME as $DB_USER..."
+echo "🔍 Checking connection to $DATABASE_HOST:$DATABASE_PORT/$DATABASE_NAME as $DATABASE_USER..."
 
 # Run a simple query to verify the connection
-psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -c "SELECT NOW();"
+psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "$DATABASE_NAME" -c "SELECT NOW();"
 
 echo "✅ Connection successful."
 
+# === Drop and recreate public schema ===
+psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "$DATABASE_NAME" -c "DROP SCHEMA public CASCADE;"
+psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "$DATABASE_NAME" -c "CREATE SCHEMA public;"
+psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "$DATABASE_NAME" -c "GRANT ALL ON SCHEMA public TO postgres;"
+psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "$DATABASE_NAME" -c "GRANT ALL ON SCHEMA public TO public;"
+
 # === Drop and recreate px4 database ===
 echo "🚨 Dropping database 'px4' if it exists..."
-psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d postgres -c "DROP DATABASE IF EXISTS px4;"
+psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d postgres -c "DROP DATABASE IF EXISTS px4;"
 
 echo "✅ Creating fresh database 'px4'..."
-psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d postgres -c "CREATE DATABASE px4;"
+psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d postgres -c "CREATE DATABASE px4;"
 
 # === Create schemas inside px4 ===
 echo "📁 Creating schemas inside 'px4'..."
 for schema in dbinfo registry transformed_data; do
   echo "➕ Creating schema: $schema"
-  psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d px4 -c "CREATE SCHEMA IF NOT EXISTS $schema;"
+  psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d px4 -c "CREATE SCHEMA IF NOT EXISTS $schema;"
 done
 
 echo "🎉 Done! Database 'px4' is reset and schemas created."
