@@ -71,11 +71,9 @@ class LogDlRepository:
                     )
                     SELECT 
                         t1.log_id,
-                        t1.log_date,
                         EXTRACT(YEAR FROM t1.log_date)::int AS log_year,
                         EXTRACT(MONTH FROM t1.log_date)::int AS log_month,
-                        EXTRACT(DAY FROM t1.log_date)::int AS log_day,
-                        job_cte.job_id
+                        EXTRACT(DAY FROM t1.log_date)::int AS log_day
                     FROM transformed_data.dbinfo_sample_1k t1,
                         job_cte
                     WHERE t1.log_id NOT IN (
