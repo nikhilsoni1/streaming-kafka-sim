@@ -1,7 +1,7 @@
 # db/__init__.py
 
 # SQLAlchemy session
-from .core import SessionLocal
+from .core.database import DatabaseClient
 
 # Models (from db/models/__init__.py)
 from .models.dbinfo import RawDbinfo
@@ -17,7 +17,7 @@ from .repositories.dbinfo import RawDbinfoRepository
 from .repositories.registry import LogDlRepository
 
 __all__ = [
-    "SessionLocal",
+    "DatabaseClient",
     "RawDbinfo",
     "LogsDlReg",
     "t_clean_dbinfo",

@@ -4,15 +4,16 @@ from sqlalchemy import BigInteger, DateTime, Integer, PrimaryKeyConstraint, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 import datetime
 
+
 class Base(DeclarativeBase):
     pass
 
 
 class LogsDlReg(Base):
-    __tablename__ = 'logs_dl_reg'
+    __tablename__ = "logs_dl_reg"
     __table_args__ = (
-        PrimaryKeyConstraint('id', 'log_id', name='logs_dl_reg_pkey'),
-        {'schema': 'registry'}
+        PrimaryKeyConstraint("id", "log_id", name="logs_dl_reg_pkey"),
+        {"schema": "registry"},
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)

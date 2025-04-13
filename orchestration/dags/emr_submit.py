@@ -24,7 +24,7 @@ with DAG(
             "ActionOnFailure": "CONTINUE",
             "HadoopJarStep": {
                 "Jar": "command-runner.jar",
-                "Args": ["spark-submit", EMR_LOG_SCRIPT]
+                "Args": ["spark-submit", EMR_LOG_SCRIPT],
             },
         }
     ]

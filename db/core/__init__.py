@@ -1,5 +1,5 @@
-from .database import SessionLocal
+from .database import DatabaseClient
 
 __all__ = [
-    "SessionLocal",
+    "DatabaseClient",
 ]

@@ -1,6 +1,6 @@
 rich
 requests
-black
+black[jupyter]
 alembic
 psycopg2-binary
 redis
@@ -11,3 +11,4 @@ dbt-core
 dbt-postgres
 tqdm
 boto3
+dotenv

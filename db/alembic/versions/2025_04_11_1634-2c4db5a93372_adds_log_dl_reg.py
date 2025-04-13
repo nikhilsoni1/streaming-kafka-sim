@@ -5,6 +5,7 @@ Revises: 8d3215844610
 Create Date: 2025-04-11 16:34:09.977081
 
 """
+
 from typing import Sequence, Union
 
 from alembic import op
@@ -12,8 +13,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '2c4db5a93372'
-down_revision: Union[str, None] = '8d3215844610'
+revision: str = "2c4db5a93372"
+down_revision: Union[str, None] = "8d3215844610"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -35,7 +36,7 @@ def upgrade() -> None:
         sa.Column("file_sha256", sa.Text, nullable=True),
         sa.Column("stdout", sa.Text, nullable=True),
         sa.Column("stderr", sa.Text, nullable=True),
-        schema="registry"
+        schema="registry",
     )
 
 

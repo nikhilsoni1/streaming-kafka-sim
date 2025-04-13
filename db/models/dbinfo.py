@@ -5,15 +5,16 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 import datetime
 
+
 class Base(DeclarativeBase):
     pass
 
 
 class RawDbinfo(Base):
-    __tablename__ = 'raw_dbinfo'
+    __tablename__ = "raw_dbinfo"
     __table_args__ = (
-        PrimaryKeyConstraint('row_id', name='raw_dbinfo_pkey'),
-        {'schema': 'dbinfo'}
+        PrimaryKeyConstraint("row_id", name="raw_dbinfo_pkey"),
+        {"schema": "dbinfo"},
     )
 
     row_id: Mapped[int] = mapped_column(Integer, primary_key=True)

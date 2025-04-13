@@ -13,7 +13,9 @@ from db.models import RawDbinfo  # Adjust path as needed
 
 
 class RawDbinfoRepository:
-    def __init__(self, session: Session, failure_log_dir: str = ".", batch_size: int = 5000):
+    def __init__(
+        self, session: Session, failure_log_dir: str = ".", batch_size: int = 5000
+    ):
         self.session = session
         self.failure_log_dir = failure_log_dir
         self.batch_size = batch_size
@@ -28,10 +30,12 @@ class RawDbinfoRepository:
 
         def chunked(data, size):
             for i in range(0, len(data), size):
-                yield data[i:i + size]
+                yield data[i : i + size]
 
         chunks = chunked(records, self.batch_size)
-        chunks = tqdm(chunks, desc="Inserting batches", unit="batch") if use_tqdm else chunks
+        chunks = (
+            tqdm(chunks, desc="Inserting batches", unit="batch") if use_tqdm else chunks
+        )
 
         for i, chunk in enumerate(chunks):
             try:
@@ -39,12 +43,14 @@ class RawDbinfoRepository:
                 self.session.commit()
             except SQLAlchemyError as e:
                 self.session.rollback()
-                failed_batches.append({
-                    "batch_index": i,
-                    "records": chunk,
-                    "error": str(e),
-                    "traceback": traceback.format_exc()
-                })
+                failed_batches.append(
+                    {
+                        "batch_index": i,
+                        "records": chunk,
+                        "error": str(e),
+                        "traceback": traceback.format_exc(),
+                    }
+                )
 
         if failed_batches:
             print(f"[WARNING] {len(failed_batches)} batch(es) failed to insert.")

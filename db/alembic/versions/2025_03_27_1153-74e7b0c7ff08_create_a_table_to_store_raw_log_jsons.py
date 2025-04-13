@@ -27,7 +27,7 @@ def upgrade() -> None:
         sa.Column("log_ts_utc", sa.DateTime(), nullable=False),
         sa.Column("hash_sha256", sa.Text, unique=True, nullable=False),
         sa.Column("raw_json", sa.dialects.postgresql.JSONB, nullable=False),
-        schema = "dbinfo"
+        schema="dbinfo",
     )
 
 

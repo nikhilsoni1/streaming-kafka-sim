@@ -1,24 +1,55 @@
-import os
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 
-# Pull variables directly from environment (assumes they are already set)
-DATABASE_USER = os.environ["DATABASE_USER"]
-DATABASE_PASSWORD = os.environ["DATABASE_PASSWORD"]
-DATABASE_HOST = os.environ["DATABASE_HOST"]
-DATABASE_PORT = os.environ["DATABASE_PORT"]
-DATABASE_NAME = os.environ["DATABASE_NAME"]
 
-# assert if each of the variables are not none
-assert DATABASE_USER is not None, "DATABASE_USER is not set"
-assert DATABASE_PASSWORD is not None, "DATABASE_PASSWORD is not set"
-assert DATABASE_HOST is not None, "DATABASE_HOST is not set"
-assert DATABASE_PORT is not None, "DATABASE_PORT is not set"
-assert DATABASE_NAME is not None, "DATABASE_NAME is not set"
+class DatabaseClient:
+    def __init__(
+        self,
+        database_user: str,
+        database_password: str,
+        database_host: str,
+        database_port: int | str,
+        database_name: str,
+    ):
+        """
+        Initialize the database connection and session factory.
 
-# Construct the database URL
-DATABASE_URL = f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
+        Args:
+            database_user (str): Database username.
+            database_password (str): Database password.
+            database_host (str): Database host.
+            database_port (int | str): Database port.
+            database_name (str): Database name.
+        """
+        self.database_user = database_user
+        self.database_password = database_password
+        self.database_host = database_host
+        self.database_port = str(database_port)
+        self.database_name = database_name
 
-# Create engine and session factory
-engine = create_engine(DATABASE_URL, echo=False, future=True)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        self._init_engine_and_session()
+
+    def _init_engine_and_session(self):
+        db_url = f"postgresql://{self.database_user}:{self.database_password}@{self.database_host}:{self.database_port}/{self.database_name}"
+        self.engine = create_engine(db_url, echo=False, future=True)
+        self.SessionLocal = sessionmaker(
+            bind=self.engine, autocommit=False, autoflush=False
+        )
+
+    def get_session(self) -> Session:
+        """
+        Get a new SQLAlchemy session.
+
+        Returns:
+            Session: A SQLAlchemy session.
+        """
+        return self.SessionLocal()
+
+    def test_connection(self) -> bool:
+        try:
+            with self.engine.connect() as conn:
+                conn.execute("SELECT 1")
+            return True
+        except Exception as e:
+            print("Database connection failed:", e)
+            return False
