@@ -10,7 +10,7 @@ WITH stratum_counts AS (
     FROM {{ ref('eda_dbinfo') }} ed
     WHERE ed.ver_sw_release IN (
         SELECT ver_sw_release
-        FROM transformed_data.distinct_ver_sw_release
+        FROM {{ ref('distinct_ver_sw_release') }}
         WHERE cumulative_contribution >= 0.75
     )
     GROUP BY rating, mav_type, ver_sw_release

@@ -79,4 +79,4 @@ def fetch_and_store(redis_client, url, ttl=36000, **kwargs):
 if __name__ == '__main__':
     url = "https://review.px4.io/dbinfo"
     redis_client = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
-    fetch_and_store(redis_client, url=url, bypass_cache=True)
+    fetch_and_store(redis_client, url=url, bypass_cache=False)
