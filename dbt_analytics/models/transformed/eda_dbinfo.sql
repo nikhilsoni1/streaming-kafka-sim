@@ -3,7 +3,6 @@
 ) }}
 
 SELECT 
-    updated_at_utc,
     type,
     log_id,
     rating,

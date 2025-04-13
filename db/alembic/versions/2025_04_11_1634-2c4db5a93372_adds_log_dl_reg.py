@@ -23,14 +23,16 @@ def upgrade() -> None:
     op.create_table(
         "logs_dl_reg",
         sa.Column("id", sa.Integer, autoincrement=True, primary_key=True),
+        sa.Column("job_id", sa.Text, nullable=True),
         sa.Column("log_ts_utc", sa.DateTime(), nullable=True),
         sa.Column("upd_ts_utc", sa.DateTime(), nullable=True),
         sa.Column("log_id", sa.Text, primary_key=True),
         sa.Column("status", sa.Text, nullable=True),
         sa.Column("file_s3_path", sa.Text, nullable=True),
-        sa.Column("file_sha256", sa.Text, nullable=True),
         sa.Column("file_name", sa.Text, nullable=True),
         sa.Column("file_ext", sa.Text, nullable=True),
+        sa.Column("file_size_bytes", sa.BigInteger, nullable=True),
+        sa.Column("file_sha256", sa.Text, nullable=True),
         sa.Column("stdout", sa.Text, nullable=True),
         sa.Column("stderr", sa.Text, nullable=True),
         schema="registry"

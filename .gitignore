@@ -24,8 +24,8 @@ build/
 # ===============================
 .venv/
 venv/
-.env  # dotenv environment file
-
+.env
+scripts/cloud-db/cloud-dev.env
 # ===============================
 # 🧪 Test artifacts and coverage reports
 # ===============================
