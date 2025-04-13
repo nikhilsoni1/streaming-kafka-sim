@@ -46,5 +46,4 @@ logs/
 scratch*.py
 scratch*.ipynb
 *.json
-*.txt
 *.zip
