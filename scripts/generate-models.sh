@@ -12,7 +12,7 @@ if [ -z "$SCHEMA_NAME" ]; then
 fi
 
 # Validate required environment variables
-REQUIRED_VARS=("POSTGRES_HOST" "POSTGRES_PORT" "POSTGRES_USER" "POSTGRES_PASSWORD" "POSTGRES_DB")
+REQUIRED_VARS=("DATABASE_HOST" "DATABASE_PORT" "DATABASE_USER" "DATABASE_PASSWORD" "DATABASE_NAME")
 for var in "${REQUIRED_VARS[@]}"; do
   if [[ -z "${!var}" ]]; then
     echo "Environment variable '$var' is not set."
@@ -31,7 +31,7 @@ INIT_FILE="${OUTPUT_DIR}/__init__.py"
 mkdir -p "$OUTPUT_DIR"
 
 # Construct SQLAlchemy DB URL
-DB_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+DB_URL="postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}"
 
 # Generate models
 echo "Generating models for schema '$SCHEMA_NAME'..."

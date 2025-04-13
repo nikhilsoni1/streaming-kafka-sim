@@ -9,3 +9,5 @@ pytz
 pandas
 dbt-core
 dbt-postgres
+tqdm
+boto3
