@@ -23,5 +23,6 @@ include = ["models", "repositories", "models.*", "repositories.*", "core", "core
 "db" = [
     "alembic.ini",
     "alembic/*",
-    "**/__pycache__"
+    "**/__pycache__",
+    "scripts/*"
 ]
