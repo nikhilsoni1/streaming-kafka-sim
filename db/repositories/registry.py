@@ -7,11 +7,13 @@ from typing import Dict
 from pytz import UTC
 from sqlalchemy import text
 from sqlalchemy import insert
+from sqlalchemy import update
 import uuid
 from sqlalchemy.exc import SQLAlchemyError
 import traceback
 from tqdm import tqdm
 import datetime
+import json
 
 
 def get_utc_now(str=False):
@@ -26,27 +28,26 @@ class LogDlRepository:
         self.session = session
         self.batch_size = batch_size
 
-    def insert_logs_in_process(self, logs: List[Dict]):
+    def insert_logs_in_process(self, log_ids: List[str], job_id, log_ts_utc):
         """
-        Insert records into LogsDlReg with status='in_process'.
+        Insert records into LogsDlReg with just log_id and status='in_process'.
+        On failure, write each failed batch to a JSON file in the current working directory.
         """
-        failed_batches = []
         insert_stmt = insert(LogsDlReg)
 
         def chunked(data, size):
             for i in range(0, len(data), size):
-                yield data[i : i + size]
+                yield data[i: i + size]
 
-        # Add 'status': 'in_process' to each record
+        # Compose full rows from log_ids
         enriched_logs = [
             {
-                **log,
+                "log_id": log_id,
                 "status": "in_process",
-                "log_ts_utc": datetime.datetime.now(datetime.UTC).strftime(
-                    "%Y-%m-%d %H:%M:%S"
-                ),
+                "log_ts_utc": log_ts_utc,
+                "job_id": job_id,
             }
-            for log in logs
+            for log_id in log_ids
         ]
 
         chunks = chunked(enriched_logs, self.batch_size)
@@ -58,17 +59,6 @@ class LogDlRepository:
                 self.session.commit()
             except SQLAlchemyError as e:
                 self.session.rollback()
-                failed_batches.append(
-                    {
-                        "batch_index": i,
-                        "records": chunk,
-                        "error": str(e),
-                        "traceback": traceback.format_exc(),
-                    }
-                )
-
-        if failed_batches:
-            print(f"{len(failed_batches)} batch(es) failed during insert.")
 
     def get_new_log_entries(self, limit: int = 10) -> List[dict]:
         # Generate job_id once for all rows
@@ -85,7 +75,6 @@ class LogDlRepository:
                         EXTRACT(YEAR FROM t1.log_date)::int AS log_year,
                         EXTRACT(MONTH FROM t1.log_date)::int AS log_month,
                         EXTRACT(DAY FROM t1.log_date)::int AS log_day,
-                        gen_random_uuid()::text AS task_id,
                         job_cte.job_id
                     FROM transformed_data.dbinfo_sample_1k t1,
                         job_cte
@@ -102,18 +91,59 @@ class LogDlRepository:
         # Convert RowMapping to list of dicts
         return [dict(row) for row in result]
 
-    def update_log_id_records(self, upd: list[dict]) -> Optional[list[dict]]:
-        try:
-            for item in upd:
-                try:
-                    self.session.merge(LogsDlReg(**item))
-                except Exception as e:
-                    print(
-                        f"Failed to merge record with log_id {item.get('log_id')}: {e}"
+    def update_logs_by_job_and_log_id(self, updates: List[Dict]):
+        """
+        Chunked batch update of LogsDlReg records using job_id and log_id.
+
+        Parameters:
+            updates (List[Dict]): Each dict must include:
+                - job_id
+                - log_id
+                - Optional: status, upd_ts_utc, file_* fields, stdout, stderr
+        """
+        failed_batches = []
+
+        def chunked(data, size):
+            for i in range(0, len(data), size):
+                yield data[i:i + size]
+
+        chunks = chunked(updates, self.batch_size)
+        chunks = tqdm(chunks, desc="Updating logs", unit="batch")
+
+        for i, chunk in enumerate(chunks):
+            try:
+                for record in chunk:
+                    update_fields = {
+                        k: v for k, v in record.items()
+                        if k not in {"job_id", "log_id"} and v is not None
+                    }
+
+                    if not update_fields:
+                        continue  # nothing to update
+
+                    stmt = (
+                        update(LogsDlReg)
+                        .where(
+                            LogsDlReg.job_id == record["job_id"],
+                            LogsDlReg.log_id == record["log_id"]
+                        )
+                        .values(**update_fields)
                     )
-            self.session.commit()
-            return upd
-        except Exception as e:
-            self.session.rollback()
-            print(f"Failed to update log records: {e}")
-            return None
+
+                    self.session.execute(stmt)
+
+                self.session.commit()
+
+            except SQLAlchemyError as e:
+                self.session.rollback()
+                failed_batches.append({
+                    "batch_index": i,
+                    "records": chunk,
+                    "error": str(e),
+                    "traceback": traceback.format_exc()
+                })
+
+        if failed_batches:
+            print(f"{len(failed_batches)} batch(es) failed during update.")
+            for fail in failed_batches:
+                print(fail)

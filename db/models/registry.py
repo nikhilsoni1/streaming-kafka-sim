@@ -16,7 +16,7 @@ class LogsDlReg(Base):
         {"schema": "registry"},
     )
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     log_id: Mapped[str] = mapped_column(Text, primary_key=True)
     job_id: Mapped[Optional[str]] = mapped_column(Text)
     log_ts_utc: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
