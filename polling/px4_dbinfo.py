@@ -9,7 +9,7 @@ import re
 from uuid import uuid4
 from pprint import pprint
 
-from db.database import SessionLocal
+from db.core.database import SessionLocal
 from db.repositories.dbinfo import RawDbinfoRepository
 
 DEFAULT_CONTROL_CHAR_RE = re.compile(r'[\x00-\x1F]+')

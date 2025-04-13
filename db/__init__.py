@@ -1,7 +1,7 @@
 # db/__init__.py
 
 # SQLAlchemy session
-from .database import SessionLocal
+from .core import SessionLocal
 
 # Models (from db/models/__init__.py)
 from .models.dbinfo import RawDbinfo
