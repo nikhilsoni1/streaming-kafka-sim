@@ -17,12 +17,4 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["models", "repositories", "models.*", "repositories.*", "core", "core.*"]
-
-[tool.setuptools.exclude-package-data]
-"db" = [
-    "alembic.ini",
-    "alembic/*",
-    "**/__pycache__",
-    "scripts/*"
-]
+include = ["db*"]

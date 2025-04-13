@@ -47,3 +47,5 @@ scratch*.py
 scratch*.ipynb
 *.json
 *.zip
+**/*.tar.gz
+# ===============================
