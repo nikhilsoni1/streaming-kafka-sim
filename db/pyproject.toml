@@ -17,7 +17,7 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["db"]
+include = ["models", "repositories", "models.*", "repositories.*", ".*"]
 
 [tool.setuptools.exclude-package-data]
 "db" = [
