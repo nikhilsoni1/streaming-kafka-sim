@@ -24,3 +24,10 @@ source scripts/set_env.sh .env
 source scripts/set_env.sh scripts/cloud-db/cloud-dev.env
 env | grep ^DATABASE_
 ```
+
+## Download logs from emr
+```sh
+aws s3 cp s3://flight-emr/logs/j-28AW3RV826BE/containers/ ./logs/ --recursive --region us-east-1
+aws s3 cp s3://flight-emr/logs/j-55EEI978OJYX/containers/ ./logs/ --recursive --region us-east-1
+
+```

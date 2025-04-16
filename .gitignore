@@ -49,3 +49,5 @@ scratch*.ipynb
 *.zip
 **/*.tar.gz
 # ===============================
+# 📂 Cloud environment files
+**/cloud-env.sh
