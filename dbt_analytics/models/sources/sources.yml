@@ -37,3 +37,69 @@ sources:
             description: >
               Base64-encoded version of the original payload. Preserved for audit and reprocessing
               purposes if decoding/parsing fails or requires fallback.
+  - name: registry
+    schema: registry
+    description: >
+      Schema tracking metadata of downloaded flight log files, including storage location,
+      file characteristics, processing status, and associated job identifiers.
+
+    tables:
+      - name: logs_dl_reg
+        description: >
+          Registry of PX4 flight log downloads. Each row corresponds to a downloaded log file
+          and includes metadata such as timestamps, job tracking, download status, storage paths,
+          and file integrity checks.
+
+        columns:
+          - name: id
+            description: >
+              Auto-incrementing primary key for uniquely identifying each download record.
+
+          - name: job_id
+            description: >
+              Identifier for the download job associated with this log entry. Used to group and trace
+              batch download executions.
+
+          - name: log_ts_utc
+            description: >
+              Timestamp when the download of the log was initiated.
+
+          - name: upd_ts_utc
+            description: >
+              Timestamp of the most recent update to this record (e.g., upon completion or error logging).
+
+          - name: log_id
+            description: >
+              Unique identifier for the PX4 log, often matching the source log ID from the dbinfo schema.
+
+          - name: status
+            description: >
+              Status of the log download or processing job (e.g., 'pending', 'completed', 'error').
+
+          - name: file_s3_path
+            description: >
+              Full S3 path where the downloaded log file is stored.
+
+          - name: file_name
+            description: >
+              Name of the downloaded file including extension.
+
+          - name: file_ext
+            description: >
+              File extension of the downloaded log (e.g., `.ulg`, `.csv`, `.json`).
+
+          - name: file_size_bytes
+            description: >
+              Size of the downloaded file in bytes.
+
+          - name: file_sha256
+            description: >
+              SHA-256 hash of the downloaded file for verifying integrity and ensuring deduplication.
+
+          - name: stdout
+            description: >
+              Standard output from the download or processing command, if applicable.
+
+          - name: stderr
+            description: >
+              Standard error output from the download or processing command, if any.
