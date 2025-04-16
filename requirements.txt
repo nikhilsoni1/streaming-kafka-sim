@@ -197,6 +197,7 @@ pytz==2025.2
     #   pandas
 pyyaml==6.0.2
     # via
+    #   -r requirements.in
     #   dbt-core
     #   dbt-semantic-interfaces
 redis==5.2.1

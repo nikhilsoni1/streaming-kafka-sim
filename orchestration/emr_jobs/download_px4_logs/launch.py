@@ -1,13 +1,58 @@
-import boto3
-from pprint import pprint
-import logging
-from botocore.exceptions import ClientError
-from uuid import uuid4
+import argparse
 import json
+import logging
 import os
+import sys
+import time
+from pprint import pprint
+from uuid import uuid4
+import boto3
+from botocore.exceptions import ClientError
+import yaml
+import json
 
 logger = logging.getLogger(__name__)
 
+def parse_step_yaml_to_json(yaml_path, job_id):
+    cwd = os.getcwd()
+    yaml_path = os.path.join(cwd, yaml_path)
+    with open(yaml_path, "r") as stream:
+        steps_yaml = stream.read()
+    parsed = yaml.safe_load(steps_yaml)
+    steps = []
+    
+    for step in parsed['Steps']:
+        args = ["spark-submit", "--deploy-mode", step["HadoopJarStep"]["Args"]["deploy-mode"]]
+
+        for env_var in step["HadoopJarStep"]["Args"]["env"]:
+            for key, val in env_var.items():
+                args.extend(["--conf", f"{key}={val}"])
+        args.extend(["--conf", f"spark.yarn.appMasterEnv.JOB_ID={job_id}"])
+
+        args.append(step["HadoopJarStep"]["Args"]["script"])
+        
+        steps.append({
+            "Name": f"{step["Name"]}-{job_id}",
+            "ActionOnFailure": step["ActionOnFailure"],
+            "HadoopJarStep": {
+                "Properties": [],
+                "Jar": "command-runner.jar",
+                "Args": args
+            }
+        })
+    # create a dir compiled, exist ok
+
+    compiled_dir = "orchestration/emr_jobs/download_px4_logs/compiled"
+    compiled_path = os.path.join(cwd, compiled_dir)
+    os.makedirs(compiled_dir, exist_ok=True)
+    # get filename from yaml_path using splitext
+
+    yaml_basename = os.path.splitext(os.path.basename(yaml_path))[0]
+    compiled_json_filename = f"{yaml_basename}.json"
+    compiled_path = os.path.join(compiled_dir, compiled_json_filename)
+    with open(compiled_path, "w") as f:
+        json.dump(steps, f, indent=4, sort_keys=True)
+    return steps
 
 def run_job_flow(
     name,
@@ -75,15 +120,13 @@ def run_job_flow(
     else:
         return cluster_id
 
-
-debug = True
 # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/emr/client/run_job_flow.html
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
-    name = f"FLIGHT-EMR-{uuid4()}"
-    log_uri = "s3://flight-emr/logs/"
-    keep_alive = True
+    job_id = str(uuid4())
+    name = f"FLIGHT-EMR-{job_id}"
+    log_uri = f"s3://flight-emr/jobs/download_px4_logs/emr-logs/{job_id}/"
+    keep_alive = False
     applications = [
         {"Name": "Hadoop"},
         {"Name": "Spark"},
@@ -104,11 +147,9 @@ if __name__ == "__main__":
         }
     ]
 
-    _cwd = os.getcwd()
-    _steps_json_path = os.path.join(_cwd, "orchestration/emr_jobs/download_px4_logs/steps.json")
     steps = None
-    with open(_steps_json_path, "r") as stream:
-        steps = json.load(stream)
+    yaml_path = "orchestration/emr_jobs/download_px4_logs/steps.yaml"
+    steps = parse_step_yaml_to_json(yaml_path, job_id=job_id)
     instances = {
         "InstanceGroups": [
             {
@@ -194,3 +235,5 @@ if __name__ == "__main__":
         emr_client=emr_client,
     )
     pprint(cluster_id)
+
+
