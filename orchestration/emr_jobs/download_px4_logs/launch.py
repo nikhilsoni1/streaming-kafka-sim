@@ -307,7 +307,7 @@ if __name__ == "__main__":
     )
     status_poller(
         "Waiting for step to complete...",
-        "PENDING",
+        "COMPLETED",
         lambda: list_steps(cluster_id, emr_client)[0]["Status"]["State"],
     )
     status_poller(
