@@ -11,6 +11,7 @@ tree db -L 2 | tee -a tree.txt
 cd db
 rm -rf build/ dist/ *.egg-info
 python -m build --sdist
+```
 
 ## Refresh elephant01
 ```sh
@@ -22,4 +23,11 @@ python -m build --sdist
 source scripts/set_env.sh .env
 source scripts/set_env.sh scripts/cloud-db/cloud-dev.env
 env | grep ^DATABASE_
+```
+
+## Download logs from emr
+```sh
+aws s3 cp s3://flight-emr/logs/j-28AW3RV826BE/containers/ ./logs/ --recursive --region us-east-1
+aws s3 cp s3://flight-emr/logs/j-55EEI978OJYX/containers/ ./logs/ --recursive --region us-east-1
+
 ```

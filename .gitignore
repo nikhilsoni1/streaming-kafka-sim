@@ -46,5 +46,8 @@ logs/
 scratch*.py
 scratch*.ipynb
 *.json
-*.txt
 *.zip
+**/*.tar.gz
+# ===============================
+# 📂 Cloud environment files
+**/cloud-env.sh
