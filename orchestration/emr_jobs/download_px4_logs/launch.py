@@ -6,12 +6,77 @@ import sys
 import time
 from pprint import pprint
 from uuid import uuid4
+
 import boto3
 from botocore.exceptions import ClientError
 import yaml
-import json
 
 logger = logging.getLogger(__name__)
+
+def status_poller(intro, done_status, func):
+    """
+    Polls a function for status, sleeping for 10 seconds between each query,
+    until the specified status is returned.
+
+    :param intro: An introductory sentence that informs the reader what we're
+                  waiting for.
+    :param done_status: The status we're waiting for. This function polls the status
+                        function until it returns the specified status.
+    :param func: The function to poll for status. This function must eventually
+                 return the expected done_status or polling will continue indefinitely.
+    """
+    logger.setLevel(logging.WARNING)
+    status = None
+    print(intro)
+    print("Current status: ", end="")
+    while status != done_status:
+        prev_status = status
+        status = func()
+        if prev_status == status:
+            print(".", end="")
+        else:
+            print(status, end="")
+        sys.stdout.flush()
+        time.sleep(10)
+    print()
+    logger.setLevel(logging.INFO)
+
+def describe_cluster(cluster_id, emr_client):
+    """
+    Gets detailed information about a cluster.
+
+    :param cluster_id: The ID of the cluster to describe.
+    :param emr_client: The Boto3 EMR client object.
+    :return: The retrieved cluster information.
+    """
+    try:
+        response = emr_client.describe_cluster(ClusterId=cluster_id)
+        cluster = response["Cluster"]
+        logger.info("Got data for cluster %s.", cluster["Name"])
+    except ClientError:
+        logger.exception("Couldn't get data for cluster %s.", cluster_id)
+        raise
+    else:
+        return cluster
+
+def list_steps(cluster_id, emr_client):
+    """
+    Gets a list of steps for the specified cluster. In this example, all steps are
+    returned, including completed and failed steps.
+
+    :param cluster_id: The ID of the cluster.
+    :param emr_client: The Boto3 EMR client object.
+    :return: The list of steps for the specified cluster.
+    """
+    try:
+        response = emr_client.list_steps(ClusterId=cluster_id)
+        steps = response["Steps"]
+        logger.info("Got %s steps for cluster %s.", len(steps), cluster_id)
+    except ClientError:
+        logger.exception("Couldn't get steps for cluster %s.", cluster_id)
+        raise
+    else:
+        return steps
 
 def parse_step_yaml_to_json(yaml_path, job_id):
     cwd = os.getcwd()
@@ -32,7 +97,7 @@ def parse_step_yaml_to_json(yaml_path, job_id):
         args.append(step["HadoopJarStep"]["Args"]["script"])
         
         steps.append({
-            "Name": f"{step["Name"]}-{job_id}",
+            "Name": f"{step['Name']}-{job_id}",
             "ActionOnFailure": step["ActionOnFailure"],
             "HadoopJarStep": {
                 "Properties": [],
@@ -120,8 +185,6 @@ def run_job_flow(
     else:
         return cluster_id
 
-# https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/emr/client/run_job_flow.html
-
 if __name__ == "__main__":
     job_id = str(uuid4())
     name = f"FLIGHT-EMR-{job_id}"
@@ -148,7 +211,9 @@ if __name__ == "__main__":
     ]
 
     steps = None
+    CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
     yaml_path = "orchestration/emr_jobs/download_px4_logs/steps.yaml"
+    yaml_path = os.path.join(CURRENT_DIR, "steps.yaml")
     steps = parse_step_yaml_to_json(yaml_path, job_id=job_id)
     instances = {
         "InstanceGroups": [
@@ -235,5 +300,20 @@ if __name__ == "__main__":
         emr_client=emr_client,
     )
     pprint(cluster_id)
+    status_poller(
+        "Waiting for cluster, this typically takes several minutes...",
+        "RUNNING",
+        lambda: describe_cluster(cluster_id, emr_client)["Status"]["State"],
+    )
+    status_poller(
+        "Waiting for step to complete...",
+        "PENDING",
+        lambda: list_steps(cluster_id, emr_client)[0]["Status"]["State"],
+    )
+    status_poller(
+        "Waiting for cluster to terminate.",
+        "TERMINATED",
+        lambda: describe_cluster(cluster_id, emr_client)["Status"]["State"],
+    )
 
 
