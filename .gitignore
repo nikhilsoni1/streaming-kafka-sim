@@ -51,3 +51,4 @@ scratch*.ipynb
 # ===============================
 # 📂 Cloud environment files
 **/cloud-env.sh
+**/*.yaml

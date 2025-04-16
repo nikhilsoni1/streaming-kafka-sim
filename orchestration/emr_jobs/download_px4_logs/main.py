@@ -16,10 +16,11 @@ DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
 DATABASE_HOST = os.getenv("DATABASE_HOST")
 DATABASE_PORT = int(os.getenv("DATABASE_PORT", 5432))
 DATABASE_NAME = os.getenv("DATABASE_NAME")
+JOB_ID = os.getenv("JOB_ID", str(uuid4()))
 
 _now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d%H:%M:%S")
 # Spark initialization
-spark = SparkSession.builder.appName(f"PX4LogDownloader-{_now}").getOrCreate()
+spark = SparkSession.builder.appName(f"PX4LogDownloader-{JOB_ID}").getOrCreate()
 sc = spark.sparkContext
 
 # Step 1: Setup DB client and fetch log records
@@ -35,7 +36,7 @@ repo = LogDlRepository(session)
 
 # Fetch logs to process
 records = repo.get_new_log_entries(limit=5)  # Increase this as needed
-job_id = str(uuid4())
+job_id = JOB_ID
 log_ts_utc = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 
 # Assign job_id

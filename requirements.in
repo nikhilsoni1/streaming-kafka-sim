@@ -12,3 +12,4 @@ dbt-postgres
 tqdm
 boto3
 dotenv
+PyYAML
