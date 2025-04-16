@@ -8,7 +8,7 @@ class DatabaseClient:
         database_user: str,
         database_password: str,
         database_host: str,
-        database_port: int | str,
+        database_port,
         database_name: str,
     ):
         """
