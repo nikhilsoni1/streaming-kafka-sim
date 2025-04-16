@@ -9,7 +9,9 @@ description = "Data access layer with models and repositories"
 authors = [{ name = "Nikhil Soni", email = "nikhil@yawpitchroll.ai" }]
 requires-python = ">=3.8"
 dependencies = [
-    "sqlalchemy"
+    "sqlalchemy",
+    "tqdm",
+    "psycopg2-binary"
 ]
 
 [tool.setuptools]
