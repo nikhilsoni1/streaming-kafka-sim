@@ -12,7 +12,7 @@ with DAG(
     dag_id='download_px4_logs_pipeline',
     default_args=default_args,
     description='Runs PX4 log download after setting environment',
-    schedule_interval=None,
+    schedule_interval='*/30 * * * *',  # Every 30 minutes
     start_date=days_ago(1),
     catchup=False,
     tags=['px4', 'emr', 'logs']
