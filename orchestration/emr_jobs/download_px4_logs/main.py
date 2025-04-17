@@ -35,7 +35,7 @@ session = dbclient.get_session()
 repo = LogDlRepository(session)
 
 # Fetch logs to process
-records = repo.get_new_log_entries(limit=5)  # Increase this as needed
+records = repo.get_new_log_entries(limit=50)  # Increase this as needed
 job_id = JOB_ID
 log_ts_utc = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 
