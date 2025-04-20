@@ -69,3 +69,10 @@ class ULogParser:
             return casts[index]
         else:
             raise ValueError(f"No typecasts found for topic '{topic_name}'.")
+
+if __name__ == "__main__":
+    test_log_path = "/Users/nikhilsoni/workspace/streaming-kafka-sim/ulog-insights/data/test_log.ulg"
+    parser = ULogParser(test_log_path)
+    topics = parser.list_topics()
+    df = parser.get_topic_df("sensor_combined", 0)
+    debug = True

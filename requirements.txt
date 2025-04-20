@@ -24,6 +24,8 @@ babel==2.17.0
     # via agate
 black[jupyter]==25.1.0
     # via -r requirements.in
+blinker==1.9.0
+    # via flask
 boto3==1.37.33
     # via -r requirements.in
 botocore==1.37.33
@@ -39,10 +41,13 @@ click==8.1.8
     #   black
     #   dbt-core
     #   dbt-semantic-interfaces
+    #   flask
 colorama==0.4.6
     # via dbt-common
 daff==1.3.46
     # via dbt-core
+dash==3.0.3
+    # via -r requirements.in
 dbt-adapters==1.14.3
     # via
     #   dbt-core
@@ -70,10 +75,14 @@ dotenv==0.9.9
     # via -r requirements.in
 executing==2.2.0
     # via stack-data
+flask==3.0.3
+    # via dash
 idna==3.10
     # via requests
 importlib-metadata==6.11.0
-    # via dbt-semantic-interfaces
+    # via
+    #   dash
+    #   dbt-semantic-interfaces
 inflect==7.5.0
     # via sqlacodegen
 ipython==9.1.0
@@ -84,6 +93,8 @@ isodate==0.6.1
     # via
     #   agate
     #   dbt-common
+itsdangerous==2.2.0
+    # via flask
 jedi==0.19.2
     # via ipython
 jinja2==3.1.6
@@ -91,6 +102,7 @@ jinja2==3.1.6
     #   dbt-common
     #   dbt-core
     #   dbt-semantic-interfaces
+    #   flask
 jmespath==1.0.1
     # via
     #   boto3
@@ -111,6 +123,7 @@ markupsafe==3.0.2
     # via
     #   jinja2
     #   mako
+    #   werkzeug
 mashumaro[msgpack]==3.14
     # via
     #   dbt-adapters
@@ -128,16 +141,23 @@ msgpack==1.1.0
     # via mashumaro
 mypy-extensions==1.0.0
     # via black
+narwhals==1.35.0
+    # via plotly
+nest-asyncio==1.6.0
+    # via dash
 networkx==3.4.2
     # via dbt-core
 numpy==2.2.4
-    # via pandas
+    # via
+    #   pandas
+    #   pyulog
 ordered-set==4.1.0
     # via deepdiff
 packaging==24.2
     # via
     #   black
     #   dbt-core
+    #   plotly
 pandas==2.2.3
     # via -r requirements.in
 parsedatetime==2.6
@@ -153,6 +173,10 @@ pexpect==4.9.0
     # via ipython
 platformdirs==4.3.7
     # via black
+plotly==6.0.1
+    # via
+    #   -r requirements.in
+    #   dash
 prompt-toolkit==3.0.50
     # via ipython
 protobuf==5.29.4
@@ -195,6 +219,8 @@ pytz==2025.2
     #   dbt-adapters
     #   dbt-core
     #   pandas
+pyulog==1.2.0
+    # via -r requirements.in
 pyyaml==6.0.2
     # via
     #   -r requirements.in
@@ -209,9 +235,12 @@ referencing==0.36.2
 requests==2.32.3
     # via
     #   -r requirements.in
+    #   dash
     #   dbt-common
     #   dbt-core
     #   snowplow-tracker
+retrying==1.3.4
+    # via dash
 rich==13.9.4
     # via -r requirements.in
 rpds-py==0.24.0
@@ -224,6 +253,7 @@ six==1.17.0
     # via
     #   isodate
     #   python-dateutil
+    #   retrying
 snowplow-tracker==1.1.0
     # via dbt-core
 sqlacodegen==3.0.0
@@ -251,6 +281,7 @@ typeguard==4.4.2
 typing-extensions==4.13.0
     # via
     #   alembic
+    #   dash
     #   dbt-adapters
     #   dbt-common
     #   dbt-core
@@ -272,5 +303,12 @@ urllib3==2.3.0
     #   requests
 wcwidth==0.2.13
     # via prompt-toolkit
+werkzeug==3.0.6
+    # via
+    #   dash
+    #   flask
 zipp==3.21.0
     # via importlib-metadata
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools
