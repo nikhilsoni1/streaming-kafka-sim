@@ -1,0 +1,4 @@
+pyulog
+pandas
+plotly
+dash

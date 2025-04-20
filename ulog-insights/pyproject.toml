@@ -1,0 +1,7 @@
+[project]
+name = "ulog-insights"
+version = "0.1.0"
+description = "Analytics tooling for PX4 .ulg logs"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+dependencies = ["pyulog", "pandas", "plotly", "dash"]
+requires-python = ">=3.8"
