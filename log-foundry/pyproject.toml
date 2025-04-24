@@ -1,0 +1,7 @@
+[project]
+name = "logfoundry"
+version = "0.1.0"
+description = "Log parsing and telemetry tooling for PX4 .ulg files"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+dependencies = ["pyulog", "pandas", "plotly", "dash"]
+requires-python = ">=3.8"
