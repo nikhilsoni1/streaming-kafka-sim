@@ -13,3 +13,6 @@ tqdm
 boto3
 dotenv
 PyYAML
+pyulog
+plotly
+dash
