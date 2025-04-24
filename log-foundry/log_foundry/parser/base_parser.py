@@ -4,6 +4,7 @@ from log_foundry.parser.dataframe_helpers import apply_typecasts
 import pandas as pd
 from pyulog import ULog
 
+
 class ULogParser:
 
     def __init__(self, ulg_path: str):
@@ -29,7 +30,9 @@ class ULogParser:
     def list_topics(self):
         return list(self.topic_map.keys())
 
-    def get_topic_df(self, topic_name: str, index: int = 0, custom_cast: dict = None) -> pd.DataFrame:
+    def get_topic_df(
+        self, topic_name: str, index: int = 0, custom_cast: dict = None
+    ) -> pd.DataFrame:
         if topic_name not in self.topic_map:
             raise ValueError(f"Topic '{topic_name}' not found.")
         if index >= len(self.topic_map[topic_name]):
@@ -51,14 +54,12 @@ class ULogParser:
         else:
             raise ValueError(f"No typecasts found for topic '{topic_name}'.")
 
+
 if __name__ == "__main__":
-    test_log_path = "/Users/nikhilsoni/workspace/streaming-kafka-sim/log-foundry/data/test_log.ulg"
+    test_log_path = (
+        "/Users/nikhilsoni/workspace/streaming-kafka-sim/log-foundry/data/test_log.ulg"
+    )
     parser = ULogParser(test_log_path)
     topics = parser.list_topics()
-    foo = parser.ulg.data_list[3]
-    foo_vars = vars(foo)
-    import json
-    with open("/Users/nikhilsoni/Downloads/test_mockup.json", "w") as f:
-        json.dump(foo_vars, f, indent=4, default=str, sort_keys=True)
     df = parser.get_topic_df("sensor_combined", 0)
     debug = True
