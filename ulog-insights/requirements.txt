@@ -1,4 +1,0 @@
-pyulog
-pandas
-plotly
-dash
