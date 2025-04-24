@@ -35,3 +35,13 @@ aws s3 cp s3://flight-emr/logs/j-55EEI978OJYX/containers/ ./logs/ --recursive --
 ## Monolithic Chart Serving
 
 [Prompt](https://chatgpt.com/c/6808578e-6558-8010-bba1-e2d0c460553a)
+
+## Clean up git branches
+```sh
+git fetch -p  # Prune tracking branches that have been removed from remote
+
+# Delete all local branches whose remote is gone
+for b in $(git branch -vv | grep ': gone]' | awk '{print $1}'); do
+  git branch -D "$b"
+done
+```
