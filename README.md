@@ -31,3 +31,7 @@ aws s3 cp s3://flight-emr/logs/j-28AW3RV826BE/containers/ ./logs/ --recursive --
 aws s3 cp s3://flight-emr/logs/j-55EEI978OJYX/containers/ ./logs/ --recursive --region us-east-1
 
 ```
+
+## Monolithic Chart Serving
+
+[Prompt](https://chatgpt.com/c/6808578e-6558-8010-bba1-e2d0c460553a)
