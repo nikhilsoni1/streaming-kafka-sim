@@ -1,9 +1,9 @@
 import click
 from commands import ec2
 from commands import s3
-from commands.rds_commands import rds
-from commands.emr_commands import emr
-from commands.security_commands import security
+from commands import rds
+from commands import emr
+from commands import security
 
 
 @click.group()
