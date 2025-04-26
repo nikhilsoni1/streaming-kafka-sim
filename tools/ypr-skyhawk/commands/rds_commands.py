@@ -3,11 +3,9 @@ import json
 import csv
 import os
 from tabulate import tabulate
-from aws_repository.services.rds_service import (
-    start_rds_instance,
-    stop_rds_instance,
-    list_all_rds_instances,
-)
+from aws_repository import rds_start_instance
+from aws_repository import rds_stop_instance
+from aws_repository import rds_list_all_instances
 
 @click.group()
 def rds():
@@ -22,7 +20,7 @@ def start_instance(db_id: str, wait: bool, region: str):
     """
     Start an RDS DB instance by DB identifier.
     """
-    start_rds_instance(db_id, wait=wait, region=region)
+    rds_start_instance(db_id, wait=wait, region=region)
 
 @rds.command(name="stop-instance")
 @click.option('--db-id', required=True, help='ID of the RDS instance to stop')
@@ -32,7 +30,7 @@ def stop_instance(db_id: str, wait: bool, region: str):
     """
     Stop an RDS DB instance by DB identifier.
     """
-    stop_rds_instance(db_id, wait=wait, region=region)
+    rds_stop_instance(db_id, wait=wait, region=region)
 
 @rds.command(name="list-instances")
 @click.option('--state', required=False, help='Filter instances by status (e.g., available, stopped)')
@@ -43,7 +41,7 @@ def list_instances(state: str = None, output: str = 'table', region: str = 'us-e
     """
     List all RDS instances in the AWS region, optionally filtering by status.
     """
-    instances = list_all_rds_instances(region=region)
+    instances = rds_list_all_instances(region=region)
     if not instances:
         click.echo("No RDS instances found.")
         return

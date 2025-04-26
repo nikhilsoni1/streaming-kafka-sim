@@ -3,12 +3,11 @@ import json
 import csv
 import os
 from tabulate import tabulate
-from aws_repository.services.ec2_service import (
-    start_ec2_instance,
-    stop_ec2_instance,
-    update_instance_ip,
-    list_all_ec2_instances,
-)
+
+from aws_repository import ec2_start_instance
+from aws_repository import ec2_stop_instance
+from aws_repository import ec2_update_instance_ip
+from aws_repository import ec2_list_all_instances
 
 @click.group()
 def ec2():
@@ -23,7 +22,7 @@ def stop_instance(instance_id: str, wait: bool, region: str):
     """
     Stop an EC2 instance by Instance ID.
     """
-    stop_ec2_instance(instance_id, wait=wait, region=region)
+    ec2_stop_instance(instance_id, wait=wait, region=region)
 
 @ec2.command(name="start-instance")
 @click.option('--instance-id', required=True, help='ID of the EC2 instance to start')
@@ -33,7 +32,7 @@ def start_instance(instance_id: str, wait: bool, region: str):
     """
     Start an EC2 instance by Instance ID.
     """
-    start_ec2_instance(instance_id, wait=wait, region=region)
+    ec2_start_instance(instance_id, wait=wait, region=region)
 
 @ec2.command(name="update-ip")
 @click.option('--instance-id', required=True, help='ID of the EC2 instance to update')
@@ -43,7 +42,7 @@ def update_ip(instance_id: str, new_ip: str, region: str):
     """
     Update the public IP address of an EC2 instance.
     """
-    update_instance_ip(instance_id, new_ip, region=region)
+    ec2_update_instance_ip(instance_id, new_ip, region=region)
 
 @ec2.command(name="list-instances")
 @click.option('--state', required=False, help='Filter instances by state (e.g., running, stopped)')
@@ -54,7 +53,7 @@ def list_instances(state: str = None, output: str = 'table', region: str = 'us-e
     """
     List all EC2 instances in the AWS region, optionally filtering by state.
     """
-    instances = list_all_ec2_instances(region=region)
+    instances = ec2_list_all_instances(region=region)
     if not instances:
         click.echo("No EC2 instances found.")
         return

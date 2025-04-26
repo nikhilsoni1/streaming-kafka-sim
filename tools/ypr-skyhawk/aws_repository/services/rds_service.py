@@ -34,7 +34,7 @@ def poll_rds_instance_status(rds_client, db_instance_id: str, desired_status: st
             time.sleep(wait_interval)
             bar.update(wait_interval)
 
-def start_rds_instance(db_id: str, region: str = "us-east-1", wait: bool = False):
+def rds_start_instance(db_id: str, region: str = "us-east-1", wait: bool = False):
     """
     Start an RDS DB instance and optionally wait until it is available.
     """
@@ -44,7 +44,7 @@ def start_rds_instance(db_id: str, region: str = "us-east-1", wait: bool = False
     if wait:
         poll_rds_instance_status(rds, db_id, desired_status='available')
 
-def stop_rds_instance(db_id: str, region: str = "us-east-1", wait: bool = False):
+def rds_stop_instance(db_id: str, region: str = "us-east-1", wait: bool = False):
     """
     Stop an RDS DB instance and optionally wait until it is stopped.
     """
@@ -80,7 +80,7 @@ def paginate_describe_db_instances(rds_client) -> list:
             })
     return instances
 
-def list_all_rds_instances(region: str = "us-east-1") -> list:
+def rds_list_all_instances(region: str = "us-east-1") -> list:
     """
     List all RDS DB instances in the specified AWS region.
     """

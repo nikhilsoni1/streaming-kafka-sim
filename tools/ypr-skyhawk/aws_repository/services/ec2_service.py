@@ -34,7 +34,7 @@ def poll_instance_status(ec2_client, instance_id: str, desired_state: str, wait_
             time.sleep(wait_interval)
             bar.update(wait_interval)
 
-def stop_ec2_instance(instance_id: str, region: str = "us-east-1", wait: bool = False):
+def ec2_stop_instance(instance_id: str, region: str = "us-east-1", wait: bool = False):
     """
     Stop an EC2 instance and optionally wait until it is fully stopped.
     """
@@ -44,7 +44,7 @@ def stop_ec2_instance(instance_id: str, region: str = "us-east-1", wait: bool = 
     if wait:
         poll_instance_status(ec2, instance_id, desired_state='stopped')
 
-def start_ec2_instance(instance_id: str, region: str = "us-east-1", wait: bool = False):
+def ec2_start_instance(instance_id: str, region: str = "us-east-1", wait: bool = False):
     """
     Start an EC2 instance and optionally wait until it is fully running.
     """
@@ -54,7 +54,7 @@ def start_ec2_instance(instance_id: str, region: str = "us-east-1", wait: bool =
     if wait:
         poll_instance_status(ec2, instance_id, desired_state='running')
 
-def update_instance_ip(instance_id: str, new_ip: str, region: str = "us-east-1"):
+def ec2_update_instance_ip(instance_id: str, new_ip: str, region: str = "us-east-1"):
     """
     Update EC2 instance public IP address.
     """
@@ -87,7 +87,7 @@ def paginate_describe_instances(ec2_client) -> list:
                 })
     return instances
 
-def list_all_ec2_instances(region: str = "us-east-1") -> list:
+def ec2_list_all_instances(region: str = "us-east-1") -> list:
     """
     List all EC2 instances in the specified AWS region.
     """
