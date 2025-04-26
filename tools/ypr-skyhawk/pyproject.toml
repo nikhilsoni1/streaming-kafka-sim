@@ -1,0 +1,18 @@
+[project]
+name = "ypr-skyhawk"
+version = "0.1.0"
+description = "Skyhawk: Lightweight Tactical AWS CLI for EC2, RDS, EMR, and Security Operations"
+authors = [
+    { name = "Your Name", email = "your.email@example.com" }
+]
+dependencies = [
+    "click>=8.0",
+    "boto3>=1.28"
+]
+
+[project.scripts]
+skyhawk = "manage:cli"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
