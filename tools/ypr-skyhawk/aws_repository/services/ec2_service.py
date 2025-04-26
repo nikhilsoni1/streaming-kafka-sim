@@ -1,6 +1,7 @@
 import time
 import click
-from aws_repository.services.common_service import create_boto3_client
+from .common_service import create_boto3_client
+from yaspin import yaspin
 
 def poll_instance_status(ec2_client, instance_id: str, desired_state: str, wait_interval: int = 5, timeout: int = 300):
     """
@@ -15,24 +16,23 @@ def poll_instance_status(ec2_client, instance_id: str, desired_state: str, wait_
     """
     start_time = time.time()
 
-    click.echo(f"Waiting for instance {instance_id} to reach state '{desired_state}' (timeout {timeout}s)...")
-
-    with click.progressbar(length=timeout, label='Polling EC2 instance status') as bar:
+    with yaspin(text=f"Waiting for instance {instance_id} to reach state '{desired_state}' (timeout {timeout}s)...", color="cyan") as spinner:
         while True:
             response = ec2_client.describe_instances(InstanceIds=[instance_id])
             state = response['Reservations'][0]['Instances'][0]['State']['Name']
             elapsed_time = time.time() - start_time
 
             if state == desired_state:
-                click.echo(f"\nInstance {instance_id} is now '{desired_state}'.")
+                spinner.ok("✅ ")
+                click.echo(f"Instance {instance_id} is now '{desired_state}'.")
                 break
 
             if elapsed_time > timeout:
-                raise TimeoutError(f"\nTimeout waiting for instance {instance_id} to reach '{desired_state}'. "
-                                   f"Last known state: {state}")
+                spinner.fail("💥 ")
+                raise TimeoutError(f"Timeout waiting for instance {instance_id} to reach '{desired_state}'. Last known state: {state}")
 
             time.sleep(wait_interval)
-            bar.update(wait_interval)
+
 
 def ec2_stop_instance(instance_id: str, region: str = "us-east-1", wait: bool = False):
     """
@@ -87,9 +87,15 @@ def paginate_describe_instances(ec2_client) -> list:
                 })
     return instances
 
+
 def ec2_list_all_instances(region: str = "us-east-1") -> list:
     """
     List all EC2 instances in the specified AWS region.
     """
     ec2 = create_boto3_client('ec2', region)
-    return paginate_describe_instances(ec2)
+
+    with yaspin(text="Fetching EC2 instances...", color="cyan") as spinner:
+        instances = paginate_describe_instances(ec2)
+        spinner.ok("✅ ")
+
+    return instances

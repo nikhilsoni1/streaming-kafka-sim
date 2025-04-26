@@ -1,8 +1,9 @@
 import time
+from yaspin import yaspin
 import click
-from aws_repository.services.common_service import create_boto3_client
+from .common_service import create_boto3_client
 
-def poll_rds_instance_status(rds_client, db_instance_id: str, desired_status: str, wait_interval: int = 10, timeout: int = 600):
+def poll_rds_instance_status(rds_client, db_instance_id: str, desired_status: str, wait_interval: int = 10, timeout: int = 900):
     """
     Polls the RDS DB instance status until it reaches the desired status, or timeout occurs.
 
@@ -15,44 +16,43 @@ def poll_rds_instance_status(rds_client, db_instance_id: str, desired_status: st
     """
     start_time = time.time()
 
-    click.echo(f"Waiting for RDS instance {db_instance_id} to reach status '{desired_status}' (timeout {timeout}s)...")
-
-    with click.progressbar(length=timeout, label='Polling RDS instance status') as bar:
+    with yaspin(text=f"Waiting for RDS instance {db_instance_id} to reach status '{desired_status}' (timeout {timeout}s)...", color="cyan") as spinner:
         while True:
             response = rds_client.describe_db_instances(DBInstanceIdentifier=db_instance_id)
             current_status = response['DBInstances'][0]['DBInstanceStatus']
             elapsed_time = time.time() - start_time
 
             if current_status == desired_status:
-                click.echo(f"\nRDS instance {db_instance_id} is now '{desired_status}'.")
+                spinner.ok("✅ ")
+                click.echo(f"RDS instance {db_instance_id} is now '{desired_status}'.")
                 break
 
             if elapsed_time > timeout:
-                raise TimeoutError(f"\nTimeout waiting for RDS instance {db_instance_id} to reach '{desired_status}'. "
+                spinner.fail("💥 ")
+                raise TimeoutError(f"Timeout waiting for RDS instance {db_instance_id} to reach '{desired_status}'. "
                                    f"Last known status: {current_status}")
 
             time.sleep(wait_interval)
-            bar.update(wait_interval)
 
-def rds_start_instance(db_id: str, region: str = "us-east-1", wait: bool = False):
+def rds_start_instance(instance_id: str, region: str = "us-east-1", wait: bool = False):
     """
     Start an RDS DB instance and optionally wait until it is available.
     """
     rds = create_boto3_client('rds', region)
-    rds.start_db_instance(DBInstanceIdentifier=db_id)
+    rds.start_db_instance(DBInstanceIdentifier=instance_id)
 
     if wait:
-        poll_rds_instance_status(rds, db_id, desired_status='available')
+        poll_rds_instance_status(rds, instance_id, desired_status='available')
 
-def rds_stop_instance(db_id: str, region: str = "us-east-1", wait: bool = False):
+def rds_stop_instance(instance_id: str, region: str = "us-east-1", wait: bool = False):
     """
     Stop an RDS DB instance and optionally wait until it is stopped.
     """
     rds = create_boto3_client('rds', region)
-    rds.stop_db_instance(DBInstanceIdentifier=db_id)
+    rds.stop_db_instance(DBInstanceIdentifier=instance_id)
 
     if wait:
-        poll_rds_instance_status(rds, db_id, desired_status='stopped')
+        poll_rds_instance_status(rds, instance_id, desired_status='stopped')
 
 def paginate_describe_db_instances(rds_client) -> list:
     """
@@ -85,4 +85,9 @@ def rds_list_all_instances(region: str = "us-east-1") -> list:
     List all RDS DB instances in the specified AWS region.
     """
     rds = create_boto3_client('rds', region)
-    return paginate_describe_db_instances(rds)
+
+    with yaspin(text="Fetching RDS instances...", color="cyan") as spinner:
+        instances = paginate_describe_db_instances(rds)
+        spinner.ok("✅ ")
+
+    return instances

@@ -13,24 +13,24 @@ def rds():
     pass
 
 @rds.command(name="start-instance")
-@click.option('--db-id', required=True, help='ID of the RDS instance to start')
+@click.option('--instance-id', required=True, help='ID of the RDS instance to start')
 @click.option('--wait', is_flag=True, default=False, help='Wait until RDS instance is fully available')
 @click.option('--region', default='us-east-1', help='AWS region name')
-def start_instance(db_id: str, wait: bool, region: str):
+def start_instance(instance_id: str, wait: bool, region: str):
     """
     Start an RDS DB instance by DB identifier.
     """
-    rds_start_instance(db_id, wait=wait, region=region)
+    rds_start_instance(instance_id, wait=wait, region=region)
 
 @rds.command(name="stop-instance")
-@click.option('--db-id', required=True, help='ID of the RDS instance to stop')
+@click.option('--instance-id', required=True, help='ID of the RDS instance to stop')
 @click.option('--wait', is_flag=True, default=False, help='Wait until RDS instance is fully stopped')
 @click.option('--region', default='us-east-1', help='AWS region name')
-def stop_instance(db_id: str, wait: bool, region: str):
+def stop_instance(instance_id: str, wait: bool, region: str):
     """
     Stop an RDS DB instance by DB identifier.
     """
-    rds_stop_instance(db_id, wait=wait, region=region)
+    rds_stop_instance(instance_id, wait=wait, region=region)
 
 @rds.command(name="list-instances")
 @click.option('--state', required=False, help='Filter instances by status (e.g., available, stopped)')
