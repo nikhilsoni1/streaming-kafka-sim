@@ -9,3 +9,4 @@ requires-python = ">=3.8"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["render_rig"]
+exclude = ["tests", "tests.*", "samples", "samples.*"]
