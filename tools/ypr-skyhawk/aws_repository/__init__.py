@@ -1,5 +1,7 @@
 # S3
 from .services import s3_list_all_buckets
+from .services import s3_create_bucket
+from .services import s3_delete_bucket
 
 # EC2
 from .services import ec2_start_instance
@@ -21,4 +23,6 @@ __all__ = [
     "rds_start_instance",
     "rds_stop_instance",
     "rds_list_all_instances",
+    "s3_create_bucket",
+    "s3_delete_bucket"
 ]

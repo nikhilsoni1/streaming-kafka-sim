@@ -4,6 +4,7 @@ import boto3
 import click
 from .common_service import create_boto3_client
 from yaspin import yaspin
+from botocore.exceptions import ClientError
 
 
 def format_size(size_bytes: int) -> str:
@@ -137,3 +138,41 @@ def s3_list_all_buckets(region: str = "us-east-1") -> dict:
     }
 
     return {"buckets": buckets, "summary": summary}
+
+
+def s3_create_bucket(bucket_name: str, region: str = "us-east-1"):
+    """Create a new S3 bucket."""
+    s3 = create_boto3_client("s3", region)
+
+    with yaspin(text=f"Creating bucket '{bucket_name}'...", color="cyan") as spinner:
+        try:
+            if region == "us-east-1":
+                s3.create_bucket(Bucket=bucket_name)
+            else:
+                s3.create_bucket(
+                    Bucket=bucket_name,
+                    CreateBucketConfiguration={"LocationConstraint": region},
+                )
+            spinner.ok("✅ ")
+            click.echo(f"Bucket '{bucket_name}' created successfully.")
+        except ClientError as e:
+            spinner.fail("💥 ")
+            raise click.ClickException(
+                f"Failed to create bucket: {e.response['Error']['Message']}"
+            )
+
+
+def s3_delete_bucket(bucket_name: str, region: str = "us-east-1"):
+    """Delete an empty S3 bucket."""
+    s3 = create_boto3_client("s3", region)
+
+    with yaspin(text=f"Deleting bucket '{bucket_name}'...", color="cyan") as spinner:
+        try:
+            s3.delete_bucket(Bucket=bucket_name)
+            spinner.ok("✅ ")
+            click.echo(f"Bucket '{bucket_name}' deleted successfully.")
+        except ClientError as e:
+            spinner.fail("💥 ")
+            raise click.ClickException(
+                f"Failed to delete bucket: {e.response['Error']['Message']}"
+            )

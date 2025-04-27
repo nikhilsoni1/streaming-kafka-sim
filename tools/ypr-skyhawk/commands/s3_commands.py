@@ -4,6 +4,8 @@ import csv
 import os
 from tabulate import tabulate
 from aws_repository import s3_list_all_buckets
+from aws_repository import s3_create_bucket
+from aws_repository import s3_delete_bucket
 
 
 @click.group()
@@ -87,3 +89,23 @@ def list_buckets(
                 writer.writeheader()
                 writer.writerows(buckets)
             click.echo(f"\nOutput saved to {save_path} (CSV format)")
+
+
+@s3.command(name="create-bucket")
+@click.option("--bucket-name", required=True, help="Name of the S3 bucket to create")
+@click.option("--region", default="us-east-1", help="AWS region name")
+def create_bucket(bucket_name: str, region: str):
+    """
+    Create a new S3 bucket.
+    """
+    s3_create_bucket(bucket_name, region)
+
+
+@s3.command(name="delete-bucket")
+@click.option("--bucket-name", required=True, help="Name of the S3 bucket to delete")
+@click.option("--region", default="us-east-1", help="AWS region name")
+def delete_bucket(bucket_name: str, region: str):
+    """
+    Delete an empty S3 bucket.
+    """
+    s3_delete_bucket(bucket_name, region)
