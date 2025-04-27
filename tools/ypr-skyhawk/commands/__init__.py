@@ -4,9 +4,4 @@ from .rds_commands import rds
 from .emr_commands import emr
 from .security_commands import security
 
-__all__ = [
-    "s3",
-    "ec2",
-    "rds",
-    "emr"
-]
+__all__ = ["s3", "ec2", "rds", "emr"]

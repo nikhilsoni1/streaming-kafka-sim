@@ -5,6 +5,7 @@ import click
 from .common_service import create_boto3_client
 from yaspin import yaspin
 
+
 def format_size(size_bytes: int) -> str:
     """Convert bytes to human-readable size."""
     if size_bytes < 1024:
@@ -18,6 +19,7 @@ def format_size(size_bytes: int) -> str:
     else:
         return f"{round(size_bytes / (1024**4), 2)} TB"
 
+
 def format_object_count(count: int) -> str:
     """Convert object count to human-readable format."""
     if count < 1000:
@@ -27,12 +29,13 @@ def format_object_count(count: int) -> str:
     else:
         return f"{round(count / 1_000_000, 1)}M"
 
+
 def s3_list_all_buckets(region: str = "us-east-1") -> dict:
     """
     List all S3 buckets with metrics like total objects and total size.
     """
-    s3 = create_boto3_client('s3', region)
-    s3_resource = boto3.resource('s3', region_name=region)
+    s3 = create_boto3_client("s3", region)
+    s3_resource = boto3.resource("s3", region_name=region)
 
     buckets = []
     total_objects = 0
@@ -41,9 +44,9 @@ def s3_list_all_buckets(region: str = "us-east-1") -> dict:
     with yaspin(text="Collecting S3 bucket metrics...", color="cyan") as spinner:
         try:
             response = s3.list_buckets()
-            for bucket in response.get('Buckets', []):
-                bucket_name = bucket['Name']
-                creation_date = str(bucket['CreationDate'])
+            for bucket in response.get("Buckets", []):
+                bucket_name = bucket["Name"]
+                creation_date = str(bucket["CreationDate"])
                 bucket_obj = s3_resource.Bucket(bucket_name)
 
                 try:
@@ -53,12 +56,14 @@ def s3_list_all_buckets(region: str = "us-east-1") -> dict:
                         obj_count += 1
                         size_bytes += obj.size
 
-                    buckets.append({
-                        "BucketName": bucket_name,
-                        "CreationDate": creation_date,
-                        "NumberOfObjects": format_object_count(obj_count),
-                        "TotalSize": format_size(size_bytes)
-                    })
+                    buckets.append(
+                        {
+                            "BucketName": bucket_name,
+                            "CreationDate": creation_date,
+                            "NumberOfObjects": format_object_count(obj_count),
+                            "TotalSize": format_size(size_bytes),
+                        }
+                    )
 
                     total_objects += obj_count
                     total_size += size_bytes
@@ -74,7 +79,7 @@ def s3_list_all_buckets(region: str = "us-east-1") -> dict:
 
     summary = {
         "total_objects": format_object_count(total_objects),
-        "total_size": format_size(total_size)
+        "total_size": format_size(total_size),
     }
 
     return {"buckets": buckets, "summary": summary}
@@ -90,8 +95,8 @@ def s3_list_all_buckets(region: str = "us-east-1") -> dict:
             "summary": {"total_objects": str, "total_size": str}
         }
     """
-    s3 = create_boto3_client('s3', region)
-    s3_resource = boto3.resource('s3', region_name=region)
+    s3 = create_boto3_client("s3", region)
+    s3_resource = boto3.resource("s3", region_name=region)
 
     buckets = []
     total_objects = 0
@@ -99,9 +104,9 @@ def s3_list_all_buckets(region: str = "us-east-1") -> dict:
 
     with click.spinner("Collecting S3 bucket metrics..."):
         response = s3.list_buckets()
-        for bucket in response.get('Buckets', []):
-            bucket_name = bucket['Name']
-            creation_date = str(bucket['CreationDate'])
+        for bucket in response.get("Buckets", []):
+            bucket_name = bucket["Name"]
+            creation_date = str(bucket["CreationDate"])
             bucket_obj = s3_resource.Bucket(bucket_name)
 
             try:
@@ -111,12 +116,14 @@ def s3_list_all_buckets(region: str = "us-east-1") -> dict:
                     obj_count += 1
                     size_bytes += obj.size
 
-                buckets.append({
-                    "BucketName": bucket_name,
-                    "CreationDate": creation_date,
-                    "NumberOfObjects": format_object_count(obj_count),
-                    "TotalSize": format_size(size_bytes)
-                })
+                buckets.append(
+                    {
+                        "BucketName": bucket_name,
+                        "CreationDate": creation_date,
+                        "NumberOfObjects": format_object_count(obj_count),
+                        "TotalSize": format_size(size_bytes),
+                    }
+                )
 
                 total_objects += obj_count
                 total_size += size_bytes
@@ -126,7 +133,7 @@ def s3_list_all_buckets(region: str = "us-east-1") -> dict:
 
     summary = {
         "total_objects": format_object_count(total_objects),
-        "total_size": format_size(total_size)
+        "total_size": format_size(total_size),
     }
 
     return {"buckets": buckets, "summary": summary}

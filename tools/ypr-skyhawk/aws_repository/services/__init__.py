@@ -20,5 +20,5 @@ __all__ = [
     "ec2_list_all_instances",
     "rds_start_instance",
     "rds_stop_instance",
-    "rds_list_all_instances"
+    "rds_list_all_instances",
 ]
