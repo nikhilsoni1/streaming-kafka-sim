@@ -1,0 +1,17 @@
+[project]
+dynamic = ["version"]
+name = "ypr-core-logfoundry"
+description = "Log parsing and telemetry tooling for PX4 .ulg files"
+authors = [{ name = "Nikhil", email = "nikhil@yawpitchroll.ai" }]
+dependencies = ["pyulog", "pandas"]
+requires-python = ">=3.8"
+
+[tool.setuptools.dynamic]
+version = { attr = "ypr_log_foundry.__version__" }
+
+[tool.setuptools.packages.find]
+exclude = ["data", "tests"]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
