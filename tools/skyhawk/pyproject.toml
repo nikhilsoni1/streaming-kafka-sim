@@ -1,6 +1,6 @@
 [project]
+dynamic = ["version"]
 name = "skyhawk"
-version = "0.1.0"
 description = "Skyhawk: Lightweight Tactical AWS CLI for EC2, RDS, EMR, and Security Operations"
 authors = [
     { name = "Nikhil Soni", email = "soni.nikhil@outlook.com" }
@@ -15,6 +15,9 @@ dependencies = [
 
 [project.scripts]
 skyhawk = "skyhawk.manage:cli"
+
+[tool.setuptools.dynamic]
+version = { attr = "skyhawk.__version__" }
 
 [build-system]
 requires = ["setuptools", "wheel"]
