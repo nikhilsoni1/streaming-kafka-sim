@@ -1,5 +1,5 @@
 # parser_adapter.py
-from log_foundry.parser import ULogParser
+from ypr_core_logfoundry.parser import ULogParser
 import os
 
 # Assume that ULog files are saved under 'render_rig/ulogs/{log_id}.ulg'
