@@ -1,3 +1,5 @@
 pyulog
 pandas
 pytest
+twine
+build
