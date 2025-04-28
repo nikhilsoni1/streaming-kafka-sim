@@ -1,7 +1,7 @@
 # Test for parser
 import pytest
 import pandas as pd
-from log_foundry.parser.base_parser import ULogParser
+from ypr_core_logfoundry.parser.base_parser import ULogParser
 
 
 # Dummy classes to mock pyulog.ULog structure
@@ -50,7 +50,7 @@ class DummyULog:
 # Monkeypatch ULog in base_parser to return our DummyULog
 @pytest.fixture
 def mock_ulog(monkeypatch):
-    monkeypatch.setattr("log_foundry.parser.base_parser.ULog", lambda _: DummyULog())
+    monkeypatch.setattr("ypr_core_logfoundry.parser.base_parser.ULog", lambda _: DummyULog())
 
 
 def test_list_topics(mock_ulog):
