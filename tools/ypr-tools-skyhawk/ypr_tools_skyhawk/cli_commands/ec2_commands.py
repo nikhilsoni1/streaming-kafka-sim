@@ -4,10 +4,10 @@ import csv
 import os
 from tabulate import tabulate
 
-from skyhawk.repository import ec2_start_instance
-from skyhawk.repository import ec2_stop_instance
-from skyhawk.repository import ec2_update_instance_ip
-from skyhawk.repository import ec2_list_all_instances
+from ypr_tools_skyhawk.aws_boto3_repo import ec2_start_instance
+from ypr_tools_skyhawk.aws_boto3_repo import ec2_stop_instance
+from ypr_tools_skyhawk.aws_boto3_repo import ec2_update_instance_ip
+from ypr_tools_skyhawk.aws_boto3_repo import ec2_list_all_instances
 
 
 @click.group()

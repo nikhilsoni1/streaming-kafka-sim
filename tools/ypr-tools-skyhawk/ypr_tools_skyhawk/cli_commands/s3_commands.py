@@ -3,9 +3,9 @@ import json
 import csv
 import os
 from tabulate import tabulate
-from skyhawk.repository import s3_list_all_buckets
-from skyhawk.repository import s3_create_bucket
-from skyhawk.repository import s3_delete_bucket
+from ypr_tools_skyhawk.aws_boto3_repo import s3_list_all_buckets
+from ypr_tools_skyhawk.aws_boto3_repo import s3_create_bucket
+from ypr_tools_skyhawk.aws_boto3_repo import s3_delete_bucket
 
 @click.group()
 def s3():
