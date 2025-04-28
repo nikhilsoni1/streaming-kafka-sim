@@ -3,9 +3,9 @@ import json
 import csv
 import os
 from tabulate import tabulate
-from repository import rds_start_instance
-from repository import rds_stop_instance
-from repository import rds_list_all_instances
+from skyhawk.repository import rds_start_instance
+from skyhawk.repository import rds_stop_instance
+from skyhawk.repository import rds_list_all_instances
 
 
 @click.group()
