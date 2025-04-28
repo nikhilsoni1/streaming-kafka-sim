@@ -50,7 +50,7 @@ class DummyULog:
 # Monkeypatch ULog in base_parser to return our DummyULog
 @pytest.fixture
 def mock_ulog(monkeypatch):
-    monkeypatch.setattr("log_foundry.parser.base_parser.ULog", lambda _: DummyULog())
+    monkeypatch.setattr("ypr_core_logfoundry.parser.base_parser.ULog", lambda _: DummyULog())
 
 
 def test_list_topics(mock_ulog):
