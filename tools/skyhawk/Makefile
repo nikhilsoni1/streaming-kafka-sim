@@ -1,45 +1,40 @@
-.PHONY: install build clean publish
+.PHONY: install clean build publish
 
-# CodeArtifact settings
+# Config
+PACKAGE = skyhawk
 DOMAIN = ypr-dockyard
 REPOSITORY = pypi-cargo
-NAMESPACE = tools
-PACKAGE = skyhawk
+REGION = us-east-1   # <-- set your region
+DIST_DIR = dist
 
-# Read version dynamically from skyhawk/__init__.py
+# Dynamic version from skyhawk/__init__.py
 PACKAGE_VERSION = $(shell grep '__version__' skyhawk/__init__.py | sed -E 's/__version__ = ["'\''](.*)["'\'']/\1/')
 
-# Build artifact path
-ASSET_FILE = dist/$(PACKAGE)-$(PACKAGE_VERSION).tar.gz
+# Artifact path
+ASSET_FILE = $(DIST_DIR)/$(PACKAGE)-$(PACKAGE_VERSION).tar.gz
 
-# Install skyhawk in editable mode
+# Install editable
 install:
 	pip install -e .
 
-# Clean build artifacts and cache
+# Clean build artifacts
 clean:
-	rm -rf build/ dist/
-	find . -name "*.egg-info" -type d -exec rm -rf {} +
+	rm -rf build/ dist/ *.egg-info
 	find . -name "__pycache__" -type d -exec rm -rf {} +
 	find . -name ".pytest_cache" -type d -exec rm -rf {} +
 	find . -name ".mypy_cache" -type d -exec rm -rf {} +
 
-# Build fresh dist/ artifacts
+# Build distribution
 build: clean
 	python3 -m build
 
-# Publish to AWS CodeArtifact
+# Publish using twine with live token injection
 publish: build
-	@echo "Calculating SHA256..."
-	export ASSET_SHA256=$$(sha256sum $(ASSET_FILE) | awk '{print $$1;}') && \
-	echo "Publishing package to AWS CodeArtifact..." && \
-	aws codeartifact publish-package-version \
-		--domain $(DOMAIN) \
-		--repository $(REPOSITORY) \
-		--format generic \
-		--namespace $(NAMESPACE) \
-		--package $(PACKAGE) \
-		--package-version $(PACKAGE_VERSION) \
-		--asset-content $(ASSET_FILE) \
-		--asset-name $(notdir $(ASSET_FILE)) \
-		--asset-sha256 $$ASSET_SHA256
+	@echo "Publishing to CodeArtifact using live token..."
+	$(eval AUTH_TOKEN := $(shell aws codeartifact get-authorization-token --domain $(DOMAIN) --region $(REGION) --query authorizationToken --output text))
+	$(eval REPO_ENDPOINT := $(shell aws codeartifact get-repository-endpoint --domain $(DOMAIN) --repository $(REPOSITORY) --format pypi --region $(REGION) --query repositoryEndpoint --output text))
+	twine upload \
+		--repository-url $(REPO_ENDPOINT) \
+		-u aws \
+		-p $(AUTH_TOKEN) \
+		$(DIST_DIR)/*
