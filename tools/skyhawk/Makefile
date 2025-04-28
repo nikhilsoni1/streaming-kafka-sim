@@ -31,7 +31,7 @@ build: clean
 # Publish using twine with live token injection
 publish: build
 	@echo "Publishing to CodeArtifact using live token..."
-	$(eval AUTH_TOKEN := $(shell aws codeartifact get-authorization-token --domain $(DOMAIN) --region $(REGION) --query authorizationToken --output text))
+	$(eval AUTH_TOKEN := $(shell aws codeartifact get-authorization-token --domain $(DOMAIN) --region $(REGION) --duration-seconds 600 --query authorizationToken --output text))
 	$(eval REPO_ENDPOINT := $(shell aws codeartifact get-repository-endpoint --domain $(DOMAIN) --repository $(REPOSITORY) --format pypi --region $(REGION) --query repositoryEndpoint --output text))
 	twine upload \
 		--repository-url $(REPO_ENDPOINT) \
