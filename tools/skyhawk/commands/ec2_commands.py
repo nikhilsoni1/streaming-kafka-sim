@@ -4,10 +4,10 @@ import csv
 import os
 from tabulate import tabulate
 
-from aws_repository import ec2_start_instance
-from aws_repository import ec2_stop_instance
-from aws_repository import ec2_update_instance_ip
-from aws_repository import ec2_list_all_instances
+from repository import ec2_start_instance
+from repository import ec2_stop_instance
+from repository import ec2_update_instance_ip
+from repository import ec2_list_all_instances
 
 
 @click.group()

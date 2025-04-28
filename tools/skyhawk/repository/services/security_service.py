@@ -1,4 +1,4 @@
-from aws_repository.services.common_service import create_boto3_client
+from repository.services.common_service import create_boto3_client
 
 
 def list_security_rules(region: str = "us-west-2"):

@@ -1,5 +1,5 @@
 import click
-from aws_repository.services.security_service import list_security_rules
+from repository.services.security_service import list_security_rules
 
 
 @click.group()

@@ -1,5 +1,5 @@
 import click
-from aws_repository.services.emr_service import list_emr_configurations
+from repository.services.emr_service import list_emr_configurations
 
 
 @click.group()

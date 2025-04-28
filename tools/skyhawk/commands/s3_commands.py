@@ -3,9 +3,9 @@ import json
 import csv
 import os
 from tabulate import tabulate
-from aws_repository import s3_list_all_buckets
-from aws_repository import s3_create_bucket
-from aws_repository import s3_delete_bucket
+from repository import s3_list_all_buckets
+from repository import s3_create_bucket
+from repository import s3_delete_bucket
 
 
 @click.group()
