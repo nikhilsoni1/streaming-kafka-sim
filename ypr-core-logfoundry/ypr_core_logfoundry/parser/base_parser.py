@@ -1,6 +1,6 @@
 # ulog_insights/parser/base_parser.py
-from log_foundry.parser.px4_typecast import typecast_dict
-from log_foundry.parser.dataframe_helpers import apply_typecasts
+from .px4_typecast import typecast_dict
+from .dataframe_helpers import apply_typecasts
 import pandas as pd
 from pyulog import ULog
 

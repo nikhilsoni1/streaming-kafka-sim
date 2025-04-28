@@ -7,7 +7,7 @@ dependencies = ["pyulog", "pandas"]
 requires-python = ">=3.8"
 
 [tool.setuptools.dynamic]
-version = { attr = "ypr_log_foundry.__version__" }
+version = { attr = "ypr_core_logfoundry.__version__" }
 
 [tool.setuptools.packages.find]
 exclude = ["data", "tests"]

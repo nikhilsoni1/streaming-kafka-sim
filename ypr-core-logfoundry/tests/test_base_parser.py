@@ -1,7 +1,7 @@
 # Test for parser
 import pytest
 import pandas as pd
-from log_foundry.parser.base_parser import ULogParser
+from ypr_core_logfoundry.parser.base_parser import ULogParser
 
 
 # Dummy classes to mock pyulog.ULog structure
