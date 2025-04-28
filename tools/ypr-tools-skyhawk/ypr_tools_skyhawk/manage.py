@@ -1,7 +1,7 @@
 import click
-from .commands import ec2
-from .commands import s3
-from .commands import rds
+from .cli_commands import ec2
+from .cli_commands import s3
+from .cli_commands import rds
 
 
 @click.group()
