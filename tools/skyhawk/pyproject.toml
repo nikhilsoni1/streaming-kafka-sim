@@ -1,0 +1,24 @@
+[project]
+dynamic = ["version"]
+name = "skyhawk"
+description = "Skyhawk: Lightweight Tactical AWS CLI for EC2, RDS, EMR, and Security Operations"
+authors = [
+    { name = "Nikhil Soni", email = "soni.nikhil@outlook.com" }
+]
+dependencies = [
+    "boto3>=1.28",
+    "click>=8.0",
+    "tabulate>=0.9",
+    "tqdm>=4.60",
+    "yaspin>=3.1.0"
+]
+
+[project.scripts]
+skyhawk = "skyhawk.manage:cli"
+
+[tool.setuptools.dynamic]
+version = { attr = "skyhawk.__version__" }
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
