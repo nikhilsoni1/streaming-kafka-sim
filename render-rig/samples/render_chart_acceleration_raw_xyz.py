@@ -4,7 +4,7 @@ from render_rig import get_log_data
 from render_rig import ChartAccelRawXYZ
 
 # Load and parse the .ulg file
-log_data = get_log_data("52dac5ff-484c-4737-9ee5-03aa07a5b051")
+log_data = get_log_data("1fc1b7b4-a68a-491b-8984-3234ed71be08")
 
 # Generate the chart
 chart = ChartAccelRawXYZ()
