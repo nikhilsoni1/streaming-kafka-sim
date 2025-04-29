@@ -1,0 +1,15 @@
+[project]
+dynamic = ["version"]
+name = "ypr-data-connector"
+description = "A data connector for Yaw Pitch Roll"
+readme = "README.md"
+authors = [{ name = "Nikhil Soni", email = "nikhil@yawpitchroll.ai" }]
+dependencies = ["sqlalchemy>=2.0.40", "psycopg2-binary>=2.9.10"]
+requires-python = ">=3.8"
+
+[tool.setuptools.dynamic]
+version = { attr = "ypr_data_connector.__version__" }
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
