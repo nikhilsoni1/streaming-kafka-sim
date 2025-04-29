@@ -3,8 +3,16 @@ from ypr_core_logfoundry.parser import ULogParser
 import os
 from render_rig.data_access import get_file3path_from_logregistry
 from render_rig.data_access import s3_get_object_by_uri
+from render_rig.data_access.object_access.s3_repo import StorageMode
 
-def get_log_data(log_id: str) -> dict:
+
+def get_log_data(
+    log_id: str,
+    region_name: str = "us-east-1",
+    mode: StorageMode = "cache",
+    cache_dir: str = "/tmp/s3_cache",
+    max_retries: int = 3,
+) -> dict:
     """
     Fetch and parse ULog data for a given log_id.
 
@@ -19,7 +27,13 @@ def get_log_data(log_id: str) -> dict:
         raise ValueError("log_id cannot be None")
 
     s3_uri = get_file3path_from_logregistry(log_id)
-    ulog_path = s3_get_object_by_uri(s3_uri=s3_uri, region_name="us-east-1", mode="cache")
+    ulog_path = s3_get_object_by_uri(
+        s3_uri=s3_uri,
+        region_name=region_name,
+        mode=mode,
+        cache_dir=cache_dir,
+        max_retries=max_retries,
+    )
 
     if not os.path.exists(ulog_path):
         raise FileNotFoundError(f"ULog file not found at {ulog_path}")
@@ -28,6 +42,7 @@ def get_log_data(log_id: str) -> dict:
 
     # You could normalize keys or filter unwanted topics here if needed
     return parsed_log
+
 
 if __name__ == "__main__":
     # Example usage
