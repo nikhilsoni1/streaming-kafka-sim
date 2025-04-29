@@ -1,3 +1,6 @@
 boto3
 fastapi
 ypr-core-logfoundry==0.1.0
+ypr-data-connector==0.1.2
+alembic
+sqlacodegen

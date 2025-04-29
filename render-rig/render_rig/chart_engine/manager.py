@@ -7,6 +7,7 @@ from render_rig.cache.store import chart_exists
 
 ALL_CHARTS = [ChartAccelRawXYZ()]
 
+
 def generate_charts_for_log(log_id: str) -> list:
     log_data = get_log_data(log_id)
     results = []

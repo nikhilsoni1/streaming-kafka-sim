@@ -4,6 +4,12 @@
 #
 #    pip-compile requirements.in
 #
+--index-url https://aws:eyJ2ZXIiOjEsImlzdSI6MTc0NTk0ODE2MywiZW5jIjoiQTEyOEdDTSIsInRhZyI6Ii1yWWV4OXVBdzROVlBqcWdNajlRQ2ciLCJleHAiOjE3NDU5OTEzNjMsImFsZyI6IkExMjhHQ01LVyIsIml2IjoiSjg3NkR6VWg3LXBXT0tsYyJ9.wYIXGTaPYP_3YBIIbrfiiw.FY4xVdG948k-2JHs.b9SzC1JBCaFjuXUyGfyhCN279yQtzVP1iVw9wgyRE8jZHMDC58glRARqOjMj8WCU0EmottvIgvpSrAdsXKUNLq4j73Uarzr7fRo2KgHcl6xvzBMIvF0gywnOWjNBNu-lbsGVTy9V_Ncv2Epof8hsoFxDEq9w_SVRnfcnVMqX8PLYnLSH8DOVUYEi7TXnMhoTXl3F7wkTDL-AvgCtOsFTwSzxSCqVgET4rm_H2U9VKkb2vilo4FRofUOp1stACyWFmgnorG_CwJCewL5MPXdtd3dl_tDD_UfBbX03NMFt8lPuepiXGyzhINMtXa5lCnmdvWvhpZeTHwGcncVh0htc_Xb5NNgiBVpuNORud-sYw5hoFKWTPHWikkKAGQlQZrtfJeLsdf5-MEbMX8SA1OdLWmpO6enROhoDHFnK7pExfSsfRCLuHk3ZYqwaW8ssFuKXiuh_H3zFlumsgotd4KYASTcRpfpqsxgkFSWSyp14AwqoIFl2WeOTnCxNz0AfEdd8K_SvLO2jwcQwm9d1xOJVqrXf9_Ezri9OXtgNococ4yLQKpcvt1zevGKJN1rHMB6j7vaxmyj9On8ojHc7VXlJck3OjtJaQH8Jiq5ZanqYQmuHYXynIsd5mA1U3CiuUAbl3w07jnHgU13m2vv9ubUem6hEmD5Sjn0J_bDCNPyiBxgFGTD1wvA1_AdsaxyAI0upLtIHfjwnqQvsPq9ANXTyBO5wwubEzv76r6Hi1jjYyY-QEg0dlFZTKFhK2dRl2UDj6GG-vhWFFGOZV44axhytIA6c_Mt_RZTOoa8jIufu5yksxerDPlr33WESHbgni4PxnF0CwEQPhAL2oejGU2htJru5a0w-_bpYDPdZ-Uhq_pzKYwTycB-vDN-ZGrQv8LX7OcdAeHlo0S_iJj0qk2bx7Rohh-CkckJbswm-C5PoNwdvXcjQfTTn-L8rYhtPLM0xuDWla9O_mU2Ac-UY6UBUkT2Cmw.TExh4lbB-UzzZ5RaR5VFMw@ypr-dockyard-183295432811.d.codeartifact.us-east-1.amazonaws.com/pypi/pypi-cargo/simple/
+--extra-index-url https://pypi.org/simple
+--trusted-host ypr-dockyard-183295432811.d.codeartifact.us-east-1.amazonaws.com
+
+alembic==1.15.2
+    # via -r requirements.in
 annotated-types==0.7.0
     # via pydantic
 anyio==4.9.0
@@ -18,31 +24,71 @@ fastapi==0.115.12
     # via -r requirements.in
 idna==3.10
     # via anyio
+inflect==7.5.0
+    # via sqlacodegen
 jmespath==1.0.1
     # via
     #   boto3
     #   botocore
+mako==1.3.10
+    # via alembic
+markupsafe==3.0.2
+    # via mako
+more-itertools==10.7.0
+    # via inflect
+numpy==2.2.5
+    # via
+    #   pandas
+    #   pyulog
+pandas==2.2.3
+    # via ypr-core-logfoundry
+psycopg2-binary==2.9.10
+    # via ypr-data-connector
 pydantic==2.11.3
     # via fastapi
 pydantic-core==2.33.1
     # via pydantic
 python-dateutil==2.9.0.post0
-    # via botocore
+    # via
+    #   botocore
+    #   pandas
+pytz==2025.2
+    # via pandas
+pyulog==1.2.0
+    # via ypr-core-logfoundry
 s3transfer==0.12.0
     # via boto3
 six==1.17.0
     # via python-dateutil
 sniffio==1.3.1
     # via anyio
+sqlacodegen==3.0.0
+    # via -r requirements.in
+sqlalchemy==2.0.40
+    # via
+    #   alembic
+    #   sqlacodegen
+    #   ypr-data-connector
 starlette==0.46.2
     # via fastapi
+typeguard==4.4.2
+    # via inflect
 typing-extensions==4.13.2
     # via
+    #   alembic
     #   fastapi
     #   pydantic
     #   pydantic-core
+    #   sqlalchemy
+    #   typeguard
     #   typing-inspection
 typing-inspection==0.4.0
     # via pydantic
+tzdata==2025.2
+    # via pandas
 urllib3==2.4.0
     # via botocore
+ypr-core-logfoundry==0.1.0
+    # via -r requirements.in
+ypr-data-connector==0.1.2
+    # via -r requirements.in
