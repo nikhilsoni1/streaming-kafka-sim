@@ -14,14 +14,19 @@ def generate_charts_for_log(log_id: str) -> list:
 
     for chart in ALL_CHARTS:
         chart_id = f"{log_id}_{chart.chart_name}"
-
+        # Check if (log_id, chart.chart_name) exists in registry
+        # fetch chart_json if exists -> continue
+        # else generate chart and save to registry
         if chart_exists(chart_id):
             results.append({"chart_id": chart_id, "status": "cached"})
             continue
-
-        if chart.is_available(log_data):
+        # Check if topic is available in the dataset
+        if chart.is_topic_available(log_data):
             fig = chart.generate(log_data)
             save_chart_json(fig, chart_id)
             results.append({"chart_id": chart_id, "status": "generated"})
+        else:
+            # log
+            pass
 
     return results
