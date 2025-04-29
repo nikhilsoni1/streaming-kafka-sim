@@ -3,6 +3,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from .base_client import BaseDatabaseClient
+from sqlalchemy.sql import text
 
 class PostgresDatabaseClient(BaseDatabaseClient):
     """
@@ -71,7 +72,7 @@ class PostgresDatabaseClient(BaseDatabaseClient):
         """
         try:
             with self.engine.connect() as conn:
-                conn.execute("SELECT 1")
+                conn.execute(text("SELECT 1"))
             return True
         except Exception as e:
             print("Database connection failed:", e)
