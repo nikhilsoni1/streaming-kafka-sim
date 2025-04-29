@@ -1,2 +1,3 @@
 boto3
 fastapi
+ypr-core-logfoundry==0.1.0
