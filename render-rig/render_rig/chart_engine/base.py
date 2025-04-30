@@ -2,7 +2,7 @@
 class Chart:
     chart_name = "chart_base"
 
-    def is_available(self, log_data: dict) -> bool:
+    def is_topic_available(self, log_data: dict) -> bool:
         raise NotImplementedError
 
     def generate(self, log_data: dict):

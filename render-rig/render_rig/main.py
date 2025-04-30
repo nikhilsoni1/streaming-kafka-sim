@@ -6,9 +6,11 @@ from render_rig.cache.store import get_chart_json
 
 app = FastAPI()
 
+
 @app.get("/charts/{log_id}")
 def generate_charts(log_id: str):
     return generate_charts_for_log(log_id)
+
 
 @app.get("/chart/{chart_id}/json")
 def serve_chart_json(chart_id: str):
