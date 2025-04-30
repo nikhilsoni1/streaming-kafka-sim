@@ -1,5 +1,6 @@
 import os
 from typing import Optional
+from typing import Tuple
 from ypr_data_connector.database_client import PostgresDatabaseClient
 from render_rig.data_access.database.models import ChartRegistry
 from sqlalchemy.exc import SQLAlchemyError
@@ -114,6 +115,24 @@ def insert_into_chart_registry(
             except Exception as e:
                 print(f"Warning: Error closing session: {e}")
 
+def lookup_chart_registry(log_id: str, chart_name: str) -> Optional[Tuple[str, str]]:
+    """
+    Looks up the ChartRegistry entry for a given log_id and chart_name.
+
+    Returns:
+        Optional[Tuple[str, str]]: (bucket_name, key) if the record exists, else None.
+    """
+    session = get_render_rig_session()
+    try:
+        result = session.query(ChartRegistry).filter_by(log_id=log_id, chart_name=chart_name).first()
+        if result:
+            return result.bucket_name, result.key
+        return None
+    except SQLAlchemyError as e:
+        raise RuntimeError(f"Database error while querying ChartRegistry: {e}")
+    finally:
+        session.close()
+
 
 if __name__ == "__main__":
     # Example usage
@@ -139,3 +158,9 @@ if __name__ == "__main__":
         bucket_name,
         key,
     )
+
+    result = lookup_chart_registry(log_id, chart_name)
+    if result:
+        print(f"Found record: {result}")
+    else:
+        print("No record found.")
