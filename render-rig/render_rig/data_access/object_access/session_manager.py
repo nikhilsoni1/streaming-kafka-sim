@@ -5,19 +5,18 @@ from botocore.config import Config
 
 logger = logging.getLogger(__name__)
 
+_clients = {}  # Global cache
 
 def create_boto3_client(
     service: str, region_name: str = "us-east-1", max_retries: int = 3
 ):
     """
-    Create a boto3 client with retry configuration and error handling.
-
-    :param service: AWS service name (e.g., 's3', 'dynamodb').
-    :param region_name: AWS region (e.g., 'us-east-1').
-    :param max_retries: Number of retry attempts.
-    :return: boto3 client instance.
-    :raises: ValueError or BotoCoreError subclasses on failure.
+    Create or reuse a boto3 client (singleton per service-region-retry combo).
     """
+    key = (service, region_name, max_retries)
+    if key in _clients:
+        return _clients[key]
+
     if not service or not isinstance(service, str):
         raise ValueError("Service name must be a non-empty string.")
     if not region_name or not isinstance(region_name, str):
@@ -28,6 +27,7 @@ def create_boto3_client(
     try:
         config = Config(retries={"max_attempts": max_retries, "mode": "standard"})
         client = boto3.client(service, region_name=region_name, config=config)
+        _clients[key] = client
         return client
     except UnknownServiceError as e:
         logger.error(f"Unknown AWS service '{service}': {e}")

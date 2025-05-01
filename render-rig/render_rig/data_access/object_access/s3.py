@@ -1,14 +1,21 @@
+# Standard library imports
 import os
 import hashlib
 import logging
 import tempfile
-from typing import Literal, Union, Optional
-import boto3
-from botocore.exceptions import ClientError, NoCredentialsError, EndpointConnectionError
-from botocore.config import Config
-from render_rig.data_access.object_access.common_service import create_boto3_client
 from urllib.parse import urlparse
 import json
+
+# Typing imports
+from typing import Literal
+from typing import Union
+from typing import Optional
+
+# AWS SDK imports
+import boto3
+from botocore.exceptions import ClientError
+from botocore.exceptions import NoCredentialsError
+from botocore.exceptions import EndpointConnectionError
 
 logger = logging.getLogger(__name__)
 
@@ -32,28 +39,20 @@ def parse_s3_uri(s3_uri: str) -> tuple[str, str]:
 
     return bucket_name, key
 
-def log_s3_download_attempt(bucket: str, key: str):
-    print(f"[LOG] Attempting to download from S3: Bucket={bucket}, Key={key}")
-
 def s3_get_object_by_bucket_key(
     bucket_name: str,
     key: str,
-    region_name: str = "us-east-1",
+    s3_client: Optional[boto3.client],
     mode: StorageMode = "memory",  # 'memory', 'cache', or 'tempfile'
     cache_dir: str = "/tmp/s3_cache",
-    s3_client: Optional[boto3.client] = None,
-    max_retries: int = 3,
 ) -> Union[bytes, str]:
     """
     Download an object from S3 with flexible storage options.
-
     :param bucket_name: Name of the S3 bucket.
     :param key: Key of the object in the S3 bucket.
-    :param region_name: AWS region of the bucket.
+    :param s3_client: boto3 S3 client.
     :param mode: Where to store the file: 'memory' returns bytes, 'cache' or 'tempfile' returns path.
     :param cache_dir: Directory to store cache if using mode='cache'.
-    :param s3_client: Optional boto3 client.
-    :param max_retries: Retry attempts for S3 download.
     :return: bytes (memory) or str (file path for 'cache'/'tempfile')
     """
     if not bucket_name or not key:
@@ -66,11 +65,6 @@ def s3_get_object_by_bucket_key(
     if mode == "cache" and os.path.exists(cache_path):
         logger.info(f"Cache hit: {cache_path}")
         return cache_path
-
-    if s3_client is None:
-        s3_client = create_boto3_client("s3", region_name, max_retries)
-
-    log_s3_download_attempt(bucket_name, key)
 
     try:
         response = s3_client.get_object(Bucket=bucket_name, Key=key)
@@ -105,21 +99,17 @@ def s3_get_object_by_bucket_key(
 
 def s3_get_object_by_uri(
     s3_uri: Optional[str],
-    region_name: str = "us-east-1",
+    s3_client: Optional[boto3.client],
     mode: StorageMode = "memory",
     cache_dir: str = "/tmp/s3_cache",
-    s3_client: Optional[boto3.client] = None,
-    max_retries: int = 3,
 ) -> Union[bytes, str]:
     """
     Download an object from S3 using a URI.
 
     :param s3_uri: Full S3 URI (e.g., 's3://bucket-name/path/to/object')
-    :param region_name: AWS region of the bucket.
+    :param s3_client: boto3 client.
     :param mode: Where to store the file: 'memory', 'cache', or 'tempfile'.
     :param cache_dir: Directory to store cache if using mode='cache'.
-    :param s3_client: Optional boto3 client.
-    :param max_retries: Retry attempts for S3 download.
     :return: bytes (memory) or str (file path for 'cache'/'tempfile')
     :raises ValueError: If s3_uri is None or invalid.
     """
@@ -131,20 +121,16 @@ def s3_get_object_by_uri(
     return s3_get_object_by_bucket_key(
         bucket_name=bucket_name,
         key=key,
-        region_name=region_name,
         mode=mode,
         cache_dir=cache_dir,
-        s3_client=s3_client,
-        max_retries=max_retries,
+        s3_client=s3_client
     )
 
 def s3_save_chart_json(
     chart_json_str: str,
     bucket_name: str,
     key: str,
-    region_name: str = "us-east-1",
-    s3_client: Optional[boto3.client] = None,
-    max_retries: int = 3,
+    s3_client: Optional[boto3.client]
 ):
     """
     Save chart JSON to S3.
@@ -152,14 +138,8 @@ def s3_save_chart_json(
     :param chart_json_str: JSON string of the chart.
     :param bucket_name: S3 bucket name.
     :param key: S3 object key.
-    :param region_name: AWS region.
-    :param mode: Storage mode - memory, cache, or tempfile (currently unused).
-    :param cache_dir: Directory to use if using cache mode (currently unused).
     :param s3_client: Optional pre-initialized boto3 S3 client.
-    :param max_retries: Maximum number of retries for S3 client.
     """
-    if s3_client is None:
-        s3_client = create_boto3_client("s3", region_name, max_retries)
 
     try:
         s3_client.put_object(Bucket=bucket_name, Key=key, Body=chart_json_str)
@@ -172,22 +152,16 @@ def s3_save_chart_json(
 def s3_get_chart_json(
     bucket_name: str,
     key: str,
-    region_name: str = "us-east-1",
-    s3_client: Optional[boto3.client] = None,
-    max_retries: int = 3,
+    s3_client: Optional[boto3.client]
 ) -> Optional[str]:
     """
     Retrieve chart JSON from S3.
 
     :param bucket_name: S3 bucket name.
     :param key: S3 object key.
-    :param region_name: AWS region.
     :param s3_client: Optional pre-initialized boto3 S3 client.
-    :param max_retries: Maximum number of retries for S3 client.
     :return: Chart JSON string or None if not found.
     """
-    if s3_client is None:
-        s3_client = create_boto3_client("s3", region_name, max_retries)
 
     try:
         response = s3_client.get_object(Bucket=bucket_name, Key=key)
@@ -198,35 +172,4 @@ def s3_get_chart_json(
         return None
     
 if __name__ == "__main__":
-    import datetime
-    import json
-    # Example usage
-    uri = "s3://flight-px4-logs/raw-logs/2025/4/10/file_aaf83b7cd2644dbda8af648db3eabdfc.ulg"
-    region_name = "us-east-1"
-
-    try:
-        data = s3_get_object_by_uri(s3_uri=uri, region_name=region_name, mode="cache")
-        print(f"Downloaded data (first 100 bytes): {data[:100]}...")
-    except Exception as e:
-        logger.error(f"Failed to download object: {e}")
-
-    bucket_name = "ypr-test-bucket-20250429"
-    chart_json = {
-        "log_ts_utc": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
-        "name": "example_chart",
-    }
-    chart_json_str = json.dumps(chart_json)
-
-    now = datetime.datetime.now(datetime.timezone.utc)
-    key = f"charts/{now.year}/{now.month}/{now.day}/example_chart.json"
-
-    try:
-        s3_save_chart_json(
-            chart_json_str=chart_json_str,
-            bucket_name=bucket_name,
-            key=key,
-            region_name=region_name,
-        )
-        logger.info(f"Chart JSON successfully saved to S3: {key}")
-    except Exception as e:
-        logger.error(f"Failed to save chart JSON to S3: {e}")
+    pass

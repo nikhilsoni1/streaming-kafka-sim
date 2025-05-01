@@ -4,7 +4,8 @@
 set -e
 
 # Validate required environment variables
-REQUIRED_VARS=("DATABASE_HOST" "DATABASE_PORT" "DATABASE_USER" "DATABASE_PASSWORD" "LOG_REGISTRY_DATABASE_NAME" "LOG_REGISTRY_DATABASE_SCHEMA")
+REQUIRED_VARS=("LOG_REGISTRY_DB_HOST" "LOG_REGISTRY_DB_PORT" "LOG_REGISTRY_DB_USER" "LOG_REGISTRY_DB_PASS" "LOG_REGISTRY_DB_NAME")
+LOG_REGISTRY_DB_SCMA="registry"
 for var in "${REQUIRED_VARS[@]}"; do
   if [[ -z "${!var}" ]]; then
     echo "Environment variable '$var' is not set."
@@ -23,9 +24,9 @@ INIT_FILE="${OUTPUT_DIR}/__init__.py"
 mkdir -p "$OUTPUT_DIR"
 
 # Construct SQLAlchemy DB URL
-DB_URL="postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${LOG_REGISTRY_DATABASE_NAME}"
+DB_URL="postgresql://${LOG_REGISTRY_DB_USER}:${LOG_REGISTRY_DB_PASS}@${LOG_REGISTRY_DB_HOST}:${LOG_REGISTRY_DB_PORT}/${LOG_REGISTRY_DB_NAME}"
 
 # Generate models
-echo "Generating models for schema '${LOG_REGISTRY_DATABASE_SCHEMA}'..."
-sqlacodegen "$DB_URL" --schema "$LOG_REGISTRY_DATABASE_SCHEMA" --outfile "$OUTPUT_FILE"
+echo "Generating models for schema '${LOG_REGISTRY_DB_SCMA}'..."
+sqlacodegen "$DB_URL" --schema "$LOG_REGISTRY_DB_SCMA" --outfile "$OUTPUT_FILE"
 echo "Models written to: $OUTPUT_FILE"

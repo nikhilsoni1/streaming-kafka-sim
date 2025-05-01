@@ -1,17 +1,19 @@
 # parser_adapter.py
 from ypr_core_logfoundry.parser import ULogParser
 import os
-from render_rig.data_access import get_file3path_from_logregistry
-from render_rig.data_access import s3_get_object_by_uri
-from render_rig.data_access.object_access.s3_repo import StorageMode
+from render_rig.data_access.database.repository.px4_registry import get_s3uri_from_logregistry
+from render_rig.data_access.object_access.s3 import s3_get_object_by_uri
+from render_rig.data_access.object_access.s3 import StorageMode
+from boto3 import client
+from sqlalchemy.orm import Session
 
 
 def get_log_data(
     log_id: str,
-    region_name: str = "us-east-1",
+    db_session: Session,
+    s3_client: client = None,
     mode: StorageMode = "cache",
     cache_dir: str = "/tmp/s3_cache",
-    max_retries: int = 3,
 ) -> dict:
     """
     Fetch and parse ULog data for a given log_id.
@@ -26,13 +28,12 @@ def get_log_data(
     if log_id is None:
         raise ValueError("log_id cannot be None")
 
-    s3_uri = get_file3path_from_logregistry(log_id)
+    s3_uri = get_s3uri_from_logregistry(log_id, db_session)
     ulog_path = s3_get_object_by_uri(
         s3_uri=s3_uri,
-        region_name=region_name,
+        s3_client=s3_client,
         mode=mode,
         cache_dir=cache_dir,
-        max_retries=max_retries,
     )
 
     if not os.path.exists(ulog_path):
@@ -45,8 +46,4 @@ def get_log_data(
 
 
 if __name__ == "__main__":
-    # Example usage
-    log_id = "a224339a-2537-480d-990e-1e30197ee72e"
-    log_data = get_log_data(log_id)
-    print(log_data)
-    debug = True
+    pass
