@@ -24,7 +24,6 @@ def insert_into_chart_registry(
     Returns:
         Optional[str]: The chart ID if insertion is successful; None if record already exists.
     """
-    session: Optional[Session] = None
     try:
         record = ChartRegistry(
             log_ts_utc=log_ts_utc,
@@ -81,8 +80,6 @@ def lookup_chart_registry(log_id: str, chart_name: str, session: Session) -> Opt
         return None
     except SQLAlchemyError as e:
         raise RuntimeError(f"Database error while querying ChartRegistry: {e}")
-    finally:
-        session.close()
 
 if __name__ == "__main__":
     pass

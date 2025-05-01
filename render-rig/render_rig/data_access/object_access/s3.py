@@ -1,64 +1,45 @@
-# Standard library imports
 import os
-import hashlib
+import json
 import logging
+import hashlib
 import tempfile
 from urllib.parse import urlparse
-import json
-
-# Typing imports
-from typing import Literal
-from typing import Union
-from typing import Optional
-
-# AWS SDK imports
+from typing import Literal, Union, Optional
+import gzip
 import boto3
-from botocore.exceptions import ClientError
-from botocore.exceptions import NoCredentialsError
-from botocore.exceptions import EndpointConnectionError
+from boto3.s3.transfer import TransferConfig
+from botocore.exceptions import ClientError, NoCredentialsError, EndpointConnectionError
+import io
+from render_rig.utils.logger import log_function
 
 logger = logging.getLogger(__name__)
-
 StorageMode = Literal["memory", "cache", "tempfile"]
 
 def parse_s3_uri(s3_uri: str) -> tuple[str, str]:
     """
     Parse an S3 URI into bucket name and object key.
-
-    :param s3_uri: Full S3 URI (e.g., 's3://bucket-name/path/to/object')
-    :return: Tuple of (bucket_name, key)
-    :raises ValueError: If the URI is invalid or doesn't start with 's3://'
     """
     parsed = urlparse(s3_uri)
-
     if parsed.scheme != "s3" or not parsed.netloc or not parsed.path:
         raise ValueError(f"Invalid S3 URI: {s3_uri}")
+    return parsed.netloc, parsed.path.lstrip("/")
 
-    bucket_name = parsed.netloc
-    key = parsed.path.lstrip("/")  # Remove leading slash
-
-    return bucket_name, key
-
+@log_function(log_return=False)
 def s3_get_object_by_bucket_key(
     bucket_name: str,
     key: str,
     s3_client: Optional[boto3.client],
-    mode: StorageMode = "memory",  # 'memory', 'cache', or 'tempfile'
+    mode: StorageMode = "memory",
     cache_dir: str = "/tmp/s3_cache",
 ) -> Union[bytes, str]:
     """
     Download an object from S3 with flexible storage options.
-    :param bucket_name: Name of the S3 bucket.
-    :param key: Key of the object in the S3 bucket.
-    :param s3_client: boto3 S3 client.
-    :param mode: Where to store the file: 'memory' returns bytes, 'cache' or 'tempfile' returns path.
-    :param cache_dir: Directory to store cache if using mode='cache'.
-    :return: bytes (memory) or str (file path for 'cache'/'tempfile')
+    Returns bytes for 'memory', and file path for 'cache' or 'tempfile'.
     """
     if not bucket_name or not key:
+        logger.error("Bucket name or key is None or empty.")
         raise ValueError("Bucket name and key must be non-empty strings.")
 
-    # Compute a safe cache filename
     cache_filename = hashlib.sha1(f"{bucket_name}/{key}".encode()).hexdigest()
     cache_path = os.path.join(cache_dir, cache_filename)
 
@@ -69,17 +50,14 @@ def s3_get_object_by_bucket_key(
     try:
         response = s3_client.get_object(Bucket=bucket_name, Key=key)
         data = response["Body"].read()
-    except NoCredentialsError:
-        logger.error("AWS credentials not found.")
-        raise
-    except (ClientError, EndpointConnectionError) as e:
+        logger.info(f"Downloaded {len(data)} bytes from S3: Bucket={bucket_name}, Key={key}")
+    except (NoCredentialsError, ClientError, EndpointConnectionError) as e:
         logger.error(f"S3 download error: {e}")
         raise
     except Exception as e:
-        logger.exception(f"Unexpected error downloading from S3: {e}")
+        logger.exception("Unexpected error downloading from S3")
         raise
 
-    # Handle storage mode
     if mode == "memory":
         return data
     elif mode == "cache":
@@ -93,10 +71,9 @@ def s3_get_object_by_bucket_key(
         tf.close()
         return tf.name
     else:
-        raise ValueError(
-            f"Invalid mode '{mode}'. Use 'memory', 'cache', or 'tempfile'."
-        )
+        raise ValueError(f"Invalid mode '{mode}'. Use 'memory', 'cache', or 'tempfile'.")
 
+@log_function(log_return=False)
 def s3_get_object_by_uri(
     s3_uri: Optional[str],
     s3_client: Optional[boto3.client],
@@ -105,19 +82,12 @@ def s3_get_object_by_uri(
 ) -> Union[bytes, str]:
     """
     Download an object from S3 using a URI.
-
-    :param s3_uri: Full S3 URI (e.g., 's3://bucket-name/path/to/object')
-    :param s3_client: boto3 client.
-    :param mode: Where to store the file: 'memory', 'cache', or 'tempfile'.
-    :param cache_dir: Directory to store cache if using mode='cache'.
-    :return: bytes (memory) or str (file path for 'cache'/'tempfile')
-    :raises ValueError: If s3_uri is None or invalid.
     """
     if not s3_uri:
+        logger.error("s3_uri is None or empty.")
         raise ValueError("s3_uri must be a non-empty string.")
-
     bucket_name, key = parse_s3_uri(s3_uri)
-
+    logger.info(f"Parsed S3 URI: Bucket={bucket_name}, Key={key}")
     return s3_get_object_by_bucket_key(
         bucket_name=bucket_name,
         key=key,
@@ -126,50 +96,70 @@ def s3_get_object_by_uri(
         s3_client=s3_client
     )
 
+@log_function(log_return=False)
 def s3_save_chart_json(
-    chart_json_str: str,
+    chart_json_str: bytes,
     bucket_name: str,
     key: str,
-    s3_client: Optional[boto3.client]
-):
+    s3_client: Optional[boto3.client],
+    use_transfer: bool = True,
+    transfer_config: Optional[TransferConfig] = None,
+    use_gzip: bool = True
+) -> bool:
     """
-    Save chart JSON to S3.
-
-    :param chart_json_str: JSON string of the chart.
-    :param bucket_name: S3 bucket name.
-    :param key: S3 object key.
-    :param s3_client: Optional pre-initialized boto3 S3 client.
+    Save chart JSON (already UTF-8 encoded bytes) to S3 with optional gzip compression.
     """
-
     try:
-        s3_client.put_object(Bucket=bucket_name, Key=key, Body=chart_json_str)
-        logger.info(f"Chart JSON saved to S3: Bucket={bucket_name}, Key={key}")
+        data = gzip.compress(chart_json_str) if use_gzip else chart_json_str
+
+        extra_args = {
+            "ContentEncoding": "gzip" if use_gzip else None,
+            "ContentType": "application/json"
+        }
+        extra_args = {k: v for k, v in extra_args.items() if v is not None}
+
+        if use_transfer:
+            transfer_config = transfer_config or TransferConfig()
+            s3_client.upload_fileobj(
+                Fileobj=io.BytesIO(data),
+                Bucket=bucket_name,
+                Key=key,
+                ExtraArgs=extra_args,
+                Config=transfer_config
+            )
+            logger.info(f"Chart JSON saved to S3 using S3 Transfer: Bucket={bucket_name}, Key={key}, Gzip={use_gzip}")
+        else:
+            s3_client.put_object(
+                Bucket=bucket_name,
+                Key=key,
+                Body=data,
+                **extra_args
+            )
+            logger.info(f"Chart JSON saved to S3 using put_object: Bucket={bucket_name}, Key={key}, Gzip={use_gzip}")
         return True
     except Exception as e:
         logger.error(f"Failed to save chart JSON to S3: {e}")
         return False
 
+@log_function(log_return=False)
 def s3_get_chart_json(
     bucket_name: str,
     key: str,
     s3_client: Optional[boto3.client]
-) -> Optional[str]:
+) -> Optional[dict]:
     """
-    Retrieve chart JSON from S3.
-
-    :param bucket_name: S3 bucket name.
-    :param key: S3 object key.
-    :param s3_client: Optional pre-initialized boto3 S3 client.
-    :return: Chart JSON string or None if not found.
+    Retrieve chart JSON from S3, handling optional gzip compression.
     """
-
     try:
         response = s3_client.get_object(Bucket=bucket_name, Key=key)
-        chart_json = json.loads(response["Body"].read().decode("utf-8"))
-        return chart_json
+        raw_data = response["Body"].read()
+        is_gzipped = response.get("ContentEncoding") == "gzip" or raw_data[:2] == b"\x1f\x8b"
+        json_str = gzip.decompress(raw_data).decode("utf-8") if is_gzipped else raw_data.decode("utf-8")
+        logger.info(f"Chart JSON retrieved from S3: Bucket={bucket_name}, Key={key}, Gzip={is_gzipped}")
+        return json.loads(json_str)
     except Exception as e:
         logger.error(f"Failed to retrieve chart JSON from S3: {e}")
         return None
-    
+
 if __name__ == "__main__":
     pass
