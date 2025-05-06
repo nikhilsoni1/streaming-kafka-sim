@@ -6,6 +6,7 @@ from botocore.exceptions import ClientError
 from render_rig2.app import celery_app
 from render_rig2.logger import logger
 from render_rig2.object_access.client import create_boto3_client
+from render_rig2.cache import cache
 from ypr_core_logfoundry.parser import ULogParser
 
 
@@ -22,32 +23,62 @@ def get_existing_log(payload: tuple):
     """
     try:
         bucket_name, key = payload
+        cache_key = f"{bucket_name}/{key}"
     except (TypeError, ValueError):
         logger.error("❌ Payload must be a tuple: (bucket_name, key)")
         return None
 
-    s3 = create_boto3_client("s3")
-    t0 = perf_counter()
-    logger.info(f"📥 Downloading s3://{bucket_name}/{key} to temp file...")
+    file_bytes = cache.get(cache_key)
 
+    if isinstance(file_bytes, bytes) and file_bytes:
+        logger.info(f"⚡ Using cached file for {cache_key}")
+    else:
+        s3 = create_boto3_client("s3")
+        logger.info(f"📥 Downloading s3://{bucket_name}/{key}...")
+
+        try:
+            with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+                temp_file_path = temp_file.name
+
+            try:
+                t0_download_file = perf_counter()
+                s3.download_file(bucket_name, key, temp_file_path)
+                t1_download_file = perf_counter()
+                logger.info(f"✅ Downloaded {key} in {round(t1_download_file - t0_download_file, 2)}s")
+
+                with open(temp_file_path, "rb") as f:
+                    file_bytes = f.read()
+            finally:
+                os.remove(temp_file_path)
+
+            if file_bytes:
+                cache.set(cache_key, file_bytes, expire=86400)  # 1-day expiry
+                logger.info(f"✅ File cached for {cache_key}")
+            else:
+                logger.error(f"❌ Downloaded file is empty: {cache_key}")
+                return None
+
+        except ClientError as e:
+            logger.error(f"❌ S3 download failed for {bucket_name}/{key}: {e}")
+            return None
+        except Exception as e:
+            logger.error(f"❌ Unexpected error during S3 download: {e}")
+            return None
+
+    # Parse from downloaded/cached bytes
     try:
         with tempfile.NamedTemporaryFile(delete=True) as temp_file:
-            s3.download_file(bucket_name, key, temp_file.name)
-            logger.info(f"✅ File downloaded to {temp_file.name}")
-            t1 = perf_counter()
+            temp_file.write(file_bytes)
+            temp_file.flush()
 
-            t2 = perf_counter()
+            t_parse_start = perf_counter()
             parsed_log = ULogParser(temp_file.name)
-            t3 = perf_counter()
-            logger.success(f"✅ ULog downloaded in {round(t1 - t0, 2)}s, parsed in {round(t3 - t2, 2)}s")
+            t_parse_end = perf_counter()
 
-            if hasattr(parsed_log, "to_dict"):
-                return parsed_log.to_dict()
-            return parsed_log  # fallback if it's already a dict-like object
+            logger.success(f"✅ Parsed ULog in {round(t_parse_end - t_parse_start, 2)}s")
 
-    except ClientError as e:
-        logger.error(f"❌ S3 download failed for {bucket_name}/{key}: {e}")
-        return None
+            return parsed_log.to_dict() if hasattr(parsed_log, "to_dict") else parsed_log
+
     except Exception as e:
-        logger.error(f"❌ Failed to parse ULog from {bucket_name}/{key}: {e}")
+        logger.error(f"❌ Failed to parse ULog for {bucket_name}/{key}: {e}")
         return None
