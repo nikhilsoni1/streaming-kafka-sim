@@ -4,22 +4,40 @@
 #
 #    pip-compile requirements.in
 #
---index-url https://aws:eyJ2ZXIiOjEsImlzdSI6MTc0NjE0MDU2OSwiZW5jIjoiQTEyOEdDTSIsInRhZyI6Inl6dEp2eXFpWGwyWGhtMUViSF9vd3ciLCJleHAiOjE3NDYxODM3NjksImFsZyI6IkExMjhHQ01LVyIsIml2IjoiYVFkd0VsUnZMMWcxeGQxUiJ9.DHtS5XJ_ZqpX1cQrNqaPEQ.9g0-xoSS0p1dI0Ap.WOkpADokobz2ULpsz-MDeKpbgy7YJkYHXFlKLxjJB_lPYCAirWyfHDBf2EPHY6SVWy9cfhzmGbnKql-gaxAp4EEeClYMUinSU45MLkw2KzMlN3Bmf3EszJ_J29KDrOpQeT4spnxOQ7Ff9ylRN84qOhxbSuRJPLuD2n1D8OScREK68J4W9I1lsb0C64utaA9h7j0hOm8FPk8w7Zgz502ly9tw_tpQZ3nzm38cn6V6gSbRWZ-eSHeqpqymY333O3rVIh0BI2TkqQnZ03b_9yMs39nQP5XGzRsyNluHY_HqLZJvxOwJOQNGziaP2JupR_Dzd1OrHYheN1Tp6KYDvXlUlET0n-UKvExvyNPg2uGcu1bc2ZiqriWB12o4RbV3MCfofAX-6j4YXhBzoP_Y96iDWxGymyncG9swK61vBlm0LgBet9KBDy_80GmzHjOpZ3sgspm3ji2a11icRTO__ClspsG1iRyd4cI-kpaSJtFS617x9YxnDo065GM34HlMTQm9uHwSnaOlxTlXCXfE1FPgpNflO818F-L-YQjomDgs2g4opJ9W_SwNanO6l5sYMrkfZsjS___WdwxmMj_BKSsuZdaH7xA_wsqPIBwpPljAjn21XtlELccr1LZac1mrGuXmVXG94jqeThZmYjdkjLzosB-bTq83fLLAbDOYc9f1AovOTWzwVMlFRGEJU2VFa795jltafxYW7F2sBRa1QCyfzdrH4-2MSKVkoT9M-BcpSVzkJO2Jdkp6e7vFt1Fuu7RzcBEkF6AihkOepr_VAKeBvcwA83IPSbTbVDt0agx12cwv6Ecl1I3z8eLc5gXtstf8peN68AvH4eqf-yzO9U8dYOlnHffR14k3GTU1hY_gXwjVG-8kcyxaXV608uNgfy0x2f5jbqm_gbMSpFRXLnQjh8ayRJfAePorFQCjkPFZhLrbCVcu4DbYiyvMTo01uwRVioJsHxL0N_m1VA.TJ-4rPXN4-XmTHygJON6ew@ypr-dockyard-183295432811.d.codeartifact.us-east-1.amazonaws.com/pypi/pypi-cargo/simple/
+--index-url https://aws:eyJ2ZXIiOjEsImlzdSI6MTc0NjU0OTM2NCwiZW5jIjoiQTEyOEdDTSIsInRhZyI6Imk4TS1ZaXM5WEE0T1lpTkZvMDZOWGciLCJleHAiOjE3NDY1OTI1NjQsImFsZyI6IkExMjhHQ01LVyIsIml2IjoiekFDZWpOUlFxaE9nNEo3ZyJ9.4pDBR396S1dLXhAtNFis4g.amtTIvbosMzPeU7k.EYdhY4QKDc5ikPSe0fURsoavMGJkIRx7zWNsm3pktS9rODsnm0NxJdUD7XkvRIcC-2ZnkVxJM4aHpqrzKyU-fbanzJgv9tInXcx4JBC4FAcio4SOFppZ8XgkOsIhXBW8zhDd9FZUp4U0Fq0CJ3LkHM8H2X3840KJumDEyc1iKJX372-eKqRYsRVHNzojkzJaUQJFFSZVaA1EnqrBacWles4OznhSL4oiW-ITYuGyX6X29S4CtMfEyATg39afc85Mpc_Dab93ToSt9UwjvMH91JIKOxJximE0pRguwkeEW6NrB6PpvW1k2sGvGs1dzdH5wPum90Ta6702b0eAgatQ4Fd3W5s_Kf1BpTJIBbhIxo-JL1jfxnaUQyQoaZcrSmeaw065MGW3cEV9ATjpUo6kaExlCP2uAqiDWwJRtcqknqhdxVoGJZy4cdsmdrBrZc3_pTf_UV_cx6kks1fD8-mrPaszDFuorhqbET_FdbKcqg1gIISuAzZbeC9l4T5F7ML7sTCwMAba2eUvZ5KztpqWnoVPyTJSmdncO6aHrgEKi7JcU3xmtWSBd2UlFFHcOJBkfH8uyeHykjfK4wiI3qKL0mC9ivqQ1zHkAA0JLWoy1kfigAC8pB7Tq77Qgz_We4I-vZyaa5N3zjbf4yGIuxss1Dg3CYhGjcIF-IxqeeleAvh6-CG1fviy6w69n07I9YgPXf2rgXtHF9qdj_X8T7g8Fp0g17CFsFUxjWxsOV_GAnh5s4hazzTv5qMHz4VTXwusBegopY6DGGLaGy4sLhhYY8ZTfdRIVjDTSjqH3UXKRi4Fs29rHk_xvJkzsv60T4eoQDLutgEdA9um-Cmfe1dXdXI7g0Ns6lwhu0RdqobL_RLnZMrP9gqgIG2C5gCfqqVKE9wGpz2_ADuoNlIOcHGz0mcShvPZWgfLTAi1PlUX1SJV-2rYwLoht2TYL_SBqYpa3J97C4mz1on6ZTIWc1TST9Vzlc8hhvKI5pfsP9MljkXGXw.KMTN6XP-sC2k6vN7zxmCJA@ypr-dockyard-183295432811.d.codeartifact.us-east-1.amazonaws.com/pypi/pypi-cargo/simple/
 --extra-index-url https://pypi.org/simple
 --trusted-host ypr-dockyard-183295432811.d.codeartifact.us-east-1.amazonaws.com
 
 alembic==1.15.2
     # via -r requirements.in
+amqp==5.3.1
+    # via kombu
 annotated-types==0.7.0
     # via pydantic
 anyio==4.9.0
     # via starlette
+billiard==4.2.1
+    # via celery
 boto3==1.38.2
     # via -r requirements.in
 botocore==1.38.2
     # via
     #   boto3
     #   s3transfer
+celery==5.5.2
+    # via -r requirements.in
+click==8.1.8
+    # via
+    #   celery
+    #   click-didyoumean
+    #   click-plugins
+    #   click-repl
+click-didyoumean==0.3.1
+    # via celery
+click-plugins==1.1.1
+    # via celery
+click-repl==0.3.0
+    # via celery
 fastapi==0.115.12
     # via -r requirements.in
 idna==3.10
@@ -30,12 +48,18 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
+kombu==5.5.3
+    # via celery
 loguru==0.7.3
     # via -r requirements.in
 mako==1.3.10
     # via alembic
+markdown-it-py==3.0.0
+    # via rich
 markupsafe==3.0.2
     # via mako
+mdurl==0.1.2
+    # via markdown-it-py
 more-itertools==10.7.0
     # via inflect
 numpy==2.2.5
@@ -44,22 +68,35 @@ numpy==2.2.5
     #   pyulog
 pandas==2.2.3
     # via ypr-core-logfoundry
+prompt-toolkit==3.0.51
+    # via click-repl
 psycopg2-binary==2.9.10
-    # via ypr-data-connector
+    # via
+    #   -r requirements.in
+    #   ypr-data-connector
 pydantic==2.11.3
     # via fastapi
 pydantic-core==2.33.1
     # via pydantic
+pygments==2.19.1
+    # via rich
 python-dateutil==2.9.0.post0
     # via
     #   botocore
+    #   celery
     #   pandas
 python-json-logger==3.3.0
     # via -r requirements.in
 pytz==2025.2
-    # via pandas
+    # via
+    #   -r requirements.in
+    #   pandas
 pyulog==1.2.0
     # via ypr-core-logfoundry
+redis==6.0.0
+    # via -r requirements.in
+rich==14.0.0
+    # via -r requirements.in
 s3transfer==0.12.0
     # via boto3
 six==1.17.0
@@ -70,6 +107,7 @@ sqlacodegen==3.0.0
     # via -r requirements.in
 sqlalchemy==2.0.40
     # via
+    #   -r requirements.in
     #   alembic
     #   sqlacodegen
     #   ypr-data-connector
@@ -89,9 +127,18 @@ typing-extensions==4.13.2
 typing-inspection==0.4.0
     # via pydantic
 tzdata==2025.2
-    # via pandas
+    # via
+    #   kombu
+    #   pandas
 urllib3==2.4.0
     # via botocore
+vine==5.1.0
+    # via
+    #   amqp
+    #   celery
+    #   kombu
+wcwidth==0.2.13
+    # via prompt-toolkit
 ypr-core-logfoundry==0.1.0
     # via -r requirements.in
 ypr-data-connector==0.1.2
