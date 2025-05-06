@@ -24,7 +24,7 @@ def lookup_chart_registry(log_id, chart_name):
                 ChartRegistry.key,
             )
             .filter_by(log_id=log_id, chart_name=chart_name)
-            .all()
+            .first()
         )
         t1 = perf_counter()
         el1 = t1 - t0

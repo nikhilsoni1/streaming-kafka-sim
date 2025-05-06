@@ -1,4 +1,4 @@
-from render_rig2.tasks import lookup_chart_registry
+from render_rig2.tasks.lookup_chart_registry import lookup_chart_registry
 from render_rig2.logger import logger
 from pprint import pprint
 
@@ -9,7 +9,6 @@ chart_name = 'chart_accel_raw_xyz'
 
 result = lookup_chart_registry(log_id, chart_name)
 if result is not None:
-    for item in result:
-        pprint(item)
+    print(result)
 else:
     print(result)
