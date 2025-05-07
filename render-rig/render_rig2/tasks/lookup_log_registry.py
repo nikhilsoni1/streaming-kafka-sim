@@ -1,5 +1,5 @@
 from render_rig2.app import celery_app
-from render_rig2.logger import logger
+from render_rig2.utils.logger import logger
 from render_rig2.database_access.sessions.log_registry_session_local import LogRegistrySessionLocal
 from render_rig2.database_access.models.log_registry_model import LogsDlReg
 from time import perf_counter

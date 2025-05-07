@@ -1,4 +1,4 @@
-from render_rig2.cache import cache
+from render_rig2.utils.cache import cache
 
 print("📦 Cached keys:")
 for key in cache.iterkeys():

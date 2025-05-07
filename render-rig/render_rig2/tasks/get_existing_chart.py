@@ -4,7 +4,7 @@ import io
 from time import perf_counter
 from botocore.exceptions import ClientError
 from render_rig2.app import celery_app
-from render_rig2.logger import logger
+from render_rig2.utils.logger import logger
 from render_rig2.object_access.client import create_boto3_client
 
 

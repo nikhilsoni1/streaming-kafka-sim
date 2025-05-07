@@ -1,7 +1,7 @@
 from celery import Celery
-from render_rig2.config import CELERY_CONFIG
+from render_rig2.utils.config import CELERY_CONFIG
 from celery.signals import setup_logging
-from render_rig2.logger import logger
+from render_rig2.utils.logger import logger
 
 # Initialize the Celery app
 celery_app = Celery("render_rig2")

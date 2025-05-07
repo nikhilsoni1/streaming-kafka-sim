@@ -1,5 +1,5 @@
 from render_rig2.app import celery_app
-from render_rig2.logger import logger
+from render_rig2.utils.logger import logger
 from render_rig2.database_access.sessions.render_rig_session_local import (
     RenderRigSessionLocal,
 )

@@ -1,6 +1,6 @@
 from render_rig2.database_access.sessions import RenderRigSessionLocal
 from render_rig2.database_access.sessions import LogRegistrySessionLocal
-from render_rig2.logger import logger
+from render_rig2.utils.logger import logger
 from sqlalchemy import text
 from time import perf_counter
 
