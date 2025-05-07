@@ -1,6 +1,6 @@
 from typing import Optional
 from typing import Tuple
-from render_rig.data_access.database.models.render_rig_registry_model import ChartRegistry
+from depr_render_rig.data_access.database.models.render_rig_registry_model import ChartRegistry
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError

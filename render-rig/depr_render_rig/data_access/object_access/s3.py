@@ -10,7 +10,7 @@ import boto3
 from boto3.s3.transfer import TransferConfig
 from botocore.exceptions import ClientError, NoCredentialsError, EndpointConnectionError
 import io
-from render_rig.utils.logger import log_function
+from depr_render_rig.utils.logger import log_function
 
 logger = logging.getLogger(__name__)
 StorageMode = Literal["memory", "cache", "tempfile"]

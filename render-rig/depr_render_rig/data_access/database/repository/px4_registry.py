@@ -1,5 +1,5 @@
 from ypr_data_connector.database_client import PostgresDatabaseClient
-from render_rig.data_access.database.models.px4_registry_model import LogsDlReg
+from depr_render_rig.data_access.database.models.px4_registry_model import LogsDlReg
 from sqlalchemy.orm import Session
 
 def get_s3uri_from_logregistry(log_id: str, session: Session) -> str:

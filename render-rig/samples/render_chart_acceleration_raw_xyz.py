@@ -1,10 +1,10 @@
 # render_accel_chart.py
 
-from render_rig import get_log_data
-from render_rig import ChartAccelRawXYZ
-from render_rig.utils import hash_bytes_sha256
-from render_rig.data_access.database.session_manager import get_log_registry_session
-from render_rig.data_access.object_access.session_manager import create_boto3_client
+from depr_render_rig import get_log_data
+from depr_render_rig import ChartAccelRawXYZ
+from depr_render_rig.utils import hash_bytes_sha256
+from depr_render_rig.data_access.database.session_manager import get_log_registry_session
+from depr_render_rig.data_access.object_access.session_manager import create_boto3_client
 
 s3_client = create_boto3_client("s3", region_name="us-east-1", max_retries=3)
 db_log_registry_session = get_log_registry_session()

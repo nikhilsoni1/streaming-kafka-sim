@@ -1,8 +1,8 @@
 # main.py
 
 from fastapi import FastAPI, HTTPException
-from render_rig.chart_engine.manager import generate_charts_for_log
-from render_rig.cache.store import get_chart_json
+from depr_render_rig.chart_engine.manager import generate_charts_for_log
+from depr_render_rig.cache.store import get_chart_json
 
 app = FastAPI()
 

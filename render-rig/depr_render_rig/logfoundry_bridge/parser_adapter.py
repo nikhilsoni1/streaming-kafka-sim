@@ -1,9 +1,9 @@
 # parser_adapter.py
 from ypr_core_logfoundry.parser import ULogParser
 import os
-from render_rig.data_access.database.repository.px4_registry import get_s3uri_from_logregistry
-from render_rig.data_access.object_access.s3 import s3_get_object_by_uri
-from render_rig.data_access.object_access.s3 import StorageMode
+from depr_render_rig.data_access.database.repository.px4_registry import get_s3uri_from_logregistry
+from depr_render_rig.data_access.object_access.s3 import s3_get_object_by_uri
+from depr_render_rig.data_access.object_access.s3 import StorageMode
 from boto3 import client
 from sqlalchemy.orm import Session
 

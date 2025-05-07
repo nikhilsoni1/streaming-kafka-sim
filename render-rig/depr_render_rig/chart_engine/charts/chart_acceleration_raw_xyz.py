@@ -1,6 +1,6 @@
 # chart_accel_raw_xyz.py
 
-from render_rig.chart_engine.base import Chart
+from depr_render_rig.chart_engine.base import Chart
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 

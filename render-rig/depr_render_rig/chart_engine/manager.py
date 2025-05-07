@@ -3,31 +3,31 @@ import time
 from collections import OrderedDict
 from pprint import pprint
 # import charts
-from render_rig.chart_engine.charts.chart_acceleration_raw_xyz import ChartAccelRawXYZ
+from depr_render_rig.chart_engine.charts.chart_acceleration_raw_xyz import ChartAccelRawXYZ
 
 # import parser
-from render_rig.logfoundry_bridge.parser_adapter import get_log_data
+from depr_render_rig.logfoundry_bridge.parser_adapter import get_log_data
 
 # import utils
-from render_rig.utils.time_utils import get_utc_now
-from render_rig.utils.hash_utils import hash_bytes_sha256
+from depr_render_rig.utils.time_utils import get_utc_now
+from depr_render_rig.utils.hash_utils import hash_bytes_sha256
 
 # import object access
-from render_rig.data_access.object_access.session_manager import create_boto3_client
-from render_rig.data_access.object_access import s3_save_chart_json
-from render_rig.data_access.object_access import s3_get_chart_json
+from depr_render_rig.data_access.object_access.session_manager import create_boto3_client
+from depr_render_rig.data_access.object_access import s3_save_chart_json
+from depr_render_rig.data_access.object_access import s3_get_chart_json
 
 # import database access
-from render_rig.data_access.database.session_manager import get_log_registry_session
-from render_rig.data_access.database.session_manager import get_render_rig_session
-from render_rig.data_access.database.repository.render_rig_registry import insert_into_chart_registry
-from render_rig.data_access.database.repository.render_rig_registry import lookup_chart_registry
+from depr_render_rig.data_access.database.session_manager import get_log_registry_session
+from depr_render_rig.data_access.database.session_manager import get_render_rig_session
+from depr_render_rig.data_access.database.repository.render_rig_registry import insert_into_chart_registry
+from depr_render_rig.data_access.database.repository.render_rig_registry import lookup_chart_registry
 
 # import standard libraries
 import os
 from uuid import uuid4
 
-from render_rig.utils.logger import setup_logger
+from depr_render_rig.utils.logger import setup_logger
 
 # This will log to both console (stdout) and file
 logger = setup_logger("logs/render_rig.log")

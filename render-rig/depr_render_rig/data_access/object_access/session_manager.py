@@ -2,7 +2,7 @@ import boto3
 import logging
 from botocore.exceptions import BotoCoreError, NoRegionError, UnknownServiceError
 from botocore.config import Config
-from render_rig.utils.logger import log_function
+from depr_render_rig.utils.logger import log_function
 
 logger = logging.getLogger(__name__)
 
