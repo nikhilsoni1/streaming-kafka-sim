@@ -1,6 +1,7 @@
 import os
 import tempfile
 from time import perf_counter
+from typing import Tuple
 from botocore.exceptions import ClientError
 
 from render_rig2.app import celery_app
@@ -11,18 +12,18 @@ from ypr_core_logfoundry.parser import ULogParser
 
 
 @celery_app.task(name="get_existing_log")
-def get_existing_log(payload: tuple):
+def get_existing_log(payload: tuple) -> Tuple[str, ULogParser] | None:
     """
     Downloads a .ulg file from S3 (non-GZIP), parses it using ULogParser, and returns structured output.
 
     Args:
-        payload (tuple): (bucket_name: str, key: str)
+        payload (tuple): (log_id: str, bucket_name: str, key: str)
 
     Returns:
-        dict or None: Parsed ULog as dict if successful, otherwise None
+        Tuple[str, ULogParser] | None: (log_id, parsed_log) if successful, else None.
     """
     try:
-        bucket_name, key = payload
+        log_id, bucket_name, key = payload
         cache_key = f"{bucket_name}/{key}"
     except (TypeError, ValueError):
         logger.error("❌ Payload must be a tuple: (bucket_name, key)")
@@ -77,7 +78,7 @@ def get_existing_log(payload: tuple):
 
             logger.success(f"✅ Parsed ULog in {round(t_parse_end - t_parse_start, 2)}s")
 
-            return parsed_log.to_dict() if hasattr(parsed_log, "to_dict") else parsed_log
+            return log_id, parsed_log
 
     except Exception as e:
         logger.error(f"❌ Failed to parse ULog for {bucket_name}/{key}: {e}")
