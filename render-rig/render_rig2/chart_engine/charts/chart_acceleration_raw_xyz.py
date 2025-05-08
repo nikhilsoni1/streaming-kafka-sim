@@ -26,8 +26,8 @@ class ChartAccelRawXYZ(Chart):
 
         fig.add_trace(
             go.Scatter(
-                x=df["timestamp"],
-                y=df["accelerometer_m_s2[0]"],
+                x=df["timestamp"].to_list(),
+                y=df["accelerometer_m_s2[0]"].to_list(),
                 mode="lines",
                 name="Accel X",
             ),
@@ -36,8 +36,8 @@ class ChartAccelRawXYZ(Chart):
         )
         fig.add_trace(
             go.Scatter(
-                x=df["timestamp"],
-                y=df["accelerometer_m_s2[1]"],
+                x=df["timestamp"].to_list(),
+                y=df["accelerometer_m_s2[1]"].to_list(),
                 mode="lines",
                 name="Accel Y",
             ),
@@ -46,8 +46,8 @@ class ChartAccelRawXYZ(Chart):
         )
         fig.add_trace(
             go.Scatter(
-                x=df["timestamp"],
-                y=df["accelerometer_m_s2[2]"],
+                x=df["timestamp"].to_list(),
+                y=df["accelerometer_m_s2[2]"].to_list(),
                 mode="lines",
                 name="Accel Z",
             ),
