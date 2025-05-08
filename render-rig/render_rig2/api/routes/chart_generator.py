@@ -1,37 +1,56 @@
 from fastapi import APIRouter
 from celery import chain
-# from render_rig2.tasks import chart_dispatcher
 from render_rig2.tasks import lookup_log_registry
 from render_rig2.tasks import lookup_chart_registry
 from render_rig2.tasks import get_existing_chart
-# from render_rig2.tasks import get_existing_log
 from render_rig2.tasks import get_log_dispatch_chart
 from render_rig2.utils.logger import logger
+from time import perf_counter
 
 router = APIRouter()
 
+
 @router.get("/{log_id}/{chart_name}")
 async def generate_chart(log_id: str, chart_name: str):
+    """
+    Generate a chart for a given log_id and chart_name.
+    """
     chart_data = None
-    task_lookup_chart_registry = lookup_chart_registry.delay(log_id, chart_name)
-    result = task_lookup_chart_registry.get(timeout=10)
-    if result is not None:
-        task_get_existing_chart = get_existing_chart.delay(result)
-        chart_data = task_get_existing_chart.get(timeout=10)
-        chart_data = chart_data.decode("utf-8")
+
+    t0 = perf_counter()
+
+    pipeline1 = chain(
+        lookup_chart_registry.s(log_id, chart_name),
+        get_existing_chart.s(),
+    )
+    result1 = pipeline1.apply_async()
+    chart_data = result1.get(timeout=60)
+
+    t1 = perf_counter()
+    et1 = t1 - t0
 
     if chart_data is not None:
-        payload = {"status": "cached", "data": chart_data}
-        logger.info(f"Chart data type: {type(chart_data)}")
-        return payload
+        logger.success(f"Chart from cache returned in {et1:.2f} seconds")
+        return {"status": "cached", "data": chart_data}
 
     # Step 2: Full generation pipeline
-    pipeline = chain(
+    t2 = perf_counter()
+
+    pipeline2 = chain(
         lookup_log_registry.s(log_id),
         get_log_dispatch_chart.s(chart_name),
     )
-    result = pipeline.apply_async()
-    chart_data = result.get(timeout=60)
-    logger.info(f"Chart data type: {type(chart_data)}")
+    result2 = pipeline2.apply_async()
+    chart_data = result2.get(timeout=60)
 
-    return {"status": "generated", "data": chart_data}
+    t3 = perf_counter()
+    et2 = t3 - t2
+
+    if chart_data is not None:
+        logger.success(f"Chart generated from log returned in {et2:.2f} seconds")
+        return {"status": "generated", "data": chart_data}
+
+    logger.error(
+        f"Failed to find or generate a chart: {chart_name} for log_id: {log_id}, total time spent: {et1 + et2:.2f} seconds"
+    )
+    return {"status": None, "data": chart_data}

@@ -4,13 +4,15 @@ from render_rig2.database_access.sessions.render_rig_session_local import (
     RenderRigSessionLocal,
 )
 from render_rig2.database_access.models.render_rig_registry_model import ChartRegistry
-from time import perf_counter
 from sqlalchemy.exc import SQLAlchemyError
 from typing import Optional, Tuple
+from render_rig2.utils.timing import timed_debug_log
 
 
 @celery_app.task(name="lookup_chart_registry")
-def lookup_chart_registry(log_id: str, chart_name: str) -> Optional[Tuple[str, str, str]]:
+def lookup_chart_registry(
+    log_id: str, chart_name: str
+) -> Optional[Tuple[str, str, str]]:
     """
     Lookup the chart registry for a given log_id and chart_name.
     This function queries the ChartRegistry table to find the bucket name and key
@@ -28,24 +30,21 @@ def lookup_chart_registry(log_id: str, chart_name: str) -> Optional[Tuple[str, s
 
     db = RenderRigSessionLocal()
     try:
-        t0 = perf_counter()
-        result = (
-            db.query(
-                ChartRegistry.bucket_name,
-                ChartRegistry.key,
+        with timed_debug_log(f"lookup_chart_registry for {log_id} - {chart_name}"):
+            result = (
+                db.query(
+                    ChartRegistry.bucket_name,
+                    ChartRegistry.key,
+                )
+                .filter_by(log_id=log_id, chart_name=chart_name)
+                .first()
             )
-            .filter_by(log_id=log_id, chart_name=chart_name)
-            .first()
-        )
-        t1 = perf_counter()
-        el1 = t1 - t0
-        logger.info(
-            f"lookup_chart_registry took {el1:.4f} seconds for log_id: {log_id}, chart_name: {chart_name}"
-        )
         if result:
+            logger.success(f"Found chart registry entry for {log_id} - {chart_name}")
             bucket_name, key = result
             result = (log_id, bucket_name, key)
             return result
+        logger.success(f"Lookup ok but no entry found for {log_id} - {chart_name}")
         return None
     except SQLAlchemyError as e:
         logger.exception(f"Database error while querying ChartRegistry: {e}")

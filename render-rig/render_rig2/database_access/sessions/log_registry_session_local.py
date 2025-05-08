@@ -1,8 +1,7 @@
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from time import perf_counter
-from render_rig2.utils.logger import logger
+from render_rig2.utils.timing import timed_debug_log
 
 
 # ----------------------------------------------
@@ -19,27 +18,19 @@ LOG_REGISTRY_DB_URL = (
     f"{LOG_REGISTRY_DB_HOST}:{LOG_REGISTRY_DB_PORT}/{LOG_REGISTRY_DB_NAME}"
 )
 
-# ⏱ Time the engine creation
-start_engine_log = perf_counter()
-LOG_REGISTRY_DB_ENGINE = create_engine(
-    LOG_REGISTRY_DB_URL,
-    pool_size=10,
-    max_overflow=5,
-    pool_pre_ping=True,
-)
-end_engine_log = perf_counter()
-logger.info(
-    f"🚀 LOG REGISTRY SQLAlchemy Engine created in {round(end_engine_log - start_engine_log, 4)}s"
-)
 
-# ⏱ Time the session factory setup
-start_session_log = perf_counter()
-LogRegistrySessionLocal = sessionmaker(
-    bind=LOG_REGISTRY_DB_ENGINE,
-    autoflush=False,
-    autocommit=False,
-)
-end_session_log = perf_counter()
-logger.info(
-    f"🔧 LOG REGISTRY SessionLocal factory initialized in {round(end_session_log - start_session_log, 4)}s"
-)
+with timed_debug_log(f"LOG REGISTRY SQLAlchemy Engine creation"):
+    # Create the SQLAlchemy engine for the LOG REGISTRY DB
+    LOG_REGISTRY_DB_ENGINE = create_engine(
+        LOG_REGISTRY_DB_URL,
+        pool_size=10,
+        max_overflow=5,
+        pool_pre_ping=True,
+    )
+
+with timed_debug_log(f"LOG REGISTRY SQLAlchemy SessionLocal factory initialization"):
+    LogRegistrySessionLocal = sessionmaker(
+        bind=LOG_REGISTRY_DB_ENGINE,
+        autoflush=False,
+        autocommit=False,
+    )
