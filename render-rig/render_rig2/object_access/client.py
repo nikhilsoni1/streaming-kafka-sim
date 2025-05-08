@@ -3,7 +3,7 @@ from render_rig2.utils.logger import logger
 from botocore.exceptions import BotoCoreError, NoRegionError, UnknownServiceError
 from botocore.config import Config
 from render_rig2.utils.logger import logger
-from time import perf_counter
+from render_rig2.utils.timing import timed_debug_log
 
 _clients = {}  # Global cache
 
@@ -30,16 +30,11 @@ def create_boto3_client(
 
     try:
         config = Config(retries={"max_attempts": max_retries, "mode": "standard"})
-        boto3_client_create_start_time = perf_counter()
-        client = boto3.client(service, region_name=region_name, config=config)
-        boto3_client_create_end_time = perf_counter()
-        boto3_client_create_elapsed_time = (
-            boto3_client_create_end_time - boto3_client_create_start_time
-        )
+        with timed_debug_log(
+            f"Creating boto3 client for service '{service}' in region '{region_name}'"
+        ):
+            client = boto3.client(service, region_name=region_name, config=config)
         _clients[key] = client
-        logger.info(
-            f"✅ Boto3 client for service '{service}' created in region '{region_name}' in {boto3_client_create_elapsed_time:.2f} seconds."
-        )
         return client
     except UnknownServiceError as e:
         logger.error(f"Unknown AWS service '{service}': {e}")
