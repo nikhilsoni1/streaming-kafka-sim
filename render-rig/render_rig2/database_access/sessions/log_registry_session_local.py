@@ -1,8 +1,6 @@
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from time import perf_counter
-from render_rig2.utils.logger import logger
 from render_rig2.utils.timing import timed_debug_log
 
 
