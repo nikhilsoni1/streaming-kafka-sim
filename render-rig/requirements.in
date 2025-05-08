@@ -6,3 +6,12 @@ alembic
 sqlacodegen
 loguru
 python-json-logger
+celery
+redis
+sqlalchemy
+psycopg2-binary
+rich
+pytz
+diskcache
+uvicorn[standard]
+kaleido
