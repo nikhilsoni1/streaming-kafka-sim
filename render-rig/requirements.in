@@ -14,3 +14,4 @@ rich
 pytz
 diskcache
 uvicorn[standard]
+kaleido

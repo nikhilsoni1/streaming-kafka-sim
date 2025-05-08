@@ -35,7 +35,7 @@ def get_existing_chart(payload: Tuple[str, str, str]) -> Optional[dict]:
 
         # Try GZIP-decompression and JSON parsing
         with gzip.GzipFile(fileobj=io.BytesIO(compressed_data)) as gz:
-            decompressed = gz.read().decode('utf-8')
+            decompressed = gz.read()
 
         t1 = perf_counter()
         logger.success(f"✅ Parsed GZIP JSON in {round(t1 - t0, 2)}s for {log_id} from s3://{bucket_name}/{key}, type {type(decompressed)}")

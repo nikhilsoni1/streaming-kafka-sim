@@ -26,7 +26,7 @@ def generate_chart_for_log(log_id: str, chart: Chart, log_data: ULogParser) -> O
     cached = cache.get(cache_key, default=None, read=True)
     t1_get_cache = perf_counter()
     time_to_get_cache = round(t1_get_cache - t0_get_cache, 2)
-    if cached is not None:
+    if cached is not None and 1==2:
         read_cached = cached.read()
         logger.info(f"🧠 Cache hit for log_id: {log_id}, chart_name: {chart_name}, duration: {time_to_get_cache}")
         return read_cached
@@ -40,10 +40,19 @@ def generate_chart_for_log(log_id: str, chart: Chart, log_data: ULogParser) -> O
     # Generate chart
     start_time = perf_counter()
     fig = chart_instance.generate(log_data)
+    # show(fig)
+    # save fig as png
+    fname = f"/Users/nikhilsoni/Downloads/{log_id}_{chart_name}.png"
+    fig.write_image(fname, format="png", scale=2, width=800, height=600)
     end_time = perf_counter()
 
     duration = round(end_time - start_time, 2)
-    chart_json = fig.to_json().encode("utf-8")
+    chart_json = fig.to_json()
+    fname = f"/Users/nikhilsoni/Downloads/{log_id}_{chart_name}.json"
+    import json
+    x1 = fig.to_plotly_json()
+    with open(fname, "w") as f:
+        json.dump(x1, f, indent=4)
 
     logger.info(
         f"✅ Chart generated for log_id: {log_id}, chart_name: {chart_name} in {duration}s"
