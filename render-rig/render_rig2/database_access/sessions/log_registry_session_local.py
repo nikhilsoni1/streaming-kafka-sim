@@ -18,7 +18,8 @@ LOG_REGISTRY_DB_URL = (
     f"{LOG_REGISTRY_DB_HOST}:{LOG_REGISTRY_DB_PORT}/{LOG_REGISTRY_DB_NAME}"
 )
 
-with timed_debug_log(f"LOG REGISTRY DB engine creation"):
+
+with timed_debug_log(f"LOG REGISTRY SQLAlchemy Engine creation"):
     # Create the SQLAlchemy engine for the LOG REGISTRY DB
     LOG_REGISTRY_DB_ENGINE = create_engine(
         LOG_REGISTRY_DB_URL,
@@ -27,7 +28,7 @@ with timed_debug_log(f"LOG REGISTRY DB engine creation"):
         pool_pre_ping=True,
     )
 
-with timed_debug_log(f"LOG REGISTRY SessionLocal factory initialization"):
+with timed_debug_log(f"LOG REGISTRY SQLAlchemy SessionLocal factory initialization"):
     LogRegistrySessionLocal = sessionmaker(
         bind=LOG_REGISTRY_DB_ENGINE,
         autoflush=False,

@@ -1,8 +1,7 @@
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from time import perf_counter
-from render_rig2.utils.logger import logger
+from render_rig2.utils.timing import timed_debug_log
 
 # ------------------------------------------
 # Load environment variables for RENDER RIG
@@ -18,27 +17,17 @@ RENDER_RIG_DB_URL = (
     f"{RENDER_RIG_DB_HOST}:{RENDER_RIG_DB_PORT}/{RENDER_RIG_DB_NAME}"
 )
 
-# ⏱ Time the engine creation
-start_engine_rig = perf_counter()
-RENDER_RIG_DB_ENGINE = create_engine(
-    RENDER_RIG_DB_URL,
-    pool_size=10,
-    max_overflow=5,
-    pool_pre_ping=True,
-)
-end_engine_rig = perf_counter()
-logger.info(
-    f"🚀 RENDER RIG SQLAlchemy Engine created in {round(end_engine_rig - start_engine_rig, 4)}s"
-)
+with timed_debug_log("RENDER RIG SQLAlchemy Engine creation"):
+    RENDER_RIG_DB_ENGINE = create_engine(
+        RENDER_RIG_DB_URL,
+        pool_size=10,
+        max_overflow=5,
+        pool_pre_ping=True,
+    )
 
-# ⏱ Time the session factory setup
-start_session_rig = perf_counter()
-RenderRigSessionLocal = sessionmaker(
-    bind=RENDER_RIG_DB_ENGINE,
-    autoflush=False,
-    autocommit=False,
-)
-end_session_rig = perf_counter()
-logger.info(
-    f"🔧 RENDER RIG SessionLocal factory initialized in {round(end_session_rig - start_session_rig, 4)}s"
-)
+with timed_debug_log("RENDER RIG SQLAlchemy SessionLocal factory initialization"):
+    RenderRigSessionLocal = sessionmaker(
+        bind=RENDER_RIG_DB_ENGINE,
+        autoflush=False,
+        autocommit=False,
+    )
