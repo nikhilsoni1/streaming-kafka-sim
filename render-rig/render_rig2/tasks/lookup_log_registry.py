@@ -1,11 +1,14 @@
 from render_rig2.app import celery_app
 from render_rig2.utils.logger import logger
-from render_rig2.database_access.sessions.log_registry_session_local import LogRegistrySessionLocal
+from render_rig2.database_access.sessions.log_registry_session_local import (
+    LogRegistrySessionLocal,
+)
 from render_rig2.database_access.models.log_registry_model import LogsDlReg
 from render_rig2.utils.timing import timed_debug_log
 from sqlalchemy.exc import SQLAlchemyError
 from urllib.parse import urlparse
 from typing import Tuple
+
 
 def parse_s3_uri(s3_uri: str) -> Tuple[str, str]:
     """
@@ -25,6 +28,7 @@ def parse_s3_uri(s3_uri: str) -> Tuple[str, str]:
     key = parsed.path.lstrip("/")
     return bucket, key
 
+
 @celery_app.task(name="lookup_log_registry")
 def lookup_log_registry(log_id: str) -> Tuple[str, str, str] | None:
     """
@@ -37,13 +41,13 @@ def lookup_log_registry(log_id: str) -> Tuple[str, str, str] | None:
     db = LogRegistrySessionLocal()
     try:
         with timed_debug_log(f"lookup_log_registry for {log_id}"):
-                result = (
-                    db.query(
-                        LogsDlReg.file_s3_path,
-                    )
-                    .filter_by(log_id=log_id)
-                    .first()
+            result = (
+                db.query(
+                    LogsDlReg.file_s3_path,
                 )
+                .filter_by(log_id=log_id)
+                .first()
+            )
 
         if result:
             logger.success(f"Found log registry entry for {log_id}")

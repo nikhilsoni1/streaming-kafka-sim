@@ -28,6 +28,7 @@ logger.add(
     format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {module}:{function}:{line} | {message}",
 )
 
+
 # ✅ Add this helper
 def is_debug_enabled() -> bool:
     # Return True if any sink is set to DEBUG or lower

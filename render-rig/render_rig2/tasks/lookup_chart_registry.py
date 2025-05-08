@@ -10,7 +10,9 @@ from render_rig2.utils.timing import timed_debug_log
 
 
 @celery_app.task(name="lookup_chart_registry")
-def lookup_chart_registry(log_id: str, chart_name: str) -> Optional[Tuple[str, str, str]]:
+def lookup_chart_registry(
+    log_id: str, chart_name: str
+) -> Optional[Tuple[str, str, str]]:
     """
     Lookup the chart registry for a given log_id and chart_name.
     This function queries the ChartRegistry table to find the bucket name and key

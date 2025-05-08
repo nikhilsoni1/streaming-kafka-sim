@@ -11,7 +11,8 @@ from render_rig2.chart_engine import CHART_REGISTRY
 from render_rig2.chart_engine.manager import generate_chart_for_log
 from render_rig2.utils.timing import timed_debug_log
 
-def get_existing_log(bucket_name: str, key:str) -> ULogParser | None:
+
+def get_existing_log(bucket_name: str, key: str) -> ULogParser | None:
     """
     Downloads a .ulg file from S3 (non-GZIP), parses it using ULogParser, and returns structured output.
 
@@ -40,7 +41,9 @@ def get_existing_log(bucket_name: str, key:str) -> ULogParser | None:
                 with timed_debug_log(f"Downloading file - s3://{bucket_name}/{key}"):
                     s3.download_file(bucket_name, key, temp_file_path)
 
-                logger.success(f"✅ Downloaded s3://{bucket_name}/{key} file to {temp_file_path}")
+                logger.success(
+                    f"✅ Downloaded s3://{bucket_name}/{key} file to {temp_file_path}"
+                )
                 with open(temp_file_path, "rb") as f:
                     file_bytes = f.read()
             finally:
@@ -80,19 +83,21 @@ def get_existing_log(bucket_name: str, key:str) -> ULogParser | None:
 
 
 @celery_app.task(name="get_log_dispatch_chart")
-def get_log_dispatch_chart(payload: Tuple[str, str, str], chart_name: str) -> str | None:
+def get_log_dispatch_chart(
+    payload: Tuple[str, str, str], chart_name: str
+) -> str | None:
     """
     Dispatches a chart rendering task to the appropriate chart engine.
-    
+
     Args:
         payload (Tuple[str, str, str]): A tuple containing:
             - log_id (str): Identifier for the log.
             - bucket_name (str): The name of the S3 bucket.
             - key (str): The key of the file in the S3 bucket.
         chart_name (str): Name of the chart to render.
-    
+
     Returns:
-        str | None: A JSON string representation of the rendered chart if successful, 
+        str | None: A JSON string representation of the rendered chart if successful,
         otherwise None.
     """
     if payload is None:

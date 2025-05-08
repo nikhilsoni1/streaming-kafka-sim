@@ -9,6 +9,7 @@ from time import perf_counter
 
 router = APIRouter()
 
+
 @router.get("/{log_id}/{chart_name}")
 async def generate_chart(log_id: str, chart_name: str):
     """
@@ -26,7 +27,7 @@ async def generate_chart(log_id: str, chart_name: str):
     chart_data = result1.get(timeout=60)
 
     t1 = perf_counter()
-    et1 = t1-t0
+    et1 = t1 - t0
 
     if chart_data is not None:
         logger.success(f"Chart from cache returned in {et1:.2f} seconds")
@@ -43,11 +44,13 @@ async def generate_chart(log_id: str, chart_name: str):
     chart_data = result2.get(timeout=60)
 
     t3 = perf_counter()
-    et2 = t3-t2
+    et2 = t3 - t2
 
     if chart_data is not None:
         logger.success(f"Chart generated from log returned in {et2:.2f} seconds")
         return {"status": "generated", "data": chart_data}
 
-    logger.error(f"Failed to find or generate a chart: {chart_name} for log_id: {log_id}, total time spent: {et1 + et2:.2f} seconds")
+    logger.error(
+        f"Failed to find or generate a chart: {chart_name} for log_id: {log_id}, total time spent: {et1 + et2:.2f} seconds"
+    )
     return {"status": None, "data": chart_data}

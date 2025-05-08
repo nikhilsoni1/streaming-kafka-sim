@@ -34,4 +34,3 @@ with timed_debug_log(f"LOG REGISTRY SQLAlchemy SessionLocal factory initializati
         autoflush=False,
         autocommit=False,
     )
-

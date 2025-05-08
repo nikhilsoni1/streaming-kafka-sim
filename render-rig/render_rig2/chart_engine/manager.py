@@ -5,7 +5,10 @@ from ypr_core_logfoundry.parser import ULogParser
 from render_rig2.utils.cache import cache
 from render_rig2.utils.timing import timed_debug_log
 
-def generate_chart_for_log(log_id: str, chart: Chart, log_data: ULogParser) -> Optional[bytes]:
+
+def generate_chart_for_log(
+    log_id: str, chart: Chart, log_data: ULogParser
+) -> Optional[bytes]:
     """
     Generates a chart for a given log ID using the specified chart engine.
     Args:
@@ -13,7 +16,7 @@ def generate_chart_for_log(log_id: str, chart: Chart, log_data: ULogParser) -> O
         chart (Chart): The chart engine to use for rendering.
         log_data (ULogParser): The parsed log data object.
     Returns:
-        Optional[bytes]: A JSON string representation of the rendered chart if successful, 
+        Optional[bytes]: A JSON string representation of the rendered chart if successful,
         otherwise None.
     Todo:
         - Remove caching in the future as it is redundant.
@@ -22,7 +25,9 @@ def generate_chart_for_log(log_id: str, chart: Chart, log_data: ULogParser) -> O
     cache_key = f"{log_id}::{chart_name}"
 
     # Try cache first
-    with timed_debug_log(f"Cache lookup for log_id: {log_id}, chart_name: {chart_name}"):
+    with timed_debug_log(
+        f"Cache lookup for log_id: {log_id}, chart_name: {chart_name}"
+    ):
         cached = cache.get(cache_key, default=None, read=True)
     if cached is not None:
         logger.success(f"Cache hit for log_id: {log_id}, chart_name: {chart_name}")
@@ -35,12 +40,12 @@ def generate_chart_for_log(log_id: str, chart: Chart, log_data: ULogParser) -> O
         return None
 
     # Generate chart
-    with timed_debug_log(f"Generating chart for log_id: {log_id}, chart_name: {chart_name}"):
+    with timed_debug_log(
+        f"Generating chart for log_id: {log_id}, chart_name: {chart_name}"
+    ):
         fig = chart_instance.generate(log_data)
     chart_json = fig.to_json()
-    logger.success(
-        f"Chart generated for log_id: {log_id}, chart_name: {chart_name}"
-    )
+    logger.success(f"Chart generated for log_id: {log_id}, chart_name: {chart_name}")
 
     # Store in cache (no lock)
     cache.set(cache_key, chart_json)

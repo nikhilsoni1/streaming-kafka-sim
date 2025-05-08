@@ -1,10 +1,11 @@
 """create chart registry
 
 Revision ID: 6bc27529e7fc
-Revises: 
+Revises:
 Create Date: 2025-04-29 14:36:43.943276
 
 """
+
 from typing import Sequence, Union
 
 from alembic import op
@@ -12,7 +13,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '6bc27529e7fc'
+revision: str = "6bc27529e7fc"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
