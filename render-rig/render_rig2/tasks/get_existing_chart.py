@@ -19,6 +19,9 @@ def get_existing_chart(payload: Tuple[str, str, str]) -> Optional[dict]:
     Returns:
         dict: Parsed JSON content if object exists, else None
     """
+    if payload is None:
+        return None
+    
     log_id, bucket_name, key = payload
 
     if not bucket_name or not key:
