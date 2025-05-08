@@ -2,7 +2,7 @@ from render_rig2.app import celery_app
 from render_rig2.utils.logger import logger
 from render_rig2.database_access.sessions.log_registry_session_local import LogRegistrySessionLocal
 from render_rig2.database_access.models.log_registry_model import LogsDlReg
-from time import perf_counter
+from render_rig2.utils.timing import timed_debug_log
 from sqlalchemy.exc import SQLAlchemyError
 from urllib.parse import urlparse
 from typing import Tuple
@@ -36,22 +36,20 @@ def lookup_log_registry(log_id: str) -> Tuple[str, str, str] | None:
     """
     db = LogRegistrySessionLocal()
     try:
-        t0 = perf_counter()
-        result = (
-            db.query(
-                LogsDlReg.file_s3_path,
-            )
-            .filter_by(log_id=log_id)
-            .first()
-        )
-        t1 = perf_counter()
-        el1 = t1 - t0
-        logger.info(
-            f"lookup_log_registry took {el1:.4f} seconds for log_id: {log_id}"
-        )
+        with timed_debug_log(f"lookup_log_registry for {log_id}"):
+                result = (
+                    db.query(
+                        LogsDlReg.file_s3_path,
+                    )
+                    .filter_by(log_id=log_id)
+                    .first()
+                )
+
         if result:
+            logger.success(f"Found log registry entry for {log_id}")
             bucket_name, key = parse_s3_uri(result.file_s3_path)
             return log_id, bucket_name, key
+        logger.success(f"Lookup ok but no entry found for {log_id}")
         return None
     except SQLAlchemyError as e:
         logger.exception(f"Database error while querying LogsDlReg: {e}")

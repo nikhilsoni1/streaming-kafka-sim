@@ -95,6 +95,8 @@ def get_log_dispatch_chart(payload: Tuple[str, str, str], chart_name: str) -> st
         str | None: A JSON string representation of the rendered chart if successful, 
         otherwise None.
     """
+    if payload is None:
+        return None
     log_id, bucket_name, key = payload
     log_data = get_existing_log(bucket_name, key)
     if chart_name not in CHART_REGISTRY:
@@ -102,7 +104,6 @@ def get_log_dispatch_chart(payload: Tuple[str, str, str], chart_name: str) -> st
         return None
     _chart = CHART_REGISTRY[chart_name]
     logger.info(f"🔧 Dispatching chart '{chart_name}' for log_id: {log_id}")
-
     with timed_debug_log(f"Chart delivery for {log_id} - {chart_name}"):
         chart_json = generate_chart_for_log(log_id, _chart, log_data)
     return chart_json
