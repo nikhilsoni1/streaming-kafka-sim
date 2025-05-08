@@ -7,22 +7,21 @@ from typing import Tuple
 
 
 @celery_app.task(name="chart_dispatcher")
-def chart_dispatcher(payload: Tuple[str, str, ULogParser]) -> str | None:
-    # tuple structure is (log_id, chart_name, log_data)
+def chart_dispatcher(payload: Tuple[str, ULogParser], chart_name:str) -> str | None:
     """
     Dispatches a chart rendering task to the appropriate chart engine.
     
     Args:
         payload (Tuple[str, str, ULogParser]): A tuple containing:
             - log_id (str): Identifier for the log.
-            - chart_name (str): Name of the chart to render.
             - log_data (ULogParser): Parsed log data object.
+            - chart_name (str): Name of the chart to render.
     
     Returns:
         str | None: A JSON string representation of the rendered chart if successful, 
         otherwise None.
     """
-    log_id, chart_name, log_data = payload
+    log_id, log_data = payload
     if chart_name not in CHART_REGISTRY:
         logger.error(f"❌ Chart '{chart_name}' is not registered.")
         return None

@@ -4,7 +4,7 @@
 #
 #    pip-compile requirements.in
 #
---index-url https://aws:eyJ2ZXIiOjEsImlzdSI6MTc0NjU0OTM2NCwiZW5jIjoiQTEyOEdDTSIsInRhZyI6Imk4TS1ZaXM5WEE0T1lpTkZvMDZOWGciLCJleHAiOjE3NDY1OTI1NjQsImFsZyI6IkExMjhHQ01LVyIsIml2IjoiekFDZWpOUlFxaE9nNEo3ZyJ9.4pDBR396S1dLXhAtNFis4g.amtTIvbosMzPeU7k.EYdhY4QKDc5ikPSe0fURsoavMGJkIRx7zWNsm3pktS9rODsnm0NxJdUD7XkvRIcC-2ZnkVxJM4aHpqrzKyU-fbanzJgv9tInXcx4JBC4FAcio4SOFppZ8XgkOsIhXBW8zhDd9FZUp4U0Fq0CJ3LkHM8H2X3840KJumDEyc1iKJX372-eKqRYsRVHNzojkzJaUQJFFSZVaA1EnqrBacWles4OznhSL4oiW-ITYuGyX6X29S4CtMfEyATg39afc85Mpc_Dab93ToSt9UwjvMH91JIKOxJximE0pRguwkeEW6NrB6PpvW1k2sGvGs1dzdH5wPum90Ta6702b0eAgatQ4Fd3W5s_Kf1BpTJIBbhIxo-JL1jfxnaUQyQoaZcrSmeaw065MGW3cEV9ATjpUo6kaExlCP2uAqiDWwJRtcqknqhdxVoGJZy4cdsmdrBrZc3_pTf_UV_cx6kks1fD8-mrPaszDFuorhqbET_FdbKcqg1gIISuAzZbeC9l4T5F7ML7sTCwMAba2eUvZ5KztpqWnoVPyTJSmdncO6aHrgEKi7JcU3xmtWSBd2UlFFHcOJBkfH8uyeHykjfK4wiI3qKL0mC9ivqQ1zHkAA0JLWoy1kfigAC8pB7Tq77Qgz_We4I-vZyaa5N3zjbf4yGIuxss1Dg3CYhGjcIF-IxqeeleAvh6-CG1fviy6w69n07I9YgPXf2rgXtHF9qdj_X8T7g8Fp0g17CFsFUxjWxsOV_GAnh5s4hazzTv5qMHz4VTXwusBegopY6DGGLaGy4sLhhYY8ZTfdRIVjDTSjqH3UXKRi4Fs29rHk_xvJkzsv60T4eoQDLutgEdA9um-Cmfe1dXdXI7g0Ns6lwhu0RdqobL_RLnZMrP9gqgIG2C5gCfqqVKE9wGpz2_ADuoNlIOcHGz0mcShvPZWgfLTAi1PlUX1SJV-2rYwLoht2TYL_SBqYpa3J97C4mz1on6ZTIWc1TST9Vzlc8hhvKI5pfsP9MljkXGXw.KMTN6XP-sC2k6vN7zxmCJA@ypr-dockyard-183295432811.d.codeartifact.us-east-1.amazonaws.com/pypi/pypi-cargo/simple/
+--index-url https://aws:eyJ2ZXIiOjEsImlzdSI6MTc0NjY1OTM5NSwiZW5jIjoiQTEyOEdDTSIsInRhZyI6IlAtSWUzTHk5XzNPeGFqNDZka0JFMUEiLCJleHAiOjE3NDY3MDI1OTUsImFsZyI6IkExMjhHQ01LVyIsIml2IjoiY1VTR1lZZGFzVk83M0g3ciJ9.zkI9UveDyUq8GQuhsJYBhQ.b1CFNdNJ3kSStrcl.GTdpzJxWv8JLHaYK8AbM9ajEdw5izjApTmy--Wc7byU_Xpovlp9JiXrJNUx87D4UInOuzVVAbgyvZ_yo5ML0HkM_CxijoSaYut0XAifQfPRr1wqiL4Zc7Va1nuLJurNdkBiIn6TTnRigT2113FjUtgaGPy8QEmAt7F-EmBlDIcmvTJVhe21feCnHUhiUMc1IISvfZ0Zw-Nda_bxXo4PveZOdqSl2yFgmfUMP4GL6JULym71Pr4bAqeZptIzfXO7ma2fOHgmuqcRMy6a6DljdIE5B2nXW3YKSzYdZFvZ3uRnjeFS12_iwj3GhQa4SBA3dJrSEGQMx6xSSV0MbrpFgu4QC8CJpLtRek43esiCw3P_ldcGJBtbjah0IaoZ94fwnSiKMfiJh1RcdIhgyUsjiuGdbEaVeToFBCOsHQZlR2D6c8Oi85sbF_LNAXSSFHvMnlScbI2-2oqpR03FT0O9um-yVErvV-9jzF8yi9jm8XC4HaoCB3b8WynRm-mamQT1pfRAeRjQTO1ic7DA2yRlHTeu3u2uT4rjpwpUKmj80P53UmAEEzIXgRwbkRwGmBUsPjhqFx2jnn9XpXGPKKFLZ_fLhI86mO53RuzRvjzpHJKOHNP8vkX1vn0URh4b-ddCfKtqcTNwabgnPWdYUwsZjkEGyr1X8nc_bjlPrBs7pkiw2RUvYX1uVedhSSWzOMz2BgKHczsNERMPMIkJlqTAttor6l3mwZ8dYfrcmIfxZry8EIID8DS3F-vxoUkGTE8LmwGyu0LQ3BYlWF4-bOcILIKGr501kqNBjArJYqxYSDa4Xvrjj8tA9L-uyELR3ecFBBP32uqywKI13T_GwTk23AGNAczjWDtHUwd7v74OZ-FhceJfMRlI0dhv40y4TS40hbJz0YOXKMEmcrNV5A8PJ4-7V0FNFgkiG8k98IyGli86wFwm_p0Doe-C-gtLKTLzzWi5pv4LKjjmrO6JhFwHFJzlzdrMqkGD-BVBycsGwd1eO.IajVfZ5kj91CLH-jtyw0ug@ypr-dockyard-183295432811.d.codeartifact.us-east-1.amazonaws.com/pypi/pypi-cargo/simple/
 --extra-index-url https://pypi.org/simple
 --trusted-host ypr-dockyard-183295432811.d.codeartifact.us-east-1.amazonaws.com
 
@@ -15,7 +15,9 @@ amqp==5.3.1
 annotated-types==0.7.0
     # via pydantic
 anyio==4.9.0
-    # via starlette
+    # via
+    #   starlette
+    #   watchfiles
 billiard==4.2.1
     # via celery
 boto3==1.38.2
@@ -32,6 +34,7 @@ click==8.1.8
     #   click-didyoumean
     #   click-plugins
     #   click-repl
+    #   uvicorn
 click-didyoumean==0.3.1
     # via celery
 click-plugins==1.1.1
@@ -42,6 +45,10 @@ diskcache==5.6.3
     # via -r requirements.in
 fastapi==0.115.12
     # via -r requirements.in
+h11==0.16.0
+    # via uvicorn
+httptools==0.6.4
+    # via uvicorn
 idna==3.10
     # via anyio
 inflect==7.5.0
@@ -87,6 +94,8 @@ python-dateutil==2.9.0.post0
     #   botocore
     #   celery
     #   pandas
+python-dotenv==1.1.0
+    # via uvicorn
 python-json-logger==3.3.0
     # via -r requirements.in
 pytz==2025.2
@@ -95,6 +104,8 @@ pytz==2025.2
     #   pandas
 pyulog==1.2.0
     # via ypr-core-logfoundry
+pyyaml==6.0.2
+    # via uvicorn
 redis==6.0.0
     # via -r requirements.in
 rich==14.0.0
@@ -134,13 +145,21 @@ tzdata==2025.2
     #   pandas
 urllib3==2.4.0
     # via botocore
+uvicorn[standard]==0.34.2
+    # via -r requirements.in
+uvloop==0.21.0
+    # via uvicorn
 vine==5.1.0
     # via
     #   amqp
     #   celery
     #   kombu
+watchfiles==1.0.5
+    # via uvicorn
 wcwidth==0.2.13
     # via prompt-toolkit
+websockets==15.0.1
+    # via uvicorn
 ypr-core-logfoundry==0.1.0
     # via -r requirements.in
 ypr-data-connector==0.1.2

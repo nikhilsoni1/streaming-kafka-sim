@@ -6,20 +6,20 @@ from botocore.exceptions import ClientError
 from render_rig2.app import celery_app
 from render_rig2.utils.logger import logger
 from render_rig2.object_access.client import create_boto3_client
-
+from typing import Optional, Tuple
 
 @celery_app.task(name="get_existing_chart")
-def get_existing_chart(payload: dict):
+def get_existing_chart(payload: Tuple[str, str, str]) -> Optional[dict]:
     """
     Fetches and parses a GZIP-compressed JSON object from S3.
 
     Args:
-        payload (dict): {'bucket_name': ..., 'key': ...}
+        payload (Tuple[str, str]): A tuple containing the bucket name and key of the S3 object.
 
     Returns:
         dict: Parsed JSON content if object exists, else None
     """
-    bucket_name, key = payload
+    log_id, bucket_name, key = payload
 
     if not bucket_name or not key:
         logger.error("❌ Invalid payload: missing 'bucket_name' or 'key'")
@@ -35,12 +35,11 @@ def get_existing_chart(payload: dict):
 
         # Try GZIP-decompression and JSON parsing
         with gzip.GzipFile(fileobj=io.BytesIO(compressed_data)) as gz:
-            decompressed = gz.read().decode("utf-8")
-            parsed = json.loads(decompressed)
+            decompressed = gz.read().decode('utf-8')
 
         t1 = perf_counter()
-        logger.success(f"✅ Parsed GZIP JSON in {round(t1 - t0, 2)}s from s3://{bucket_name}/{key}")
-        return parsed
+        logger.success(f"✅ Parsed GZIP JSON in {round(t1 - t0, 2)}s for {log_id} from s3://{bucket_name}/{key}, type {type(decompressed)}")
+        return decompressed
 
     except ClientError as e:
         if e.response["Error"]["Code"] in ("404", "NoSuchKey"):
