@@ -1,4 +1,3 @@
-from time import perf_counter
 from typing import Optional
 from render_rig2.utils.logger import logger
 from render_rig2.chart_engine import Chart
