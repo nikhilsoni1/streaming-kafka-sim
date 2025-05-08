@@ -1,10 +1,8 @@
 from fastapi import APIRouter
 from celery import chain
-# from render_rig2.tasks import chart_dispatcher
 from render_rig2.tasks import lookup_log_registry
 from render_rig2.tasks import lookup_chart_registry
 from render_rig2.tasks import get_existing_chart
-# from render_rig2.tasks import get_existing_log
 from render_rig2.tasks import get_log_dispatch_chart
 from render_rig2.utils.logger import logger
 
