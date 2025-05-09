@@ -53,3 +53,5 @@ scratch*.ipynb
 **/cloud-env.sh
 **/*.yaml
 **/*.gpg
+/infrastructure/elasticache/.terraform
+infrastructure/elasticache/.terraform.lock.hcl
