@@ -63,4 +63,6 @@ async def generate_chart(log_id: str, chart_name: str):
         f"Failed to find or generate a chart: {chart_name} for log_id: {log_id}, total time spent: {et1 + et2:.2f} seconds"
     )
     return {"status": None, "data": chart_data}
+
+
 #   after return to fastapi, store in s3 and update the chart registry

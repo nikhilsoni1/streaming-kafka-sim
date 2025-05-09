@@ -26,7 +26,7 @@ def log_chart_in_registry(payload: dict) -> Optional[bool]:
             - upd_ts_utc (str): UTC timestamp of the last update to the log entry.
 
     Returns:
-        Optional[bool]: 
+        Optional[bool]:
             - True if the chart metadata was successfully logged.
             - False if there was a database error during the operation.
             - None if the provided payload is invalid (e.g., None).
@@ -40,13 +40,17 @@ def log_chart_in_registry(payload: dict) -> Optional[bool]:
     except TypeError as e:
         logger.error(f"Error creating ChartRegistry object: {e}")
         return None
-    
+
     try:
-        with timed_debug_log(f"Logging chart metadata for {record.log_id} - {record.chart_name}"):
+        with timed_debug_log(
+            f"Logging chart metadata for {record.log_id} - {record.chart_name}"
+        ):
             db = RenderRigSessionLocal()
             db.add(record)
             db.commit()
-        logger.success(f"Chart metadata logged successfully for {record.log_id} - {record.chart_name}")
+        logger.success(
+            f"Chart metadata logged successfully for {record.log_id} - {record.chart_name}"
+        )
         return True
     except SQLAlchemyError as e:
         logger.exception(f"Database error while logging chart metadata: {e}")
@@ -54,4 +58,3 @@ def log_chart_in_registry(payload: dict) -> Optional[bool]:
         return False
     finally:
         db.close()
-    

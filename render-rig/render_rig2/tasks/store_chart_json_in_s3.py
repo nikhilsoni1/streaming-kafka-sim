@@ -23,6 +23,7 @@ def hash_string_sha256(data: str) -> str:
     """
     return hashlib.sha256(data.encode("utf-8")).hexdigest()
 
+
 def generate_chart_metadata(log_id: str, chart_name: str, chart_json: dict) -> dict:
     """
     Generates metadata for a chart based on the log ID and chart name.
@@ -37,9 +38,11 @@ def generate_chart_metadata(log_id: str, chart_name: str, chart_json: dict) -> d
     """
     RENDER_RIG_CHARTS_BUCKET_NAME = os.getenv("RENDER_RIG_CHARTS_BUCKET_NAME", None)
     if RENDER_RIG_CHARTS_BUCKET_NAME is None:
-        logger.error("RENDER_RIG_CHARTS_BUCKET_NAME is not set in the environment variables.")
+        logger.error(
+            "RENDER_RIG_CHARTS_BUCKET_NAME is not set in the environment variables."
+        )
         return None
-    
+
     _now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     log_ts_utc = _now
     upd_ts_utc = _now
@@ -63,13 +66,14 @@ def generate_chart_metadata(log_id: str, chart_name: str, chart_json: dict) -> d
     logger.success(f"Chart metadata generated successfully")
     return chart_metadata
 
+
 def save_chart_json_to_s3(
     chart_json: str,
     bucket_name: str,
     key: str,
     use_transfer: bool = True,
     transfer_config: Optional[TransferConfig] = None,
-    use_gzip: bool = True
+    use_gzip: bool = True,
 ) -> bool:
     """
     Saves the chart JSON to S3.
@@ -85,12 +89,14 @@ def save_chart_json_to_s3(
     """
     s3_client = create_boto3_client("s3")
     try:
-        chart_json = chart_json.encode("utf-8") if isinstance(chart_json, str) else chart_json
+        chart_json = (
+            chart_json.encode("utf-8") if isinstance(chart_json, str) else chart_json
+        )
         data = gzip.compress(chart_json) if use_gzip else chart_json
 
         extra_args = {
             "ContentEncoding": "gzip" if use_gzip else None,
-            "ContentType": "application/json"
+            "ContentType": "application/json",
         }
         extra_args = {k: v for k, v in extra_args.items() if v is not None}
 
@@ -101,21 +107,21 @@ def save_chart_json_to_s3(
                 Bucket=bucket_name,
                 Key=key,
                 ExtraArgs=extra_args,
-                Config=transfer_config
+                Config=transfer_config,
             )
-            logger.info(f"Chart JSON saved to S3 using S3 Transfer: Bucket={bucket_name}, Key={key}, Gzip={use_gzip}")
+            logger.info(
+                f"Chart JSON saved to S3 using S3 Transfer: Bucket={bucket_name}, Key={key}, Gzip={use_gzip}"
+            )
         else:
-            s3_client.put_object(
-                Bucket=bucket_name,
-                Key=key,
-                Body=data,
-                **extra_args
+            s3_client.put_object(Bucket=bucket_name, Key=key, Body=data, **extra_args)
+            logger.info(
+                f"Chart JSON saved to S3 using put_object: Bucket={bucket_name}, Key={key}, Gzip={use_gzip}"
             )
-            logger.info(f"Chart JSON saved to S3 using put_object: Bucket={bucket_name}, Key={key}, Gzip={use_gzip}")
         return True
     except Exception as e:
         logger.error(f"Failed to save chart JSON to S3: {e}")
         return False
+
 
 @celery_app.task(name="store_chart_json_in_s3")
 def store_chart_json_in_s3(log_id: str, chart_name: str, chart_json: str) -> dict:
@@ -134,15 +140,14 @@ def store_chart_json_in_s3(log_id: str, chart_name: str, chart_json: str) -> dic
     if chart_metadata is None:
         logger.error("Failed to generate chart metadata, aborting S3 upload.")
         return None
-    
+
     bucket_name = chart_metadata["bucket_name"]
     key = chart_metadata["key"]
     with timed_debug_log(f"Storing chart JSON in S3: {bucket_name}/{key}"):
-        result = save_chart_json_to_s3(chart_json=chart_json, bucket_name=bucket_name, key=key)
+        result = save_chart_json_to_s3(
+            chart_json=chart_json, bucket_name=bucket_name, key=key
+        )
     if result:
         logger.success(f"Chart JSON stored successfully in S3: {bucket_name}/{key}")
         return chart_metadata
     return None
-
-    
-

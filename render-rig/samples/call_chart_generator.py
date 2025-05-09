@@ -1,8 +1,13 @@
 import requests
+
 # from render_rig2.app import celery_app
 from render_rig2.utils.logger import logger
-from render_rig2.database_access.sessions.log_registry_session_local import LogRegistrySessionLocal
-from render_rig2.database_access.sessions.render_rig_session_local import RenderRigSessionLocal
+from render_rig2.database_access.sessions.log_registry_session_local import (
+    LogRegistrySessionLocal,
+)
+from render_rig2.database_access.sessions.render_rig_session_local import (
+    RenderRigSessionLocal,
+)
 from render_rig2.database_access.models.log_registry_model import LogsDlReg
 from render_rig2.database_access.models.render_rig_registry_model import ChartRegistry
 from sqlalchemy.exc import SQLAlchemyError
@@ -10,6 +15,7 @@ import random
 from sqlalchemy.orm import Session
 from typing import Generator
 import time
+
 
 def random_log_id_generator(db: Session) -> Generator[str, None, None]:
     try:
@@ -24,7 +30,10 @@ def random_log_id_generator(db: Session) -> Generator[str, None, None]:
     except SQLAlchemyError as e:
         logger.error("Database error during log_id fetch: %s", e)
 
-def random_log_id_from_chart_registry_generator(db: Session) -> Generator[str, None, None]:
+
+def random_log_id_from_chart_registry_generator(
+    db: Session,
+) -> Generator[str, None, None]:
     try:
         log_ids = db.query(ChartRegistry.log_id).all()
         if not log_ids:
@@ -36,6 +45,7 @@ def random_log_id_from_chart_registry_generator(db: Session) -> Generator[str, N
             yield random.choice(log_ids_list)
     except SQLAlchemyError as e:
         logger.error("Database error during log_id fetch: %s", e)
+
 
 def call_chart_generator_endpoint(log_id: str, chart_name: str):
     url = f"http://localhost:8000/chart_generator/{log_id}/{chart_name}"
@@ -71,8 +81,3 @@ if __name__ == "__main__":
         print(f"Calling chart generator for log_id: {log_id}")
         call_chart_generator_endpoint(log_id, chart_name)
         time.sleep(1)
-
-
-
-
-
