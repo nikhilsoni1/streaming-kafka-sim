@@ -1,0 +1,20 @@
+# Terraform directories and generated files
+.terraform/                  # Provider and module caches
+.terraform.lock.hcl          # Dependency lock file (optional to track in Git)
+
+# Terraform state files
+terraform.tfstate
+terraform.tfstate.backup
+*.tfstate
+*.tfstate.backup
+
+# Env-specific variable files (optional)
+terraform.tfvars
+*.tfvars
+
+# Local overrides and crash logs
+override.tf
+override.tf.json
+crash.log
+terraform.rc
+.terraformrc
