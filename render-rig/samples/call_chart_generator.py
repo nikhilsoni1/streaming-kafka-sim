@@ -9,6 +9,7 @@ from sqlalchemy.exc import SQLAlchemyError
 import random
 from sqlalchemy.orm import Session
 from typing import Generator
+import time
 
 def random_log_id_generator(db: Session) -> Generator[str, None, None]:
     try:
@@ -61,13 +62,15 @@ if __name__ == "__main__":
     db2 = RenderRigSessionLocal()
     gen2 = random_log_id_from_chart_registry_generator(db2)
 
-    for _ in range(5):
+    for _ in range(10):
         if random.choice([True, False]):
             log_id = next(gen1)
         else:
             log_id = next(gen2)
+        log_id = next(gen2)
         print(f"Calling chart generator for log_id: {log_id}")
         call_chart_generator_endpoint(log_id, chart_name)
+        time.sleep(1)
 
 
 
