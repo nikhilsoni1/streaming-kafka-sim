@@ -55,3 +55,4 @@ scratch*.ipynb
 **/*.gpg
 /infrastructure/elasticache/.terraform
 infrastructure/elasticache/.terraform.lock.hcl
+render-rig/cloud.env
