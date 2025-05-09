@@ -72,6 +72,9 @@ if __name__ == "__main__":
     db2 = RenderRigSessionLocal()
     gen2 = random_log_id_from_chart_registry_generator(db2)
 
+    # fire these calls asynchronously, do not wait for them to finish
+    # and do not block the main thread
+    
     for _ in range(10):
         if random.choice([True, False]):
             log_id = next(gen1)
