@@ -5,7 +5,6 @@ from celery import chain
 log_id = "1fc1b7b4-a68a-491b-8984-3234ed71be08"
 chart_name = "chart_accel_raw_xyz"
 
-
 pipeline1 = chain(
     lookup_chart_registry.s(log_id, chart_name),
     get_existing_chart.s(),
