@@ -1,7 +1,6 @@
 variable "vpc_id" {
-    description = "The VPC ID used for all networking resources"
-    type = string
-    default = "vpc-04f2af21793ec3523"
+  description = "VPC ID"
+  type        = string
 }
 
 variable "availability_zones" {
