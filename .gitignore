@@ -1,33 +1,38 @@
 # ===============================
-# 🚫 IDE and OS-specific junk
+# IDE and OS-specific files
 # ===============================
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
 scratch.md
+
 # ===============================
-# 🐍 Python cache and compiled files
+# Python cache and compiled files
 # ===============================
 __pycache__/
 *.py[cod]
 
 # ===============================
-# 📦 Build artifacts (setuptools, wheel, etc.)
+# Build artifacts (Python packaging)
 # ===============================
-dist/
 build/
+dist/
 *.egg-info/
 
 # ===============================
-# 🔁 Virtual environments
+# Virtual environments and environment configs
 # ===============================
 .venv/
 venv/
 .env
 scripts/cloud-db/cloud-dev.env
+render-rig/cloud.env
+
 # ===============================
-# 🧪 Test artifacts and coverage reports
+# Test artifacts and coverage reports
 # ===============================
 .cache/
 .coverage
@@ -35,24 +40,42 @@ htmlcov/
 pytestdebug.log
 
 # ===============================
-# 📂 Logs and temporary files
+# Logs and temporary files
 # ===============================
 logs/
 *.log
+*.bak
+*.tmp
 
 # ===============================
-# 🔬 Scratch or exploratory files
+# Scratch or exploratory files
 # ===============================
 scratch*.py
 scratch*.ipynb
 *.json
 *.zip
 **/*.tar.gz
+
 # ===============================
-# 📂 Cloud environment files
+# Cloud environment & secrets
+# ===============================
 **/cloud-env.sh
-**/*.yaml
 **/*.gpg
-/infrastructure/elasticache/.terraform
-infrastructure/elasticache/.terraform.lock.hcl
-render-rig/cloud.env
+**/*.yaml
+
+# ===============================
+# Terraform
+# ===============================
+**/.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfplan
+*.binary
+*.tfvars
+*.tfvars.json
+*.terraform.lock.hcl
+.crash
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
