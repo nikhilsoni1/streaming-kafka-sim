@@ -1,5 +1,10 @@
-variable "render_rig2_api_subnet" {
+variable "render_rig2_api_subnet_id" {
   description = "Public subnet ID for placing the ALB"
+  type        = string
+}
+
+variable "render_rig2_worker_subnet_id" {
+  description = "Private subnet ID for placing the ALB"
   type        = string
 }
 
