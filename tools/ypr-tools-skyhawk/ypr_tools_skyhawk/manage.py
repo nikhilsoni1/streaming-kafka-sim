@@ -13,5 +13,3 @@ cli.add_command(ec2)
 cli.add_command(s3)
 cli.add_command(rds)
 
-if __name__ == "__main__":
-    cli()

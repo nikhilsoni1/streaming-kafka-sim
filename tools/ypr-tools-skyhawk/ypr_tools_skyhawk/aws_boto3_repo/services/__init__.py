@@ -8,6 +8,8 @@ from .ec2_service import ec2_start_instance
 from .ec2_service import ec2_stop_instance
 from .ec2_service import ec2_update_instance_ip
 from .ec2_service import ec2_list_all_instances
+from .ec2_service import ec2_list_subnets
+from .ec2_service import ec2_get_available_cidr_blocks
 
 # RDS
 from .rds_service import rds_start_instance
@@ -25,4 +27,6 @@ __all__ = [
     "rds_list_all_instances",
     "s3_create_bucket",
     "s3_delete_bucket",
+    "ec2_list_subnets",
+    "ec2_get_available_cidr_blocks",
 ]

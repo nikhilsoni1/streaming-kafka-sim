@@ -2,7 +2,9 @@ import time
 import click
 from .common_service import create_boto3_client
 from yaspin import yaspin
-
+import ipaddress
+import pandas as pd
+from itertools import zip_longest
 
 def poll_instance_status(
     ec2_client,
@@ -118,3 +120,72 @@ def ec2_list_all_instances(region: str = "us-east-1") -> list:
         spinner.ok("✅ ")
 
     return instances
+
+def ec2_list_subnets(vpc_id: str, region: str = "us-east-1") -> list:
+    _response_subnets = None
+    with yaspin(text=f"Fetching subnets...", color="cyan",) as spinner:
+        ec2 = create_boto3_client("ec2", region)
+        response = ec2.describe_subnets(
+            Filters=[
+                {'Name': 'vpc-id', 'Values': [vpc_id]}
+            ]
+        )
+        _response_subnets = response['Subnets']
+        spinner.ok("✅ ")
+
+    return _response_subnets
+
+def ec2_get_available_cidr_blocks(
+    vpc_id,
+    target_prefix,
+    num_blocks,
+    region="us-east-1"
+    ):
+    """
+    Returns a list of available CIDR blocks within the given VPC.
+
+    Parameters:
+        vpc_id (str): VPC identifier (used for logging/debugging).
+        used_cidr_blocks (List[str]): List of currently used CIDRs.
+        target_prefix (int): Desired prefix length for new blocks, e.g. 24.
+        num_blocks (int): Number of available blocks to return.
+
+    Returns:
+        List[str]: List of available CIDR blocks as strings.
+    """
+    with yaspin(text=f"Fetching available CIDR blocks for VPC: {vpc_id}...", color="cyan") as spinner:
+        
+        ec2 = create_boto3_client("ec2", region)
+        response1 = ec2.describe_subnets(
+            Filters=[
+                {'Name': 'vpc-id', 'Values': [vpc_id]}
+            ]
+        )
+        used_cidr_blocks = [subnet['CidrBlock'] for subnet in response1['Subnets']]
+        response2 = ec2.describe_vpcs(VpcIds=[vpc_id])
+        vpc = response2['Vpcs'][0]
+        vpc_cidr_block = vpc['CidrBlock']
+        
+        vpc_net = ipaddress.ip_network(vpc_cidr_block)
+        used_networks = [ipaddress.ip_network(cidr) for cidr in used_cidr_blocks]
+
+        used_networks.sort()
+        used_networks_str = [str(net) for net in used_networks]
+
+        all_candidates = list(vpc_net.subnets(new_prefix=target_prefix))
+        available = []
+
+        for candidate in all_candidates:
+            if all(not candidate.overlaps(used) for used in used_networks):
+                available.append(str(candidate))
+            if len(available) >= num_blocks:
+                break
+
+        # _zip = list(zip_longest(used_networks_str, available, fillvalue="-"))
+        # df = pd.DataFrame(_zip, columns=["Used CIDR Blocks", "Available CIDR Blocks"])
+        df = pd.DataFrame(available, columns=["Available CIDR Blocks"])
+        df.insert(0, "VPC ID", vpc_id)
+        table_data = df.values.tolist()
+        headers = df.columns.tolist()
+        spinner.ok("✅ ")
+    return table_data, headers

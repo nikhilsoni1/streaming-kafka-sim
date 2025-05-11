@@ -4,6 +4,4 @@ from .rds_commands import rds
 
 __all__ = ["s3",
            "ec2",
-           "rds",
-           "emr",
-           "security"]
+           "rds",]

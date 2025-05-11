@@ -15,3 +15,4 @@ pytz
 diskcache
 uvicorn[standard]
 kaleido
+plotly
