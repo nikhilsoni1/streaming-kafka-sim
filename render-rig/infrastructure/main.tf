@@ -3,5 +3,5 @@ module "iam" {
 }
 
 module "networking" {
-  source             = "./networking"
+  source = "./networking"
 }

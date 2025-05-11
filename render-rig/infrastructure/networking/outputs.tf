@@ -12,3 +12,8 @@ output "internet_gateway_id" {
   description = "ID of the Internet Gateway"
   value       = aws_internet_gateway.render_rig2_igw.id
 }
+
+output "api_sg_id" {
+  description = "Security Group ID for the API service"
+  value       = aws_security_group.render_rig2_alb_sg.id
+}

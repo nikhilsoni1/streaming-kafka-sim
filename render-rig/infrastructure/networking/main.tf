@@ -50,3 +50,31 @@ resource "aws_route" "public_internet" {
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.render_rig2_igw.id
 }
+
+# ALB
+resource "aws_security_group" "render_rig2_alb_sg" {
+  name        = "render_rig2_alb_sg"
+  description = "Allow HTTP from anywhere to ALB"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    description = "Allow HTTP from the internet"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name    = "render_rig2_alb_sg"
+    service = "render_rig2"
+  }
+}
