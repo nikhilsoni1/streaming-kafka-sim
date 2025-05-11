@@ -10,7 +10,8 @@ dependencies = [
     "click>=8.0",
     "tabulate>=0.9",
     "tqdm>=4.60",
-    "yaspin>=3.1.0"
+    "yaspin>=3.1.0",
+    "pandas"
 ]
 
 [project.scripts]

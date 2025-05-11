@@ -8,7 +8,9 @@ from ypr_tools_skyhawk.aws_boto3_repo import ec2_start_instance
 from ypr_tools_skyhawk.aws_boto3_repo import ec2_stop_instance
 from ypr_tools_skyhawk.aws_boto3_repo import ec2_update_instance_ip
 from ypr_tools_skyhawk.aws_boto3_repo import ec2_list_all_instances
-
+from ypr_tools_skyhawk.aws_boto3_repo import ec2_list_subnets
+from ypr_tools_skyhawk.aws_boto3_repo import ec2_get_available_cidr_blocks
+from ypr_tools_skyhawk.aws_boto3_repo.helpers.subnet_helpers import get_subnet_info
 
 @click.group()
 def ec2():
@@ -140,3 +142,21 @@ def list_instances(
                 writer.writeheader()
                 writer.writerows(instances)
             click.echo(f"\nOutput saved to {save_path} (CSV format)")
+
+@ec2.command(name="list-subnets")
+@click.option('--vpc-id', required=True, help='The VPC ID to inspect')
+@click.option("--region", default="us-east-1", help="AWS region name")
+def list_subnets(vpc_id, region):
+    table_data, headers = get_subnet_info(ec2_list_subnets(vpc_id, region))
+    formatted_output = tabulate(table_data, headers=headers, tablefmt="pretty")
+    click.echo(formatted_output)
+
+@ec2.command(name="list-available-cidr-blocks")
+@click.option('--vpc-id', required=True, help='The VPC ID to inspect')
+@click.option('--prefix', required=True, type=int, help='Target CIDR prefix')
+@click.option('--count', required=True, type=int, help='Number of CIDR blocks to find')
+@click.option('--region', default='us-east-1', help='AWS region name')
+def get_available_cidr_blocks(vpc_id, prefix, count, region):
+    table_data, headers = ec2_get_available_cidr_blocks(vpc_id, prefix, count, region)
+    formatted_output = tabulate(table_data, headers=headers, tablefmt="pretty")
+    click.echo(formatted_output)
