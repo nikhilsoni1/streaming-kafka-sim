@@ -18,7 +18,7 @@ login:
 
 # Build the Docker image
 build:
-	docker build -t $(REPO_NAME) .
+	docker build --no-cache -t $(REPO_NAME) .
 
 # Tag the Docker image for ECR
 tag:
