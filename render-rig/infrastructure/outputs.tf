@@ -10,3 +10,12 @@ output "render_rig2_worker_subnet_id" {
 output "render_rig2_alb_sg_id" {
   value = module.networking.render_rig2_alb_sg_id
 }
+
+
+output "render-rig2-alb-id" {
+  value = module.alb.render-rig2-alb-id
+}
+
+output "render-rig2-api-tg" {
+  value = module.alb.render-rig2-api-tg
+}
