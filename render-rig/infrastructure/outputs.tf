@@ -19,3 +19,7 @@ output "render-rig2-alb-id" {
 output "render-rig2-api-tg" {
   value = module.alb.render-rig2-api-tg
 }
+
+output "alb_dns_name" {
+  value = module.alb.alb_dns_name
+}

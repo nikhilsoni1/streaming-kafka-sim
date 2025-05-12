@@ -78,3 +78,29 @@ resource "aws_security_group" "render_rig2_alb_sg" {
     service = "render_rig2"
   }
 }
+
+resource "aws_security_group" "render_rig2_task_sg" {
+  name        = "render_rig2_task_sg"
+  description = "Allow ALB access to ECS container"
+  vpc_id      = var.vpc_id
+
+  # Allow ALB SG to talk to port 8000
+  ingress {
+    from_port                = 8000
+    to_port                  = 8000
+    protocol                 = "tcp"
+    security_groups          = [aws_security_group.render_rig2_alb_sg.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "render_rig2_task_sg"
+    service = "render_rig2"
+  }
+}

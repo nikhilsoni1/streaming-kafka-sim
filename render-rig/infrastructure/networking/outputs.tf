@@ -18,3 +18,8 @@ output "render_rig2_alb_sg_id" {
   description = "Security group for ALB"
   value       = aws_security_group.render_rig2_alb_sg.id
 }
+
+output "render_rig2_task_sg_id" {
+  description = "Task Security group"
+  value = aws_security_group.render_rig2_task_sg.id
+}
