@@ -17,7 +17,7 @@ module "alb" {
 
 module "ecs" {
   source             = "./ecs"
-  image_uri          = "183295432811.dkr.ecr.us-east-1.amazonaws.com/render-rig2"
+  image_uri          = "183295432811.dkr.ecr.us-east-1.amazonaws.com/render-rig2:latest"
   execution_role_arn = module.iam.ecs_task_execution_role_arn
   task_role_arn      = module.iam.render_rig2_task_role_arn
   env_ssm_path       = "/render_rig2/"
@@ -34,7 +34,7 @@ module "ecs_services" {
     module.networking.render_rig2_worker_subnet_id
   ]
 
-  api_security_group_id = module.networking.render_rig2_alb_sg_id
+  api_security_group_id = module.networking.render_rig2_task_sg_id
   target_group_arn      = module.alb.target_group_arn
 
   api_desired_count    = 1
