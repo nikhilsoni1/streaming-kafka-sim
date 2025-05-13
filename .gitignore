@@ -81,9 +81,10 @@ override.tf.json
 *_override.tf.json
 
 # ===============================
-# Javascript-specific
+# Javascript / Typescript
 # ===============================
 !pnpm-lock.yaml
 !pnpm-workspace.yaml
 !package.json
 node_modules
+!tsconfig.json
