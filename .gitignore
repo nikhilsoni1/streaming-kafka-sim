@@ -79,3 +79,11 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+
+# ===============================
+# Javascript-specific
+# ===============================
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+!package.json
+node_modules
