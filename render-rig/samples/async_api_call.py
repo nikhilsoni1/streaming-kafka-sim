@@ -54,6 +54,7 @@ async def run_all(urls):
 def main(sample_size=100):
     db = LogRegistrySessionLocal()
     log_ids = sample_log_ids(get_all_log_ids(db), sample_size)
+    db.close()
     urls = construct_urls(log_ids)
 
     import nest_asyncio
