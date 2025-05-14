@@ -1,6 +1,7 @@
 {
     "name": "streaming-kafka-sim",
     "private": true,
+    "packageManager": "pnpm@10.10.0",
     "scripts": {
         "build": "turbo run build",
         "dev": "turbo run dev",

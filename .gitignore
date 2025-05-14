@@ -89,3 +89,4 @@ override.tf.json
 node_modules
 !tsconfig.json
 .turbo
+!turbo.json
