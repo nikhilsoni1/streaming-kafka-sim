@@ -15,6 +15,7 @@ from .ec2_service import ec2_get_available_cidr_blocks
 from .rds_service import rds_start_instance
 from .rds_service import rds_stop_instance
 from .rds_service import rds_list_all_instances
+from .rds_service import rds_reboot_instance
 
 __all__ = [
     "s3_list_all_buckets",
@@ -29,4 +30,5 @@ __all__ = [
     "s3_delete_bucket",
     "ec2_list_subnets",
     "ec2_get_available_cidr_blocks",
+    "rds_reboot_instance"
 ]

@@ -6,6 +6,7 @@ from tabulate import tabulate
 from ypr_tools_skyhawk.aws_boto3_repo import rds_start_instance
 from ypr_tools_skyhawk.aws_boto3_repo import rds_stop_instance
 from ypr_tools_skyhawk.aws_boto3_repo import rds_list_all_instances
+from ypr_tools_skyhawk.aws_boto3_repo import rds_reboot_instance
 
 
 @click.group()
@@ -138,3 +139,13 @@ def list_instances(
                 writer.writeheader()
                 writer.writerows(instances)
             click.echo(f"\nOutput saved to {save_path} (CSV format)")
+
+@rds.command(name="reboot-instance")
+@click.option("--instance-id", required=True, help="ID of the RDS instance to reboot")
+@click.option("--wait", is_flag=True, default=True, help="Wait until RDS instance is fully available again")
+@click.option("--region", default="us-east-1", help="AWS region name")
+def reboot_instance(instance_id: str, wait: bool, region: str):
+    """
+    Reboot an RDS DB instance by DB identifier.
+    """
+    rds_reboot_instance(instance_id, wait=wait, region=region)

@@ -122,3 +122,23 @@ def rds_list_all_instances(region: str = "us-east-1") -> list:
         spinner.ok("✅ ")
 
     return instances
+
+def rds_reboot_instance(db_id: str, region: str = "us-east-1", wait: bool = False):
+    """
+    Reboot an RDS DB instance and optionally wait until it is available again.
+    Only reboots if the instance is currently 'available'.
+    """
+    rds = create_boto3_client("rds", region)
+    current_status = get_rds_instance_status(rds, db_id)
+
+    if current_status != "available":
+        click.echo(
+            f"Cannot reboot RDS instance {db_id}. Current state: '{current_status}'. Reboot aborted."
+        )
+        return
+
+    click.echo(f"Rebooting RDS instance {db_id}...")
+    rds.reboot_db_instance(DBInstanceIdentifier=db_id)
+
+    if wait:
+        poll_rds_instance_status(rds, db_id, desired_status="available")
