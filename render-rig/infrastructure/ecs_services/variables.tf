@@ -8,11 +8,6 @@ variable "api_task_definition_arn" {
   type        = string
 }
 
-variable "worker_task_definition_arn" {
-  description = "ARN of the Celery worker ECS task definition"
-  type        = string
-}
-
 variable "subnet_ids" {
   description = "List of subnet IDs to run ECS tasks in"
   type        = list(string)
@@ -38,4 +33,24 @@ variable "worker_desired_count" {
   description = "Number of worker containers to run"
   type        = number
   default     = 4
+}
+
+variable "worker_task_lookup_chart_registry_arn" {
+  type = string
+}
+
+variable "worker_task_get_log_dispatch_chart_arn" {
+  type = string
+}
+
+variable "worker_task_lookup_log_registry_arn" {
+  type = string
+}
+
+variable "worker_task_get_existing_chart_arn" {
+  type = string
+}
+
+variable "worker_task_store_log_chart_arn" {
+  type = string
 }

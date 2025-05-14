@@ -24,10 +24,14 @@ module "ecs" {
 }
 
 module "ecs_services" {
-  source                     = "./ecs_services"
-  cluster_name               = module.ecs.ecs_cluster_name
-  api_task_definition_arn    = module.ecs.api_task_definition_arn
-  worker_task_definition_arn = module.ecs.worker_task_definition_arn
+  source                                 = "./ecs_services"
+  cluster_name                           = module.ecs.ecs_cluster_name
+  api_task_definition_arn                = module.ecs.api_task_definition_arn
+  worker_task_lookup_chart_registry_arn  = module.ecs.worker_task_lookup_chart_registry_arn
+  worker_task_get_existing_chart_arn     = module.ecs.worker_task_get_existing_chart_arn
+  worker_task_lookup_log_registry_arn    = module.ecs.worker_task_lookup_log_registry_arn
+  worker_task_get_log_dispatch_chart_arn = module.ecs.worker_task_get_log_dispatch_chart_arn
+  worker_task_store_log_chart_arn        = module.ecs.worker_task_store_log_chart_arn
 
   subnet_ids = [
     module.networking.render_rig2_api_subnet_id,
@@ -37,6 +41,6 @@ module "ecs_services" {
   api_security_group_id = module.networking.render_rig2_task_sg_id
   target_group_arn      = module.alb.target_group_arn
 
-  api_desired_count    = 1
+  api_desired_count    = 2
   worker_desired_count = 1
 }

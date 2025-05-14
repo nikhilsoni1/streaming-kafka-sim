@@ -24,49 +24,52 @@ def construct_urls(log_ids, chart_name="chart_accel_raw_xyz"):
     base_url = "http://render-rig2-alb-830325047.us-east-1.elb.amazonaws.com/chart_generator"
     return [f"{base_url}/{log_id}/{chart_name}" for log_id in log_ids]
 
-# Step 4: Async fetch basic metrics
-async def fetch(client, url):
-    start = time.time()
-    try:
-        response = await client.get(url, timeout=3600)
-        duration = time.time() - start
-        return {
-            "url": url,
-            "status_code": response.status_code,
-            "response_time_sec": duration,
-            "response_size_mb": len(response.content) / (1024 * 1024),
-        }
-    except Exception:
-        return {
-            "url": url,
-            "status_code": None,
-            "response_time_sec": None,
-            "response_size_mb": None,
-        }
+# Step 4: Async fetch with rate limit
+async def fetch(client, url, semaphore, delay_sec):
+    async with semaphore:
+        await asyncio.sleep(delay_sec)  # delay before sending
+        start = time.time()
+        try:
+            response = await client.get(url, timeout=3600)
+            duration = time.time() - start
+            return {
+                "url": url,
+                "status_code": response.status_code,
+                "response_time_sec": duration,
+                "response_size_mb": len(response.content) / (1024 * 1024),
+            }
+        except Exception:
+            return {
+                "url": url,
+                "status_code": None,
+                "response_time_sec": None,
+                "response_size_mb": None,
+            }
 
-# Step 5: Run all requests
-async def run_all(urls):
+# Step 5: Run all requests with rate limiting
+async def run_all(urls, rate_per_minute=60):
+    semaphore = asyncio.Semaphore(1)  # Only 1 request at a time
+    delay_sec = 60 / rate_per_minute  # Delay between each request
+
     async with httpx.AsyncClient() as client:
-        tasks = [fetch(client, url) for url in urls]
+        tasks = [
+            fetch(client, url, semaphore, delay_sec * i)
+            for i, url in enumerate(urls)
+        ]
         return await asyncio.gather(*tasks)
 
-# Step 6: Main function with sample_size param
-def main(sample_size=100):
-    db = LogRegistrySessionLocal()
-    log_ids = sample_log_ids(get_all_log_ids(db), sample_size)
-    db.close()
-    urls = construct_urls(log_ids)
+# Step 6: Main function
+db = LogRegistrySessionLocal()
+log_ids = sample_log_ids(get_all_log_ids(db), 50)
+db.close()
+urls = construct_urls(log_ids)
+import requests
+from time import perf_counter
 
-    import nest_asyncio
-    nest_asyncio.apply()
 
-    results = asyncio.run(run_all(urls))
-    df = pd.DataFrame(results)
-    # print(df)
-    # Save to CSV
-    df.to_csv("async_api_call_results.csv", index=False)
-    return df
-
-# Entry point
-if __name__ == "__main__":
-    main(sample_size=100)
+for i in urls:
+    start = perf_counter()
+    result = requests.get(i)
+    end = perf_counter()
+    print(f"URL: {i}, Status Code: {result.status_code}, Response Time: {end - start:.2f} seconds, Size: {len(result.content) / (1024 * 1024):.2f} MB")
+    time.sleep(1)

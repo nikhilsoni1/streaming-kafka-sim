@@ -17,18 +17,23 @@ resource "aws_ecs_service" "api_service" {
     container_port   = 8000
   }
 
-  depends_on = [aws_ecs_service.worker_service]
+  depends_on = [aws_ecs_service.worker_store_log_chart,
+  aws_ecs_service.worker_get_log_dispatch_chart,
+  aws_ecs_service.worker_lookup_log_registry,
+  aws_ecs_service.worker_get_existing_chart,
+  aws_ecs_service.worker_lookup_chart_registry
+  ]
 
   tags = {
     service = "render_rig2"
   }
 }
 
-resource "aws_ecs_service" "worker_service" {
-  name            = "render-rig2-worker-service"
+resource "aws_ecs_service" "worker_store_log_chart" {
+  name            = "render-rig2-worker-store-log-chart"
   cluster         = var.cluster_name
-  task_definition = var.worker_task_definition_arn
-  desired_count   = var.worker_desired_count
+  task_definition = var.worker_task_store_log_chart_arn
+  desired_count   = 2
   launch_type     = "FARGATE"
 
   network_configuration {
@@ -40,3 +45,72 @@ resource "aws_ecs_service" "worker_service" {
     service = "render_rig2"
   }
 }
+
+resource "aws_ecs_service" "worker_get_log_dispatch_chart" {
+  name            = "render-rig2-worker-get-log-dispatch-chart"
+  cluster         = var.cluster_name
+  task_definition = var.worker_task_get_log_dispatch_chart_arn
+  desired_count   = 2
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = [var.subnet_ids[1]]
+    assign_public_ip = true
+  }
+
+  tags = {
+    service = "render_rig2"
+  }
+}
+
+resource "aws_ecs_service" "worker_lookup_log_registry" {
+  name            = "render-rig2-worker-lookup-log-registry"
+  cluster         = var.cluster_name
+  task_definition = var.worker_task_lookup_log_registry_arn
+  desired_count   = 2
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = [var.subnet_ids[1]]
+    assign_public_ip = true
+  }
+
+  tags = {
+    service = "render_rig2"
+  }
+}
+
+resource "aws_ecs_service" "worker_get_existing_chart" {
+  name            = "render-rig2-worker-get-existing-chart"
+  cluster         = var.cluster_name
+  task_definition = var.worker_task_get_existing_chart_arn
+  desired_count   = 2
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = [var.subnet_ids[1]]
+    assign_public_ip = true
+  }
+
+  tags = {
+    service = "render_rig2"
+  }
+}
+
+resource "aws_ecs_service" "worker_lookup_chart_registry" {
+  name            = "render-rig2-worker-lookup-chart-registry"
+  cluster         = var.cluster_name
+  task_definition = var.worker_task_lookup_chart_registry_arn
+  desired_count   = 2
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = [var.subnet_ids[1]]
+    assign_public_ip = true
+  }
+
+  tags = {
+    service = "render_rig2"
+  }
+}
+
