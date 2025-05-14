@@ -4,6 +4,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI(title="Render Rig Service API", version="1.0.0")
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
+
 app.include_router(
     chart_generator.router, prefix="/chart_generator", tags=["Chart Generator"]
 )

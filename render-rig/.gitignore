@@ -1,1 +1,4 @@
 # .gitingore for render-rig
+**/terraform.tfstate*
+**/terraform.tfstate*
+**/.terraform*

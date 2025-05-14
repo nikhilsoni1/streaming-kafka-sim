@@ -1,6 +1,7 @@
 
 resource "aws_iam_policy" "ssm_access" {
-  name = "RenderRig2SSMReadAccess"
+  name        = "RenderRig2SSMReadAccess"
+  description = "Allow ECS tasks to read secrets from SSM Parameter Store"
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -8,15 +9,16 @@ resource "aws_iam_policy" "ssm_access" {
       {
         Effect = "Allow",
         Action = [
-          "ssm:GetParameter",
           "ssm:GetParameters",
+          "ssm:GetParameter",
           "ssm:GetParametersByPath"
         ],
-        Resource = "arn:aws:ssm:us-east-1:*:parameter/render_rig2/*"
+        Resource = "*"
       }
     ]
   })
 }
+
 
 resource "aws_iam_policy" "s3_access" {
   name = "RenderRig2S3Access"
