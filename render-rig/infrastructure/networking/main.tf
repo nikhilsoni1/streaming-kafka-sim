@@ -107,47 +107,16 @@ resource "aws_security_group" "render_rig2_task_sg" {
 }
 
 
-resource "aws_security_group" "allow_https" {
-  name        = "allow-https"
-  description = "Allow HTTPS egress to AWS endpoints"
-  vpc_id      = var.vpc_id
-
-  egress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+resource "aws_route_table" "worker_private_rt" {
+  vpc_id = var.vpc_id
 
   tags = {
-    Name = "allow-https"
+    Name    = "render_rig2_worker_rt"
+    service = "render_rig2"
   }
 }
 
-
-data "aws_region" "current" {}
-
-resource "aws_vpc_endpoint" "ssm" {
-  vpc_id             = var.vpc_id
-  service_name       = "com.amazonaws.${data.aws_region.current.name}.ssm"
-  vpc_endpoint_type  = "Interface"
-  subnet_ids         = [aws_subnet.render_rig2_worker_subnet.id]
-  security_group_ids = [aws_security_group.allow_https.id]
+resource "aws_route_table_association" "worker_assoc" {
+  subnet_id      = aws_subnet.render_rig2_worker_subnet.id
+  route_table_id = aws_route_table.public.id
 }
-
-resource "aws_vpc_endpoint" "ssmmessages" {
-  vpc_id             = var.vpc_id
-  service_name       = "com.amazonaws.${data.aws_region.current.name}.ssmmessages"
-  vpc_endpoint_type  = "Interface"
-  subnet_ids         = [aws_subnet.render_rig2_worker_subnet.id]
-  security_group_ids = [aws_security_group.allow_https.id]
-}
-
-resource "aws_vpc_endpoint" "ec2messages" {
-  vpc_id             = var.vpc_id
-  service_name       = "com.amazonaws.${data.aws_region.current.name}.ec2messages"
-  vpc_endpoint_type  = "Interface"
-  subnet_ids         = [aws_subnet.render_rig2_worker_subnet.id]
-  security_group_ids = [aws_security_group.allow_https.id]
-}
-

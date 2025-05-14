@@ -18,6 +18,7 @@ async def generate_chart(log_id: str, chart_name: str):
     """
     Generate a chart for a given log_id and chart_name.
     """
+    logger.debug(f"Generating chart for log_id: {log_id}, chart_name: {chart_name}")
     chart_data = None
 
     t0 = perf_counter()
@@ -26,8 +27,12 @@ async def generate_chart(log_id: str, chart_name: str):
         lookup_chart_registry.s(log_id, chart_name),
         get_existing_chart.s(),
     )
-    result1 = pipeline1.apply_async()
-    chart_data = result1.get(timeout=60)
+    try:
+        result1 = pipeline1.apply_async()
+        chart_data = result1.get(timeout=60)
+    except Exception as e:
+        logger.error(f"Error in pipeline1: {e}")
+        chart_data = None
 
     t1 = perf_counter()
     et1 = t1 - t0

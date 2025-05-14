@@ -21,10 +21,10 @@ resource "aws_lb_target_group" "render-rig2-api-tg" {
     path                = "/health"
     protocol            = "HTTP"
     matcher             = "200"
-    interval            = 30
-    timeout             = 5
+    interval            = 45
+    timeout             = 30
     healthy_threshold   = 2
-    unhealthy_threshold = 3
+    unhealthy_threshold = 5
   }
 
   tags = {

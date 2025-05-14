@@ -6,7 +6,7 @@ resource "aws_ecs_service" "api_service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets         = [var.subnet_ids[0]]
+    subnets         = var.subnet_ids
     security_groups = [var.api_security_group_id]
     assign_public_ip = true
   }
@@ -33,7 +33,7 @@ resource "aws_ecs_service" "worker_service" {
 
   network_configuration {
     subnets          = [var.subnet_ids[1]]
-    assign_public_ip = false
+    assign_public_ip = true
   }
 
   tags = {

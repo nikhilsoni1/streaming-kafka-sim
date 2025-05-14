@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Render Rig Chart Viewer</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+    label, input {
+      font-size: 1rem;
+      margin: 0.5rem 0;
+    }
+    #chart {
+      width: 100%;
+      height: 600px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Render Rig Chart Viewer</h2>
+
+  <label for="logId">Log ID:</label><br>
+  <input type="text" id="logId" name="logId" placeholder="e.g. abc123" style="width: 100%;" /><br>
+
+  <label for="chartName">Chart Name:</label><br>
+  <input type="text" id="chartName" name="chartName" placeholder="e.g. chart_accel_raw_xyz" style="width: 100%;" /><br>
+
+  <button onclick="renderChart()" style="margin-top: 10px; padding: 10px 20px;">Render Chart</button>
+
+  <div id="chart">Chart will appear here.</div>
+
+  <script>
+    async function renderChart() {
+      const logId = document.getElementById("logId").value.trim();
+      const chartName = document.getElementById("chartName").value.trim();
+      const chartContainer = document.getElementById("chart");
+  
+      if (!logId || !chartName) {
+        alert("Please enter both Log ID and Chart Name.");
+        return;
+      }
+  
+      chartContainer.innerHTML = "Fetching chart...";
+  
+      try {
+        const response = await fetch(`http://render-rig2-alb-830325047.us-east-1.elb.amazonaws.com/chart_generator/${logId}/${chartName}`);
+        const data = await response.json();
+  
+        console.log("✅ API response:", data);
+  
+        if (data.status === "cached" || data.status === "generated") {
+          const plotlyJson = JSON.parse(data.data);
+          console.log("📦 Parsed Plotly JSON:", plotlyJson.data);
+  
+          if (!Array.isArray(plotlyJson.data) || plotlyJson.data.length === 0) {
+            console.warn("⚠️ No data traces in plotlyJson.data");
+          } else {
+            console.log(`✅ Found ${plotlyJson.data.length} traces`);
+  
+            plotlyJson.data.forEach((trace, index) => {
+              console.log(`Trace ${index}: type=${trace.type}, mode=${trace.mode}, x.length=${trace.x?.length || 0}, y.length=${trace.y?.length || 0}`);
+            });
+          }
+  
+          Plotly.newPlot('chart', plotlyJson.data, plotlyJson.layout || {});
+        } else {
+          chartContainer.innerHTML = "Chart not found or failed to render.";
+          console.warn("⚠️ Unexpected chart status:", data.status);
+        }
+      } catch (err) {
+        console.error("❌ Fetch error:", err);
+        chartContainer.innerHTML = "Error fetching chart.";
+      }
+    }
+  </script>
+</body>
+</html>

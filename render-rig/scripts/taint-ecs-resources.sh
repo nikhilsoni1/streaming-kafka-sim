@@ -6,6 +6,8 @@ set -e
 RESOURCES=(
   "module.ecs.aws_ecs_task_definition.api_task"
   "module.ecs.aws_ecs_task_definition.worker_task"
+  "module.ecs_services.aws_ecs_service.api_service"
+  "module.ecs_services.aws_ecs_service.worker_service"
 )
 
 echo "Tainting ECS-related Terraform resources..."
