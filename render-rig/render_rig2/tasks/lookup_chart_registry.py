@@ -49,3 +49,6 @@ def lookup_chart_registry(
     except SQLAlchemyError as e:
         logger.exception(f"Database error while querying ChartRegistry: {e}")
         raise RuntimeError(f"Database error while querying ChartRegistry: {e}")
+    finally:
+        db.close()
+        logger.debug("Database session closed.")

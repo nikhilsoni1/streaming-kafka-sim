@@ -58,3 +58,6 @@ def lookup_log_registry(log_id: str) -> Tuple[str, str, str] | None:
     except SQLAlchemyError as e:
         logger.exception(f"Database error while querying LogsDlReg: {e}")
         raise RuntimeError(f"Database error while querying LogsDlReg: {e}")
+    finally:
+        db.close()
+        logger.debug("Database session closed.")
