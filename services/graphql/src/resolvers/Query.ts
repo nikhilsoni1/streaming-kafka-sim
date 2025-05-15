@@ -14,6 +14,21 @@ export const Query: Resolvers = {
             };
         },
     },
+    VehicleData: {
+        async data(parent, _args, _context) {
+            // Assuming getAccelarationData returns an object like { x: string, y: string, z: string }
+            // const accData = await _context.database.getAccelarationData({
+            //     x: true,
+            //     y: true,
+            //     z: true,
+            // });
+            return await _context.database.getAccelarationData({
+                x: true,
+                y: true,
+                z: true,
+            });
+        },
+    },
     // VehicleData: {
     //     async data(parent, _args, _context) {
     //         // Assuming getAccelarationData returns an object like { x: string, y: string, z: string }

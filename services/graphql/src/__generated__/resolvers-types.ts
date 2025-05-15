@@ -7,7 +7,6 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
-export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -19,10 +18,11 @@ export type Scalars = {
 };
 
 export type Acceleration = {
+  __typename?: 'Acceleration';
   units?: Maybe<AccelerationUnits>;
-  x?: Maybe<Array<Scalars['String']['output']>>;
-  y?: Maybe<Array<Scalars['String']['output']>>;
-  z?: Maybe<Array<Scalars['String']['output']>>;
+  x: Array<Scalars['String']['output']>;
+  y: Array<Scalars['String']['output']>;
+  z: Array<Scalars['String']['output']>;
 };
 
 export enum AccelerationUnits {
@@ -115,38 +115,34 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 ) => TResult | Promise<TResult>;
 
 
-/** Mapping of interface types */
-export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
-  Acceleration: never;
-};
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  Acceleration: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Acceleration']>;
+  Acceleration: ResolverTypeWrapper<Acceleration>;
   AccelerationUnits: AccelerationUnits;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
-  VehicleData: ResolverTypeWrapper<Omit<VehicleData, 'data'> & { data?: Maybe<ResolversTypes['Acceleration']> }>;
+  VehicleData: ResolverTypeWrapper<VehicleData>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  Acceleration: ResolversInterfaceTypes<ResolversParentTypes>['Acceleration'];
+  Acceleration: Acceleration;
   Boolean: Scalars['Boolean']['output'];
   ID: Scalars['ID']['output'];
   Query: {};
   String: Scalars['String']['output'];
-  VehicleData: Omit<VehicleData, 'data'> & { data?: Maybe<ResolversParentTypes['Acceleration']> };
+  VehicleData: VehicleData;
 };
 
 export type AccelerationResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['Acceleration'] = ResolversParentTypes['Acceleration']> = {
-  __resolveType: TypeResolveFn<null, ParentType, ContextType>;
   units?: Resolver<Maybe<ResolversTypes['AccelerationUnits']>, ParentType, ContextType>;
-  x?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
-  y?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
-  z?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  x?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  y?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  z?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type QueryResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {

@@ -1,5 +1,9 @@
 import path from "path";
-import { Acceleration, AccelerationUnits, VehicleData } from "../__generated__/resolvers-types";
+import {
+    Acceleration,
+    AccelerationUnits,
+    VehicleData,
+} from "../__generated__/resolvers-types";
 
 export class DatabaseAPI {
     // private readonly url: string;
@@ -16,10 +20,14 @@ export class DatabaseAPI {
         const fileContent = await readFile(filePath, { encoding: "utf-8" });
         const json = JSON.parse(fileContent);
 
-        return json.data.timestamp as VehicleData['timestamp'];
+        return json.data.timestamp as VehicleData["timestamp"];
     }
 
-    public async getAccelarationData(args: {
+    public async getAccelarationData({
+        x = false,
+        y = false,
+        z = false,
+    }: {
         x?: boolean;
         y?: boolean;
         z?: boolean;
@@ -30,13 +38,13 @@ export class DatabaseAPI {
         const json = JSON.parse(fileContent);
 
         // Optionally filter axes based on args
-        let result: Acceleration = {
+        let result = {
             units: AccelerationUnits.Ms2,
-            x: args.x ? (json.data.acceleration["x:"] as [string]) : undefined,
-            y: args.y ? (json.data.acceleration["y:"] as [string]) : undefined,
-            z: args.z ? (json.data.acceleration["z:"] as [string]) : undefined,
+            x: x ? (json.data.acceleration["x:"] as [string]) : undefined,
+            y: y ? (json.data.acceleration["y:"] as [string]) : undefined,
+            z: z ? (json.data.acceleration["z:"] as [string]) : undefined,
         };
 
-        return result;
+        return result as Acceleration;
     }
 }

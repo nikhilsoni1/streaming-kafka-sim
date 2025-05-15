@@ -24,11 +24,11 @@
 enum AccelerationUnits {
     ms2
 }
-interface Acceleration {
+type Acceleration {
     units: AccelerationUnits
-    x: [String!]
-    y: [String!]
-    z: [String!]
+    x: [String!]!
+    y: [String!]!
+    z: [String!]!
 }
 
 type VehicleData {
