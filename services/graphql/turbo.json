@@ -1,0 +1,13 @@
+{
+    "extends": ["//"],
+    "tasks": {
+        "generate": {
+            "outputs": ["./src/__generated__/**/*"]
+        },
+        "dev": {
+            "cache": false,
+            "persistent": true
+        },
+        "build": { "dependsOn": ["generate"] }
+    }
+}
