@@ -1,0 +1,22 @@
+{
+    "extends": ["//"],
+    "tasks": {
+        "generate": {
+            "outputs": ["./src/__generated__/**/*"]
+        },
+        "generate:watch": {
+            "persistent": true,
+            "cache": false,
+            "outputs": ["./src/__generated__/**/*"]
+        },
+        "dev": {
+            "cache": false,
+            "persistent": true,
+            "dependsOn": ["generate"]
+        },
+        "build": {
+            "dependsOn": ["generate"],
+            "outputs": ["./dist/**/*"]
+        }
+    }
+}

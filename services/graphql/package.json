@@ -1,0 +1,38 @@
+{
+    "name": "@gql/acceleration",
+    "private": true,
+    "description": "A simple example of a GraphQL service using Apollo Server and TypeScript.",
+    "version": "0.0.0",
+    "license": "MIT",
+    "type": "commonjs",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "engines": {
+        "node": ">=18.0"
+    },
+    "scripts": {
+        "cleanup": "rimraf --glob 'dist'",
+        "build": "pnpm run cleanup && pnpm run generate && tsc",
+        "generate": "graphql-codegen",
+        "generate:watch": "graphql-codegen --watch \"src/schema.graphql\"",
+        "postinstall": "pnpm run build",
+        "start": "node dist/index.js",
+        "dev": "nodemon --watch \"src/**\" --ext \"ts,json,graphql\" --exec \"pnpm run start\" --ignore ./src/__generated__/"
+    },
+    "dependencies": {
+        "@apollo/server": "^4.3.3",
+        "@apollo/subgraph": "^2.3.1",
+        "graphql": "latest",
+        "graphql-tag": "latest"
+    },
+    "devDependencies": {
+        "@graphql-codegen/cli": "^5.0.0",
+        "@graphql-codegen/typescript": "^4.0.0",
+        "@graphql-codegen/typescript-resolvers": "^4.0.0",
+        "@types/node": "^22.0.0",
+        "nodemon": "^3.0.0",
+        "rimraf": "^6.0.1",
+        "ts-node": "^10.9.1",
+        "typescript": "^5.0.0"
+    }
+}
