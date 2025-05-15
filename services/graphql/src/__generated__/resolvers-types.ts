@@ -1,4 +1,5 @@
 import { GraphQLResolveInfo } from 'graphql';
+import { DataSourceContext } from '../types/DataSourceContext';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -140,7 +141,7 @@ export type ResolversParentTypes = {
   VehicleData: Omit<VehicleData, 'data'> & { data?: Maybe<ResolversParentTypes['Acceleration']> };
 };
 
-export type AccelerationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Acceleration'] = ResolversParentTypes['Acceleration']> = {
+export type AccelerationResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['Acceleration'] = ResolversParentTypes['Acceleration']> = {
   __resolveType: TypeResolveFn<null, ParentType, ContextType>;
   units?: Resolver<Maybe<ResolversTypes['AccelerationUnits']>, ParentType, ContextType>;
   x?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
@@ -148,11 +149,11 @@ export type AccelerationResolvers<ContextType = any, ParentType extends Resolver
   z?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
 };
 
-export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+export type QueryResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   vehicle?: Resolver<Maybe<ResolversTypes['VehicleData']>, ParentType, ContextType, RequireFields<QueryVehicleArgs, 'vehicleId'>>;
 };
 
-export type VehicleDataResolvers<ContextType = any, ParentType extends ResolversParentTypes['VehicleData'] = ResolversParentTypes['VehicleData']> = {
+export type VehicleDataResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['VehicleData'] = ResolversParentTypes['VehicleData']> = {
   data?: Resolver<Maybe<ResolversTypes['Acceleration']>, ParentType, ContextType>;
   log_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   timestamp?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
@@ -160,7 +161,7 @@ export type VehicleDataResolvers<ContextType = any, ParentType extends Resolvers
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type Resolvers<ContextType = any> = {
+export type Resolvers<ContextType = DataSourceContext> = {
   Acceleration?: AccelerationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   VehicleData?: VehicleDataResolvers<ContextType>;
