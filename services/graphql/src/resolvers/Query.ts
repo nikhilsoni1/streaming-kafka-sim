@@ -22,9 +22,7 @@ export const Query: Resolvers = {
     //             y: true,
     //             z: true,
     //         });
-    //         return {
-    //             acceleration: accData,
-    //         };
+    //         return { data: accData };
     //     },
     // },
     // Acceleration: {

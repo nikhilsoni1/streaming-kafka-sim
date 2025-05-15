@@ -1,5 +1,5 @@
 import path from "path";
-import { Acceleration, VehicleData } from "../__generated__/resolvers-types";
+import { Acceleration, AccelerationUnits, VehicleData } from "../__generated__/resolvers-types";
 
 export class DatabaseAPI {
     // private readonly url: string;
@@ -31,6 +31,7 @@ export class DatabaseAPI {
 
         // Optionally filter axes based on args
         let result: Acceleration = {
+            units: AccelerationUnits.Ms2,
             x: args.x ? (json.data.acceleration["x:"] as [string]) : undefined,
             y: args.y ? (json.data.acceleration["y:"] as [string]) : undefined,
             z: args.z ? (json.data.acceleration["z:"] as [string]) : undefined,
