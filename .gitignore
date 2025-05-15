@@ -79,3 +79,14 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+
+# ===============================
+# Javascript / Typescript
+# ===============================
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+!package.json
+node_modules
+!tsconfig.json
+.turbo
+!turbo.json
