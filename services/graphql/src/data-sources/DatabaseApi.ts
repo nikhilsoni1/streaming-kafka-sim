@@ -15,7 +15,7 @@ export class DatabaseAPI {
     }
 
     public async getTimestamps() {
-        const filePath = path.resolve(__dirname, "../../../mocks/data.json");
+        const filePath = path.resolve(__dirname, "../../mocks/data.json");
         const { readFile } = await import("fs/promises");
         const fileContent = await readFile(filePath, { encoding: "utf-8" });
         const json = JSON.parse(fileContent);
@@ -32,7 +32,7 @@ export class DatabaseAPI {
         y?: boolean;
         z?: boolean;
     }) {
-        const filePath = path.resolve(__dirname, "../../../mocks/data.json");
+        const filePath = path.resolve(__dirname, "../../mocks/data.json");
         const { readFile } = await import("fs/promises");
         const fileContent = await readFile(filePath, { encoding: "utf-8" });
         const json = JSON.parse(fileContent);
@@ -40,7 +40,7 @@ export class DatabaseAPI {
         // Optionally filter axes based on args
         let result = {
             units: AccelerationUnits.Ms2,
-            x: x ? (json.data.acceleration["x:"] as [string]) : undefined,
+            x: x ? json.data.acceleration["x:"] : undefined,
             y: y ? (json.data.acceleration["y:"] as [string]) : undefined,
             z: z ? (json.data.acceleration["z:"] as [string]) : undefined,
         };
