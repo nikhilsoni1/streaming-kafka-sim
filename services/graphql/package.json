@@ -11,11 +11,10 @@
         "node": ">=18.0"
     },
     "scripts": {
-        "cleanup": "rimraf --glob 'dist'",
+        "cleanup": "rimraf 'dist'",
         "build": "pnpm run cleanup && pnpm run generate && tsc",
         "generate": "graphql-codegen",
         "generate:watch": "graphql-codegen --watch \"src/schema.graphql\"",
-        "postinstall": "pnpm run build",
         "start": "node dist/index.js",
         "dev": "nodemon --watch \"src/**\" --ext \"ts,json,graphql\" --exec \"pnpm run start\" --ignore ./src/__generated__/"
     },
