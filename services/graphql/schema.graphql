@@ -10,11 +10,6 @@ directive @contact(
 ) on SCHEMA
 
 extend schema
-  @contact(
-    name: "Thing Server Team"
-    url: "https://myteam.slack.com/archives/teams-chat-room-url"
-    description: "send urgent issues to [#oncall](https://yourteam.slack.com/archives/oncall)."
-  )
   @link(
     url: "https://specs.apollo.dev/federation/v2.3",
     import: [
@@ -23,20 +18,6 @@ extend schema
     ]
   )
 
-type Query {
-  thing(id: ID!): Thing
-}
-
-type Mutation {
-  createThing(thing: CreateThing!): Thing
-}
-
-type Thing @key(fields: "id") {
+type Vehicle {
   id: ID!
-  name: String
-}
-
-input CreateThing {
-  id: ID!
-  name: String
 }

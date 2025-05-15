@@ -6,7 +6,6 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
-export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -16,35 +15,9 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
-export type CreateThing = {
-  id: Scalars['ID']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type Mutation = {
-  __typename?: 'Mutation';
-  createThing?: Maybe<Thing>;
-};
-
-
-export type MutationCreateThingArgs = {
-  thing: CreateThing;
-};
-
-export type Query = {
-  __typename?: 'Query';
-  thing?: Maybe<Thing>;
-};
-
-
-export type QueryThingArgs = {
-  id: Scalars['ID']['input'];
-};
-
-export type Thing = {
-  __typename?: 'Thing';
+export type Vehicle = {
+  __typename?: 'Vehicle';
   id: Scalars['ID']['output'];
-  name?: Maybe<Scalars['String']['output']>;
 };
 
 
@@ -119,23 +92,17 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
-  CreateThing: CreateThing;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
-  Mutation: ResolverTypeWrapper<{}>;
-  Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
-  Thing: ResolverTypeWrapper<Thing>;
+  Vehicle: ResolverTypeWrapper<Vehicle>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Boolean: Scalars['Boolean']['output'];
-  CreateThing: CreateThing;
   ID: Scalars['ID']['output'];
-  Mutation: {};
-  Query: {};
   String: Scalars['String']['output'];
-  Thing: Thing;
+  Vehicle: Vehicle;
 };
 
 export type ContactDirectiveArgs = {
@@ -146,24 +113,13 @@ export type ContactDirectiveArgs = {
 
 export type ContactDirectiveResolver<Result, Parent, ContextType = any, Args = ContactDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
-export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  createThing?: Resolver<Maybe<ResolversTypes['Thing']>, ParentType, ContextType, RequireFields<MutationCreateThingArgs, 'thing'>>;
-};
-
-export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  thing?: Resolver<Maybe<ResolversTypes['Thing']>, ParentType, ContextType, RequireFields<QueryThingArgs, 'id'>>;
-};
-
-export type ThingResolvers<ContextType = any, ParentType extends ResolversParentTypes['Thing'] = ResolversParentTypes['Thing']> = {
+export type VehicleResolvers<ContextType = any, ParentType extends ResolversParentTypes['Vehicle'] = ResolversParentTypes['Vehicle']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = any> = {
-  Mutation?: MutationResolvers<ContextType>;
-  Query?: QueryResolvers<ContextType>;
-  Thing?: ThingResolvers<ContextType>;
+  Vehicle?: VehicleResolvers<ContextType>;
 };
 
 export type DirectiveResolvers<ContextType = any> = {
