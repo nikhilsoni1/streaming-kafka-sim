@@ -20,9 +20,9 @@ export class DatabaseAPI {
     }
 
     public async getAccelarationData(args: {
-        x: boolean;
-        y: boolean;
-        z: boolean;
+        x?: boolean;
+        y?: boolean;
+        z?: boolean;
     }) {
         const filePath = path.resolve(__dirname, "../../data.json");
         const { readFile } = await import("fs/promises");
