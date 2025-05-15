@@ -15,7 +15,7 @@ export class DatabaseAPI {
     }
 
     public async getTimestamps() {
-        const filePath = path.resolve(__dirname, "../../data.json");
+        const filePath = path.resolve(__dirname, "../../../mocks/data.json");
         const { readFile } = await import("fs/promises");
         const fileContent = await readFile(filePath, { encoding: "utf-8" });
         const json = JSON.parse(fileContent);
@@ -32,7 +32,7 @@ export class DatabaseAPI {
         y?: boolean;
         z?: boolean;
     }) {
-        const filePath = path.resolve(__dirname, "../../data.json");
+        const filePath = path.resolve(__dirname, "../../../mocks/data.json");
         const { readFile } = await import("fs/promises");
         const fileContent = await readFile(filePath, { encoding: "utf-8" });
         const json = JSON.parse(fileContent);

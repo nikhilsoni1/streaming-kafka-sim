@@ -13,6 +13,10 @@
             "cache": false,
             "persistent": true
         },
-        "build": { "dependsOn": ["generate"] }
+        "build": {
+            "dependsOn": ["generate"],
+            "ignore": ["./mocks/**/*"],
+            "outputs": ["./dist/**/*"]
+        }
     }
 }
