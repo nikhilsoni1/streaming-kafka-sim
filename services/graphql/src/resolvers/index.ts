@@ -1,11 +1,9 @@
-import { Query } from "./Query";
 import { Mutation } from "./Mutation";
-import { Thing } from "./Thing";
+import { Query } from "./Query";
 
 const resolvers = {
-  ...Query,
-  ...Mutation,
-  ...Thing,
+    ...Query,
+    ...Mutation,
 };
 
 export default resolvers;
