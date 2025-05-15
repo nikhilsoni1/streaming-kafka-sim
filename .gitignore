@@ -87,6 +87,6 @@ override.tf.json
 !pnpm-workspace.yaml
 !package.json
 node_modules
-!tsconfig.json
+!tsconfig.**
 .turbo
 !turbo.json
