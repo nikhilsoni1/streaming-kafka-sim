@@ -1,9 +1,10 @@
 {
-    "name": "acclearation-subgraph",
+    "name": "@gql/acceleration",
     "private": true,
-    "description": "A template for TypeScript projects with pre-configured tooling",
+    "description": "A simple example of a GraphQL service using Apollo Server and TypeScript.",
     "version": "0.0.0",
     "license": "MIT",
+    "type": "module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "engines": {
