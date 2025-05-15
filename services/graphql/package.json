@@ -18,10 +18,10 @@
         "node": ">=18.0"
     },
     "scripts": {
-        "build": "npm run generate && tsc",
+        "build": "pnpm run generate && tsc",
         "generate": "graphql-codegen",
         "generate:watch": "graphql-codegen --watch \"src/schema.graphql\"",
-        "postinstall": "npm run build",
+        "postinstall": "pnpm run build",
         "start": "node dist/index.js",
         "dev": "nodemon --watch \"src/**\" --ext \"ts,json,graphql\" --exec \"pnpm run build && pnpm run start\" --ignore ./src/__generated__/"
     },

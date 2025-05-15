@@ -37,6 +37,7 @@ type VehicleData {
     timestamp: [String!]
     data: Acceleration
 }
+
 type Query {
     vehicle(vehicleId: ID!): VehicleData
 }
