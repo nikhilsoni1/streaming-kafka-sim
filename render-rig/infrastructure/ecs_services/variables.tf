@@ -29,11 +29,6 @@ variable "api_desired_count" {
   default     = 2
 }
 
-variable "worker_desired_count" {
-  description = "Number of worker containers to run"
-  type        = number
-  default     = 4
-}
 
 variable "worker_task_lookup_chart_registry_arn" {
   type = string
@@ -53,4 +48,34 @@ variable "worker_task_get_existing_chart_arn" {
 
 variable "worker_task_store_log_chart_arn" {
   type = string
+}
+
+variable "num_worker_store_log_chart" {
+    description = "Number of worker containers to store log chart"
+    type        = number
+    default     = 1
+}
+
+variable "num_worker_get_log_dispatch_chart" {
+    description = "Number of worker containers to get log dispatch chart"
+    type        = number
+    default     = 1
+}
+
+variable "num_worker_lookup_log_registry" {
+    description = "Number of worker containers to lookup log registry"
+    type        = number
+    default     = 1
+}
+
+variable "num_worker_get_existing_chart" {
+    description = "Number of worker containers to get existing chart"
+    type        = number
+    default     = 1
+}
+
+variable "num_worker_lookup_chart_registry" {
+    description = "Number of worker containers to lookup chart registry"
+    type        = number
+    default     = 1
 }

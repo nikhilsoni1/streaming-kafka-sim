@@ -3,9 +3,10 @@ import httpx
 import pandas as pd
 import random
 import time
-
+from tqdm import tqdm
 from render_rig2.database_access.sessions.log_registry_session_local import LogRegistrySessionLocal
 from render_rig2.database_access.models.log_registry_model import LogsDlReg
+from uuid import uuid4
 
 # Step 1: Get all log_ids from DB
 def get_all_log_ids(session):
@@ -60,16 +61,29 @@ async def run_all(urls, rate_per_minute=60):
 
 # Step 6: Main function
 db = LogRegistrySessionLocal()
-log_ids = sample_log_ids(get_all_log_ids(db), 50)
+log_ids = sample_log_ids(get_all_log_ids(db), 100)
 db.close()
 urls = construct_urls(log_ids)
 import requests
 from time import perf_counter
 
 
-for i in urls:
+store = list()
+for i in tqdm(urls):
     start = perf_counter()
     result = requests.get(i)
     end = perf_counter()
-    print(f"URL: {i}, Status Code: {result.status_code}, Response Time: {end - start:.2f} seconds, Size: {len(result.content) / (1024 * 1024):.2f} MB")
+    rt = end - start
+    store.append({
+        "url": i,
+        "status_code": result.status_code,
+        "response_time_sec": rt,
+        "response_size_mb": len(result.content) / (1024 * 1024),
+    })
+    # print(f"URL: {i}, Status Code: {result.status_code}, Response Time: {end - start:.2f} seconds, Size: {len(result.content) / (1024 * 1024):.2f} MB")
     time.sleep(1)
+
+# Step 7: Save results to CSV
+df = pd.DataFrame(store)
+fname = f"output/async_api_results_{uuid4().hex}.csv"
+df.to_csv(fname, index=False)

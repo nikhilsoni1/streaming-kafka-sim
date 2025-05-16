@@ -41,6 +41,11 @@ module "ecs_services" {
   api_security_group_id = module.networking.render_rig2_task_sg_id
   target_group_arn      = module.alb.target_group_arn
 
-  api_desired_count    = 2
-  worker_desired_count = 1
+  api_desired_count = 2
+
+  num_worker_store_log_chart        = 1
+  num_worker_get_log_dispatch_chart = 1
+  num_worker_lookup_log_registry    = 1
+  num_worker_get_existing_chart     = 1
+  num_worker_lookup_chart_registry  = 1
 }

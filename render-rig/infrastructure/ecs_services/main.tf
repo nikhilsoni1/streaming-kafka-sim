@@ -33,7 +33,7 @@ resource "aws_ecs_service" "worker_store_log_chart" {
   name            = "render-rig2-worker-store-log-chart"
   cluster         = var.cluster_name
   task_definition = var.worker_task_store_log_chart_arn
-  desired_count   = 2
+  desired_count   = var.num_worker_store_log_chart
   launch_type     = "FARGATE"
 
   network_configuration {
@@ -50,7 +50,7 @@ resource "aws_ecs_service" "worker_get_log_dispatch_chart" {
   name            = "render-rig2-worker-get-log-dispatch-chart"
   cluster         = var.cluster_name
   task_definition = var.worker_task_get_log_dispatch_chart_arn
-  desired_count   = 2
+  desired_count   = var.num_worker_get_log_dispatch_chart
   launch_type     = "FARGATE"
 
   network_configuration {
@@ -67,7 +67,7 @@ resource "aws_ecs_service" "worker_lookup_log_registry" {
   name            = "render-rig2-worker-lookup-log-registry"
   cluster         = var.cluster_name
   task_definition = var.worker_task_lookup_log_registry_arn
-  desired_count   = 2
+  desired_count   = var.num_worker_lookup_log_registry
   launch_type     = "FARGATE"
 
   network_configuration {
@@ -84,7 +84,7 @@ resource "aws_ecs_service" "worker_get_existing_chart" {
   name            = "render-rig2-worker-get-existing-chart"
   cluster         = var.cluster_name
   task_definition = var.worker_task_get_existing_chart_arn
-  desired_count   = 2
+  desired_count   = var.num_worker_get_existing_chart
   launch_type     = "FARGATE"
 
   network_configuration {
@@ -101,7 +101,7 @@ resource "aws_ecs_service" "worker_lookup_chart_registry" {
   name            = "render-rig2-worker-lookup-chart-registry"
   cluster         = var.cluster_name
   task_definition = var.worker_task_lookup_chart_registry_arn
-  desired_count   = 2
+  desired_count   = var.num_worker_lookup_chart_registry
   launch_type     = "FARGATE"
 
   network_configuration {
@@ -113,4 +113,3 @@ resource "aws_ecs_service" "worker_lookup_chart_registry" {
     service = "render_rig2"
   }
 }
-
