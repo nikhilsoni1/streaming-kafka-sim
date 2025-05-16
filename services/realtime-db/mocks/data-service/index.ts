@@ -3,6 +3,11 @@ import express from "express";
 import _ from "lodash";
 
 const app = express();
+app.get("/", (req, res) => {
+    res.send({
+        message: "Visit /address to get random address data.",
+    });
+});
 
 app.get("/address", (req, res) => {
     const count = req.query.count;
@@ -12,8 +17,9 @@ app.get("/address", (req, res) => {
             .send({ errorMsg: "count query parameter is missing." });
     }
     res.send(
+        // @ts-ignore
         _.times(count, () => {
-            const address = faker.address;
+            const address = faker.location;
             return {
                 country: address.country(),
                 city: address.city(),
@@ -27,5 +33,5 @@ app.get("/address", (req, res) => {
 });
 
 app.listen(3030, () => {
-    console.log("server started on port 3030");
+    console.info("🚀 Mock server started at http://localhost:3030");
 });
