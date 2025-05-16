@@ -1,0 +1,25 @@
+{
+  "name": "realtime-db",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:mock": "node mocks/data-service/index.ts",
+    "dev:mock": "nodemon --watch \"mocks/**\" --ext \"ts\" --exec \"pnpm run start:mock\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.10.0",
+  "devDependencies": {
+    "@faker-js/faker": "^9.8.0",
+    "@types/lodash": "^4.17.16",
+    "@types/node": "^22.15.18",
+    "express": "^5.1.0",
+    "lodash": "^4.17.21",
+    "nodemon": "^3.1.10",
+    "typescript": "^5.8.3"
+  }
+}
