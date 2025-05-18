@@ -32,3 +32,8 @@ output "worker_task_store_log_chart_arn" {
   description = "ARN of the Celery worker ECS task definition"
   value       = aws_ecs_task_definition.worker_task_store_log_chart.arn
 }
+
+output "worker_task_all_arn" {
+  description = "ARN of the Celery worker ECS task definition"
+  value       = aws_ecs_task_definition.worker_task_all.arn
+}

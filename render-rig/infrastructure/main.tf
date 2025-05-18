@@ -32,6 +32,7 @@ module "ecs_services" {
   worker_task_lookup_log_registry_arn    = module.ecs.worker_task_lookup_log_registry_arn
   worker_task_get_log_dispatch_chart_arn = module.ecs.worker_task_get_log_dispatch_chart_arn
   worker_task_store_log_chart_arn        = module.ecs.worker_task_store_log_chart_arn
+  worker_task_all_arn                    = module.ecs.worker_task_all_arn
 
   subnet_ids = [
     module.networking.render_rig2_api_subnet_id,
@@ -41,11 +42,13 @@ module "ecs_services" {
   api_security_group_id = module.networking.render_rig2_task_sg_id
   target_group_arn      = module.alb.target_group_arn
 
-  api_desired_count = 2
+  api_desired_count = 1
 
-  num_worker_store_log_chart        = 1
-  num_worker_get_log_dispatch_chart = 1
-  num_worker_lookup_log_registry    = 1
-  num_worker_get_existing_chart     = 1
-  num_worker_lookup_chart_registry  = 1
+  num_worker_store_log_chart        = 0
+  num_worker_get_log_dispatch_chart = 0
+  num_worker_lookup_log_registry    = 0
+  num_worker_get_existing_chart     = 0
+  num_worker_lookup_chart_registry  = 0
+
+  num_worker_all = 1
 }

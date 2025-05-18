@@ -50,6 +50,10 @@ variable "worker_task_store_log_chart_arn" {
   type = string
 }
 
+variable "worker_task_all_arn" {
+  type = string
+}
+
 variable "num_worker_store_log_chart" {
     description = "Number of worker containers to store log chart"
     type        = number
@@ -76,6 +80,12 @@ variable "num_worker_get_existing_chart" {
 
 variable "num_worker_lookup_chart_registry" {
     description = "Number of worker containers to lookup chart registry"
+    type        = number
+    default     = 1
+}
+
+variable "num_worker_all" {
+    description = "Number of worker containers listening to all queues"
     type        = number
     default     = 1
 }

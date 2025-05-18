@@ -113,3 +113,20 @@ resource "aws_ecs_service" "worker_lookup_chart_registry" {
     service = "render_rig2"
   }
 }
+
+resource "aws_ecs_service" "worker_all" {
+  name            = "render-rig2-worker-all"
+  cluster         = var.cluster_name
+  task_definition = var.worker_task_all_arn
+  desired_count   = var.num_worker_all
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = [var.subnet_ids[1]]
+    assign_public_ip = true
+  }
+
+  tags = {
+    service = "render_rig2"
+  }
+}
