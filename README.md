@@ -1,47 +1,36 @@
-## Important Commands
+# streaming-kafka-sim
 
-### List tree structure of a directory
-```sh
-tree <directory_path> -L 2 | tee -a tree.txt  
-tree db -L 2 | tee -a tree.txt  
-```
+**streaming-kafka-sim** is a **work-in-progress** telemetry simulation and analytics platform designed for real-time log ingestion, transformation, and visualization. It simulates Kafka-based telemetry ingestion, applies transformations using dbt, and leverages a distributed chart rendering engine—**`render-rig2`**—to generate compute-heavy visualizations.
 
-## Packaging db
-```sh
-cd db
-rm -rf build/ dist/ *.egg-info
-python -m build --sdist
-```
+---
 
-## Refresh elephant01
-```sh
-./scripts/cloud-db/refresh-env.sh scripts/cloud-db/cloud-dev.env
-```
+## 🖼️ `render-rig2`: Chart Rendering Engine
 
-## Setting up env
-```sh
-source scripts/set_env.sh .env
-source scripts/set_env.sh scripts/cloud-db/cloud-dev.env
-env | grep ^DATABASE_
-```
+`render-rig2` is the backbone of the visualization pipeline and is designed to render high-cost charts in parallel using a **distributed task queue architecture** powered by **Celery** and **Redis**.
 
-## Download logs from emr
-```sh
-aws s3 cp s3://flight-emr/logs/j-28AW3RV826BE/containers/ ./logs/ --recursive --region us-east-1
-aws s3 cp s3://flight-emr/logs/j-55EEI978OJYX/containers/ ./logs/ --recursive --region us-east-1
+### 🔧 Key Capabilities
 
-```
+- **Parallel Chart Rendering**: Leverages ECS and Celery workers for scalable, distributed processing.
+- **Extensible Architecture**: Add new chart types in  
+  `render-rig/render_rig2/chart_engine/charts/`
+- **API Interface**: Exposes endpoints for on-demand chart rendering.
+- **Docker-First Setup**: Spin it up locally using Docker Compose.
 
-## Monolithic Chart Serving
+### 🧪 Use Case
 
-[Prompt](https://chatgpt.com/c/6808578e-6558-8010-bba1-e2d0c460553a)
+This engine is built with **PX4 log analysis** in mind—helping drone engineers and developers **quickly visualize metrics** from telemetry logs, such as acceleration profiles, orientation timelines, and sensor readings.
 
-## Clean up git branches
-```sh
-git fetch -p  # Prune tracking branches that have been removed from remote
+---
 
-# Delete all local branches whose remote is gone
-for b in $(git branch -vv | grep ': gone]' | awk '{print $1}'); do
-  git branch -D "$b"
-done
-```
+## 🔁 Project Modules
+
+```bash
+streaming-kafka-sim/
+├── render-rig2/              # Chart rendering engine (Celery + Redis + API)
+├── dbt_analytics/            # dbt models for transforming telemetry
+├── tools/ypr-tools-skyhawk/ # AWS CLI tools (EC2, RDS, EMR, Security)
+├── polling/                 # PX4 telemetry poller
+├── scripts/                 # Utility scripts for DB setup and environments
+├── services/                # Redis, Airflow, etc.
+├── scratch-codeartifact.py  # Experimental scripts
+├── requirements.txt
