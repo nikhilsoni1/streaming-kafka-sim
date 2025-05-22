@@ -16,3 +16,4 @@ diskcache
 uvicorn[standard]
 kaleido
 plotly
+flower
