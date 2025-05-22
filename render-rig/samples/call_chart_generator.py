@@ -64,23 +64,16 @@ def call_chart_generator_endpoint(log_id: str, chart_name: str):
 
 
 if __name__ == "__main__":
-    chart_name = "chart_accel_raw_xyz"
+    chart_name = "chart_power"
 
     db1 = LogRegistrySessionLocal()
     gen1 = random_log_id_generator(db1)
 
     db2 = RenderRigSessionLocal()
     gen2 = random_log_id_from_chart_registry_generator(db2)
-
-    # fire these calls asynchronously, do not wait for them to finish
-    # and do not block the main thread
     
-    for _ in range(10):
-        if random.choice([True, False]):
-            log_id = next(gen1)
-        else:
-            log_id = next(gen2)
-        log_id = next(gen2)
-        print(f"Calling chart generator for log_id: {log_id}")
+    for _ in range(5):
+        log_id = next(gen1)
+        print(f"Calling chart generator for log_id: {log_id[:5]}, chart_name: {chart_name}")
         call_chart_generator_endpoint(log_id, chart_name)
         time.sleep(1)
