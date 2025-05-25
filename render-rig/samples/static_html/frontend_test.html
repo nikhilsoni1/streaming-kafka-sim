@@ -49,7 +49,7 @@
       chartContainer.innerHTML = "Fetching chart...";
   
       try {
-        const response = await fetch(`http://localhost:8000/chart_generator/${logId}/${chartName}`);
+        const response = await fetch(`http://localhost:8000/charts/${logId}/${chartName}`);
         const data = await response.json();
   
         console.log("✅ API response:", data);
