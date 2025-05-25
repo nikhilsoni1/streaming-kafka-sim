@@ -17,11 +17,21 @@ class ChartPower(Chart):
 
     def generate(self, log_data: dict):
         df = log_data.get_topic_df(self.topic_name)
+
+        is_ocv_estimate_available = "ocv_estimate" in df.columns
+        is_internal_resistance_estimate_available = "internal_resistance_estimate" in df.columns
+        include_third_row = is_ocv_estimate_available and is_internal_resistance_estimate_available
+
+        rows = 3 if include_third_row else 2
+        subplot_titles = ["Voltage & Current", "Battery Status"]
+        if include_third_row:
+            subplot_titles.append("Internal Estimates")
+
         fig = make_subplots(
-            rows=3,
+            rows=rows,
             cols=1,
             shared_xaxes=True,
-            subplot_titles=("Voltage & Current", "Battery Status", "Internal Estimates"),
+            subplot_titles=tuple(subplot_titles),
             vertical_spacing=0.05,
         )
 
@@ -61,10 +71,8 @@ class ChartPower(Chart):
             ), row=2, col=1
         )
 
-        # Third subplot: OCV estimate and Internal resistance
-        is_ocv_estimate_available = "ocv_estimate" in df.columns
-        is_internal_resistance_estimate_available = "internal_resistance_estimate" in df.columns
-        if is_ocv_estimate_available and is_internal_resistance_estimate_available:
+        # Optional third subplot
+        if include_third_row:
             fig.add_trace(
                 go.Scatter(
                     x=df["timestamp"].tolist(),
@@ -81,15 +89,16 @@ class ChartPower(Chart):
                     name="Internal Resistance Estimate [mOhm]",
                 ), row=3, col=1
             )
-
-            fig.update_layout(
-                title_text="Power",
-                height=700,
-                showlegend=True,
-                legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1),
-            )
         else:
             logger.info(
                 f"OCV estimate, available: {is_ocv_estimate_available} or Internal resistance estimate, available: {is_internal_resistance_estimate_available}."
             )
+
+        fig.update_layout(
+            title_text="Power",
+            height=700,
+            showlegend=True,
+            legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1),
+        )
+
         return fig
