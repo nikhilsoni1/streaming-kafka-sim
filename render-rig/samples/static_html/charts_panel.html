@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Render Rig Chart Grid</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      max-width: 1200px;
+      margin: auto;
+      text-align: center;
+    }
+    #controls {
+      margin-bottom: 20px;
+    }
+    #logId {
+      width: 50%;
+      font-size: 1rem;
+      padding: 8px;
+    }
+    #chartGrid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-top: 30px;
+    }
+    .chartBox {
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Render Rig Chart Viewer</h2>
+  <div id="controls">
+    <input type="text" id="logId" placeholder="Enter log_id" value="1fc1b7b4-a68a-491b-8984-3234ed71be08" />
+    <button onclick="generateCharts()">Generate Charts</button>
+  </div>
+
+  <div id="chartGrid"></div>
+
+  <script>
+    async function generateCharts() {
+      const logId = document.getElementById('logId').value.trim();
+      const grid = document.getElementById('chartGrid');
+      grid.innerHTML = ''; // clear old charts
+
+      if (!logId) {
+        alert("Please enter a log_id.");
+        return;
+      }
+
+      try {
+        const chartListResp = await fetch('http://localhost:8000/charts');
+        const chartNames = await chartListResp.json();
+
+        for (const chartName of chartNames) {
+          const chartDiv = document.createElement('div');
+          chartDiv.className = 'chartBox';
+          grid.appendChild(chartDiv);
+
+          try {
+            const response = await fetch(`http://localhost:8000/charts/${logId}/${chartName}`);
+            const data = await response.json();
+
+            if (data.status === "cached" || data.status === "generated") {
+              const plotlyJson = JSON.parse(data.data);
+              Plotly.newPlot(chartDiv, plotlyJson.data, plotlyJson.layout || {});
+            } else {
+              chartDiv.innerHTML = `<p>❌ Failed to render ${chartName}</p>`;
+              console.warn(`Chart ${chartName} returned status:`, data.status);
+            }
+          } catch (err) {
+            chartDiv.innerHTML = `<p>⚠️ Error loading ${chartName}</p>`;
+            console.error(`Fetch error for ${chartName}:`, err);
+          }
+        }
+
+      } catch (err) {
+        console.error("Failed to fetch chart names:", err);
+        alert("Error loading chart list.");
+      }
+    }
+  </script>
+
+</body>
+</html>

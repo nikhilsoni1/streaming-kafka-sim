@@ -10,7 +10,7 @@ def health_check():
     return {"status": "ok"}
 
 app.include_router(
-    chart_generator.router, prefix="/chart_generator", tags=["Chart Generator"]
+    chart_generator.router, prefix="/charts", tags=["Chart Generator"]
 )
 app.add_middleware(
     CORSMiddleware,

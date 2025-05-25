@@ -7,10 +7,15 @@ from render_rig2.tasks import get_log_dispatch_chart
 from render_rig2.tasks import log_chart_in_registry
 from render_rig2.tasks import store_chart_json_in_s3
 from render_rig2.utils.logger import logger
+from render_rig2.chart_engine import CHART_REGISTRY
 from time import perf_counter
 
 router = APIRouter()
 
+
+@router.get("/", summary="List available chart types")
+def list_charts():
+    return list(CHART_REGISTRY.keys())
 
 @router.get("/{log_id}/{chart_name}")
 async def generate_chart(log_id: str, chart_name: str):
