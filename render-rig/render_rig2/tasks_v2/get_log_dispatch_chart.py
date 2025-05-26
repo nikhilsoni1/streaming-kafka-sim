@@ -9,7 +9,7 @@ from render_rig2.utils.cache import cache
 from ypr_core_logfoundry.parser import ULogParser
 from render_rig2.chart_engine import CHART_REGISTRY
 from render_rig2.chart_engine.manager import generate_chart_for_log
-from render_rig2.utils.timing import timed_debug_log
+from render_rig2.contracts import TaskPayload
 
 
 def get_existing_log(bucket_name: str, key: str) -> ULogParser | None:
@@ -38,8 +38,7 @@ def get_existing_log(bucket_name: str, key: str) -> ULogParser | None:
                 temp_file_path = temp_file.name
 
             try:
-                with timed_debug_log(f"Downloading file - s3://{bucket_name}/{key}"):
-                    s3.download_file(bucket_name, key, temp_file_path)
+                s3.download_file(bucket_name, key, temp_file_path)
 
                 logger.success(
                     f"✅ Downloaded s3://{bucket_name}/{key} file to {temp_file_path}"
@@ -82,33 +81,62 @@ def get_existing_log(bucket_name: str, key: str) -> ULogParser | None:
         return None
 
 
-@celery_app.task(name="get_log_dispatch_chart")
-def get_log_dispatch_chart(
-    payload: Tuple[str, str, str], chart_name: str
-) -> str | None:
+@celery_app.task(name="get_log_dispatch_chart", bind=True)
+def get_log_dispatch_chart(self, payload_dict: dict) -> dict:
     """
     Dispatches a chart rendering task to the appropriate chart engine.
 
     Args:
-        payload (Tuple[str, str, str]): A tuple containing:
-            - log_id (str): Identifier for the log.
-            - bucket_name (str): The name of the S3 bucket.
-            - key (str): The key of the file in the S3 bucket.
-        chart_name (str): Name of the chart to render.
+        payload_dict (dict): Serialized TaskPayload.
 
     Returns:
-        str | None: A JSON string representation of the rendered chart if successful,
-        otherwise None.
+        dict: Updated TaskPayload with result or error information.
     """
-    if payload is None:
-        return None
-    log_id, bucket_name, key = payload
-    log_data = get_existing_log(bucket_name, key)
-    if chart_name not in CHART_REGISTRY:
-        logger.error(f"❌ Chart '{chart_name}' is not registered.")
-        return None
-    _chart = CHART_REGISTRY[chart_name]
-    logger.info(f"🔧 Dispatching chart '{chart_name}' for log_id: {log_id}")
-    with timed_debug_log(f"Chart delivery for {log_id} - {chart_name}"):
+    payload = TaskPayload.model_validate(payload_dict)
+    task_name = self.name
+    payload.retries = self.request.retries
+    payload.set_phase("init_dispatch_chart", task_name=task_name, status="running")
+
+    # Step 1: Stop chain early if meta indicates so
+    if payload.meta.get("stop_chain") is True:
+        payload.set_phase("skipped_due_to_meta_flag", status="skipped")
+        logger.info(f"[{payload.task_id}] {task_name} skipped due to meta['stop_chain']=True")
+        return payload.model_dump()
+
+    chart_name = payload.chart_name
+    log_id = payload.log_id
+
+    try:
+        # Step 2: Ensure previous task produced expected result
+        payload.require_result_type("raw_log", expected_source="log_registry")
+        bucket_name = payload.result.data.get("bucket_name")
+        key = payload.result.data.get("key")
+
+        # Step 3: Validate chart
+        if chart_name not in CHART_REGISTRY:
+            error_msg = f"Chart '{chart_name}' is not registered."
+            payload.log_error(error_msg)
+            payload.set_phase("invalid_chart", status="failed")
+            logger.error(f"[{payload.task_id}] {error_msg}")
+            return payload.model_dump()
+
+        # Step 4: Generate chart
+        _chart = CHART_REGISTRY[chart_name]
+        logger.info(f"[{payload.task_id}] Dispatching chart '{chart_name}' for log_id: {log_id}")
+        log_data = get_existing_log(bucket_name, key)
         chart_json = generate_chart_for_log(log_id, _chart, log_data)
-    return chart_json
+
+        payload.set_result(
+            source="generated",
+            type_="chart",
+            data=chart_json,
+        )
+        payload.set_phase("chart_generated", status="success")
+
+    except Exception as e:
+        payload.log_error(e)
+        payload.set_phase("chart_dispatch_error", status="failed")
+        logger.exception(f"[{payload.task_id}] Exception in {task_name}")
+
+    return payload.model_dump()
+

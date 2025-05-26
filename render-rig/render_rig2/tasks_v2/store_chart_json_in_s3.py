@@ -4,13 +4,12 @@ import uuid
 import hashlib
 import gzip
 import io
-from typing import Tuple, Literal, Union, Optional
+from typing import Optional
 from boto3.s3.transfer import TransferConfig
-import boto3
 from render_rig2.app import celery_app
 from render_rig2.utils.logger import logger
 from render_rig2.object_access.client import create_boto3_client
-from render_rig2.utils.timing import timed_debug_log
+from render_rig2.contracts import TaskPayload
 
 
 # rewrite the following function for a string inpiut instead of bytes
@@ -123,31 +122,68 @@ def save_chart_json_to_s3(
         return False
 
 
-@celery_app.task(name="store_chart_json_in_s3")
-def store_chart_json_in_s3(log_id: str, chart_name: str, chart_json: str) -> dict:
+@celery_app.task(name="store_chart_json_in_s3", bind=True)
+def store_chart_json_in_s3(self, payload_dict: dict) -> dict:
     """
-    Dispatches a chart rendering task to the appropriate chart engine.
+    Stores the generated chart JSON in S3 using chart metadata.
 
     Args:
-        payload (Tuple[str, str, str]): A tuple containing:
-            - log_id (str): Identifier for the log.
-            - chart_name (str): Name of the chart to render.
+        payload_dict (dict): Serialized TaskPayload containing chart JSON.
 
     Returns:
-        dict | None: A dictionary containing the metadata for the chart if successful
+        dict: Updated TaskPayload with result or error information.
     """
-    chart_metadata = generate_chart_metadata(log_id, chart_name, chart_json)
-    if chart_metadata is None:
-        logger.error("Failed to generate chart metadata, aborting S3 upload.")
-        return None
+    payload = TaskPayload.model_validate(payload_dict)
+    task_name = self.name
+    payload.retries = self.request.retries
+    payload.set_phase("init_store_chart_json", task_name=task_name, status="running")
 
-    bucket_name = chart_metadata["bucket_name"]
-    key = chart_metadata["key"]
-    with timed_debug_log(f"Storing chart JSON in S3: {bucket_name}/{key}"):
-        result = save_chart_json_to_s3(
-            chart_json=chart_json, bucket_name=bucket_name, key=key
-        )
-    if result:
-        logger.success(f"Chart JSON stored successfully in S3: {bucket_name}/{key}")
-        return chart_metadata
-    return None
+    # Step 1: Stop chain early if meta indicates so
+    if payload.meta.get("stop_chain") is True:
+        payload.set_phase("skipped_due_to_meta_flag", status="skipped")
+        logger.info(f"[{payload.task_id}] {task_name} skipped due to meta['stop_chain']=True")
+        return payload.model_dump()
+
+    try:
+        log_id = payload.log_id
+        chart_name = payload.chart_name
+
+        # Step 2: Ensure previous result has the generated chart
+        payload.require_result_type("chart", expected_source="generated")
+        chart_json = payload.result.data
+
+        # Step 3: Generate chart metadata
+        chart_metadata = generate_chart_metadata(log_id, chart_name, chart_json)
+        if chart_metadata is None:
+            error_msg = "Failed to generate chart metadata. Aborting S3 upload."
+            payload.log_error(error_msg)
+            payload.set_phase("metadata_generation_failed", status="failed")
+            logger.error(f"[{payload.task_id}] {error_msg}")
+            return payload.model_dump()
+
+        # Step 4: Upload to S3
+        bucket_name = chart_metadata["bucket_name"]
+        key = chart_metadata["key"]
+        upload_success = save_chart_json_to_s3(chart_json=chart_json, bucket_name=bucket_name, key=key)
+
+        if upload_success:
+            payload.set_result(
+                source="s3",
+                type_="reference",
+                data={
+                    "log_id": log_id,
+                    "bucket_name": bucket_name,
+                    "key": key,
+                }
+            )
+            payload.set_phase("chart_json_stored", status="success")
+        else:
+            payload.log_error("S3 upload failed.")
+            payload.set_phase("s3_upload_failed", status="failed")
+
+    except Exception as e:
+        payload.log_error(e)
+        payload.set_phase("store_chart_exception", status="failed")
+        logger.exception(f"[{payload.task_id}] Exception in {task_name}")
+
+    return payload.model_dump()

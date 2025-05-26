@@ -5,50 +5,70 @@ from render_rig2.database_access.sessions.render_rig_session_local import (
 )
 from render_rig2.database_access.models.render_rig_registry_model import ChartRegistry
 from sqlalchemy.exc import SQLAlchemyError
-from typing import Optional, Tuple
-from render_rig2.utils.timing import timed_debug_log
+from render_rig2.contracts import TaskPayload
 
-
-@celery_app.task(name="lookup_chart_registry")
-def lookup_chart_registry(payload: dict) -> dict:
+@celery_app.task(
+    name="lookup_chart_registry",
+    bind=True,
+    autoretry_for=(SQLAlchemyError,),
+    retry_backoff=True,
+    max_retries=3,
+)
+def lookup_chart_registry(self, payload_dict: dict) -> dict:
     """
-    Lookup the chart registry for a given log_id and chart_name.
-    This function queries the ChartRegistry table to find the bucket name and key
-    associated with the provided log_id and chart_name.
-    If the record exists, it returns a tuple of (bucket_name, key).
-    If the record does not exist, it returns None.
+    Looks up the chart in the ChartRegistry by log_id and chart_name.
 
     Args:
-        log_id (str): The log ID to look up.
-        chart_name (str): The name of the chart to look up.
+        payload_dict (dict): Serialized ChartTaskPayload dictionary.
 
     Returns:
-        Optional[Tuple[str, str, str]]: (log_id, bucket_name, key) if the record exists, else None.
+        dict: A dictionary representation of ChartTaskPayload, including phase/status/result updates.
+              If a registry entry is found, result includes S3 reference info.
+              If not found, result is None and status is set to 'need_generation'.
+              On DB error, status is 'failed' and errors are logged.
     """
-    log_id = payload.get("log_id")
-    chart_name = payload.get("chart_name")
-
+    payload = TaskPayload.model_validate(payload_dict)
+    task_name = self.name
+    payload.set_phase("looking_up_chart_registry", task_name=task_name)
+    log_id = payload.log_id
+    chart_name = payload.chart_name
+    logger.info(f"[{payload.task_id}] {task_name} started for log_id={payload.log_id}, chart_name={payload.chart_name}")
     db = RenderRigSessionLocal()
     try:
-        with timed_debug_log(f"lookup_chart_registry for {log_id} - {chart_name}"):
-            result = (
-                db.query(
-                    ChartRegistry.bucket_name,
-                    ChartRegistry.key,
-                )
-                .filter_by(log_id=log_id, chart_name=chart_name)
-                .first()
+        result = (
+            db.query(
+                ChartRegistry.bucket_name,
+                ChartRegistry.key,
             )
+            .filter_by(log_id=log_id, chart_name=chart_name)
+            .first()
+        )
         if result:
-            logger.success(f"Found chart registry entry for {log_id} - {chart_name}")
             bucket_name, key = result
-            result = (log_id, bucket_name, key)
-            return result
-        logger.success(f"Lookup ok but no entry found for {log_id} - {chart_name}")
-        return None
+            payload.set_result(
+                source="chart_registry",
+                type_="reference",
+                data={
+                    "log_id": payload.log_id,
+                    "bucket_name": bucket_name,
+                    "key": key,
+                }
+            )
+            payload.set_phase("chart_found_in_registry", status="success")
+        else:
+            payload.result = None
+            payload.set_phase("chart_not_found_in_registry", status="queued")
+
     except SQLAlchemyError as e:
-        logger.exception(f"Database error while querying ChartRegistry: {e}")
-        raise RuntimeError(f"Database error while querying ChartRegistry: {e}")
+        payload.log_error(e)
+        if self.request.retries < self.max_retries:
+            payload.set_phase("db_error", status="retrying")
+        else:
+            payload.set_phase("db_error", status="failed")
+        logger.exception(f"[{payload.task_id}] SQLAlchemyError Exception in {task_name}")
+        raise
     finally:
         db.close()
-        logger.debug("Database session closed.")
+        logger.debug(f"[{payload.task_id}] Database session closed in {task_name}.")
+
+    return payload.model_dump()

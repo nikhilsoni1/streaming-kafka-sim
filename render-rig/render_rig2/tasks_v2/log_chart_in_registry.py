@@ -5,56 +5,76 @@ from render_rig2.database_access.sessions.render_rig_session_local import (
 )
 from render_rig2.database_access.models.render_rig_registry_model import ChartRegistry
 from sqlalchemy.exc import SQLAlchemyError
-from typing import Optional, Tuple
-from render_rig2.utils.timing import timed_debug_log
+from typing import Optional
+from render_rig2.contracts import TaskPayload
 
 
-@celery_app.task(name="log_chart_in_registry")
-def log_chart_in_registry(payload: dict) -> Optional[bool]:
+@celery_app.task(name="log_chart_in_registry", bind=True)
+def log_chart_in_registry(self, payload_dict: dict) -> dict:
     """
     Logs chart metadata into the registry database.
 
     Args:
-        payload (dict): A dictionary containing the following chart metadata:
-            - log_id (str): Unique identifier for the log entry.
-            - chart_name (str): Name of the chart.
-            - chart_id (str): Unique identifier for the chart.
-            - chart_hash_sha256 (str): SHA-256 hash of the chart file.
-            - bucket_name (str): Name of the S3 bucket where the chart is stored.
-            - key (str): S3 key corresponding to the chart file.
-            - log_ts_utc (str): UTC timestamp of when the log entry was created.
-            - upd_ts_utc (str): UTC timestamp of the last update to the log entry.
+        payload_dict (dict): Serialized TaskPayload containing chart metadata in result.
 
     Returns:
-        Optional[bool]:
-            - True if the chart metadata was successfully logged.
-            - False if there was a database error during the operation.
-            - None if the provided payload is invalid (e.g., None).
+        dict: Updated TaskPayload with status and error logs.
     """
-    if payload is None:
-        logger.error("Payload is None, cannot log chart in registry.")
-        return None
+    payload = TaskPayload.model_validate(payload_dict)
+    task_name = self.name
+    payload.retries = self.request.retries
+    payload.set_phase("init_log_chart_in_registry", task_name=task_name, status="running")
+
+    # Stop early if meta indicates so
+    if payload.meta.get("stop_chain") is True:
+        payload.set_phase("skipped_due_to_meta_flag", status="skipped")
+        logger.info(f"[{payload.task_id}] {task_name} skipped due to meta['stop_chain']=True")
+        return payload.model_dump()
 
     try:
-        record = ChartRegistry(**payload)
-    except TypeError as e:
-        logger.error(f"Error creating ChartRegistry object: {e}")
-        return None
+        # Validate the result source/type
+        payload.require_result_type("reference", expected_source="s3")
 
-    try:
-        with timed_debug_log(
-            f"Logging chart metadata for {record.log_id} - {record.chart_name}"
-        ):
-            db = RenderRigSessionLocal()
-            db.add(record)
-            db.commit()
-        logger.success(
-            f"Chart metadata logged successfully for {record.log_id} - {record.chart_name}"
-        )
-        return True
+        metadata = {
+            "log_id": payload.log_id,
+            "chart_name": payload.chart_name,
+            "bucket_name": payload.result.data.get("bucket_name"),
+            "key": payload.result.data.get("key"),
+            "chart_id": str(uuid.uuid4()),
+            "chart_hash_sha256": payload.meta.get("chart_hash_sha256"),
+            "log_ts_utc": payload.meta.get("log_ts_utc", datetime.utcnow().isoformat()),
+            "upd_ts_utc": datetime.utcnow().isoformat(),
+        }
+
+        # Create DB record
+        try:
+            record = ChartRegistry(**metadata)
+        except TypeError as e:
+            payload.log_error(f"Invalid metadata for ChartRegistry: {e}")
+            payload.set_phase("chart_registry_build_failed", status="failed")
+            logger.error(f"[{payload.task_id}] Metadata construction failed: {e}")
+            return payload.model_dump()
+
+        # Commit to DB
+        db = RenderRigSessionLocal()
+        db.add(record)
+        db.commit()
+        payload.set_phase("chart_registry_entry_created", status="success")
+        logger.info(f"[{payload.task_id}] Chart metadata logged for {metadata['log_id']} - {metadata['chart_name']}")
+
     except SQLAlchemyError as e:
-        logger.exception(f"Database error while logging chart metadata: {e}")
         db.rollback()
-        return False
+        payload.log_error(e)
+        payload.set_phase("db_commit_failed", status="failed")
+        logger.exception(f"[{payload.task_id}] Database error while logging chart metadata")
+
+    except Exception as e:
+        payload.log_error(e)
+        payload.set_phase("log_chart_registry_failed", status="failed")
+        logger.exception(f"[{payload.task_id}] Unexpected error in {task_name}")
+
     finally:
         db.close()
+
+    return payload.model_dump()
+
