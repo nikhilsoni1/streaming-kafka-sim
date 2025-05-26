@@ -67,6 +67,10 @@ async def generate_chart(log_id: str, chart_name: str):
         )
         post_pipeline.apply_async()
         return {"status": "generated", "data": chart_data}
+    elif chart_data is None:
+        topic_name = CHART_REGISTRY.get(chart_name).topic_name
+        logger.warning(f"Chart data is None for log_id: {log_id}, chart_name: {chart_name}")
+        return {"status": "topic_not_found", "data": chart_data, "topic_name": topic_name}
     # run pipeline3 aafter sending the result above
 
     logger.error(

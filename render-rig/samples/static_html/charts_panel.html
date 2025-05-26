@@ -69,6 +69,8 @@
             if (data.status === "cached" || data.status === "generated") {
               const plotlyJson = JSON.parse(data.data);
               Plotly.newPlot(chartDiv, plotlyJson.data, plotlyJson.layout || {});
+            } else if (data.status === "topic_not_found") {
+              chartDiv.innerHTML = `<p>❌🔍❌ Topic <strong>${data.topic_name}</strong> not found in log, aborted <strong>${chartName}</strong> generation</p>`;
             } else {
               chartDiv.innerHTML = `<p>❌ Failed to render ${chartName}</p>`;
               console.warn(`Chart ${chartName} returned status:`, data.status);

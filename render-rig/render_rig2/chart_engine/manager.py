@@ -18,11 +18,11 @@ def generate_chart_for_log(
     Returns:
         Optional[bytes]: A JSON string representation of the rendered chart if successful,
         otherwise None.
-    Todo:
-        - Remove caching in the future as it is redundant.
     """
     chart_name = chart.chart_name
     cache_key = f"{log_id}::{chart_name}"
+
+    
 
     # Try cache first
     with timed_debug_log(
@@ -35,8 +35,9 @@ def generate_chart_for_log(
 
     # Instantiate chart engine
     chart_instance = chart()
+    is_topic_available = chart_instance.is_topic_available(log_data=log_data)
 
-    if not chart_instance.is_topic_available(log_data=log_data):
+    if not is_topic_available:
         return None
 
     # Generate chart
