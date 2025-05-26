@@ -7,6 +7,7 @@ from render_rig2.chart_engine.charts import ChartPower
 cache = Cache("/tmp/render_cache")
 
 log_id = "1fc1b7b4-a68a-491b-8984-3234ed71be08"
+log_id = "7b74d038-ea95-4cd4-82a9-919d1155a6a3"
 
 # Cache lookup_log_registry
 if log_id in cache:
