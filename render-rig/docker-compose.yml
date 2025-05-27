@@ -19,7 +19,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: render-worker
-    command: celery -A render_rig2.app worker -Q lookup_chart_registry,get_existing_chart,lookup_log_registry,get_log_dispatch_chart,store_log_chart -c 6 --loglevel=info
+    command: celery -A render_rig2.app_v2 worker -Q lookup_chart_registry,get_existing_chart,lookup_log_registry,get_log_dispatch_chart,store_log_chart -c 6 --loglevel=info
     env_file:
       - .env
   
@@ -29,7 +29,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: render-flower
-    command: celery -A render_rig2.app flower --port=5555
+    command: celery -A render_rig2.app_v2 flower --port=5555
     ports:
       - "5555:5555"
     env_file:

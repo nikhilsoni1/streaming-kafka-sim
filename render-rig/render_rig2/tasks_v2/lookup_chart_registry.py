@@ -1,5 +1,4 @@
 from sqlalchemy.exc import SQLAlchemyError
-
 from render_rig2.app_v2 import celery_app
 from render_rig2.contracts import TaskPayload
 from render_rig2.database_access.models.render_rig_registry_model import ChartRegistry
