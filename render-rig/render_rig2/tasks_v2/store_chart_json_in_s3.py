@@ -1,15 +1,17 @@
-import os
 import datetime
-import uuid
-import hashlib
 import gzip
+import hashlib
 import io
+import os
+import uuid
 from typing import Optional
+
 from boto3.s3.transfer import TransferConfig
-from render_rig2.app import celery_app
-from render_rig2.utils.logger import logger
-from render_rig2.object_access.client import create_boto3_client
+
+from render_rig2.app_v2 import celery_app
 from render_rig2.contracts import TaskPayload
+from render_rig2.object_access.client import create_boto3_client
+from render_rig2.utils.logger import logger
 
 
 # rewrite the following function for a string inpiut instead of bytes
@@ -133,6 +135,8 @@ def store_chart_json_in_s3(self, payload_dict: dict) -> dict:
     Returns:
         dict: Updated TaskPayload with result or error information.
     """
+
+    # Validate and deserialize the payload dictionary
     payload = TaskPayload.model_validate(payload_dict)
     task_name = self.name
     payload.retries = self.request.retries
@@ -141,7 +145,9 @@ def store_chart_json_in_s3(self, payload_dict: dict) -> dict:
     # Step 1: Stop chain early if meta indicates so
     if payload.meta.get("stop_chain") is True:
         payload.set_phase("skipped_due_to_meta_flag", status="skipped")
-        logger.info(f"[{payload.task_id}] {task_name} skipped due to meta['stop_chain']=True")
+        logger.info(
+            f"[{payload.task_id}] {task_name} skipped due to meta['stop_chain']=True"
+        )
         return payload.model_dump()
 
     try:
@@ -157,25 +163,19 @@ def store_chart_json_in_s3(self, payload_dict: dict) -> dict:
         if chart_metadata is None:
             error_msg = "Failed to generate chart metadata. Aborting S3 upload."
             payload.log_error(error_msg)
-            payload.set_phase("metadata_generation_failed", status="failed")
+            payload.set_phase("metadata_generation_failed", status="skipped")
             logger.error(f"[{payload.task_id}] {error_msg}")
             return payload.model_dump()
 
         # Step 4: Upload to S3
         bucket_name = chart_metadata["bucket_name"]
         key = chart_metadata["key"]
-        upload_success = save_chart_json_to_s3(chart_json=chart_json, bucket_name=bucket_name, key=key)
+        upload_success = save_chart_json_to_s3(
+            chart_json=chart_json, bucket_name=bucket_name, key=key
+        )
 
         if upload_success:
-            payload.set_result(
-                source="s3",
-                type_="reference",
-                data={
-                    "log_id": log_id,
-                    "bucket_name": bucket_name,
-                    "key": key,
-                }
-            )
+            payload.set_result(source="s3", type_="reference", data=chart_metadata)
             payload.set_phase("chart_json_stored", status="success")
         else:
             payload.log_error("S3 upload failed.")

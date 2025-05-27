@@ -3,10 +3,21 @@
 from loguru import logger
 from rich.console import Console
 import os
+import logging
 
 LOG_DIR = "logs"
 LOG_FILE = os.path.join(LOG_DIR, "app.log")
 os.makedirs(LOG_DIR, exist_ok=True)
+
+for noisy_logger in [
+    "celery",
+    "kombu",
+    "celery.worker",
+    "celery.worker.consumer",
+    "celery.app.trace",
+    "billiard",
+]:
+    logging.getLogger(noisy_logger).setLevel(logging.WARNING)
 
 # Clear previous handlers
 logger.remove()

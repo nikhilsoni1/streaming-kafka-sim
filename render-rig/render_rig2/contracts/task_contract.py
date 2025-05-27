@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+import datetime
 from typing import Optional, List, Dict, Union
 from pydantic import BaseModel, Field
 
@@ -18,18 +18,16 @@ class TaskPayload(BaseModel):
     """
     The standard payload contract for all chart generation tasks.
     """
-    task_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    task_id: str = Field(default_factory=lambda: str(uuid.uuid4().hex))
     task_name: Optional[str] = None
     log_id: str
     chart_name: str
     webhook_url: Optional[str] = None
-
     status: str = "queued"
     phase: str = "not_started"
     retries: int = 0
     errors: List[str] = Field(default_factory=list)
     logs: List[str] = Field(default_factory=list)
-
     result: Optional[ResultPayload] = None
     meta: Dict = Field(default_factory=dict)
 
