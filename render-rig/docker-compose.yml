@@ -13,13 +13,53 @@ services:
     env_file:
       - .env
 
-  worker:
+  worker_lookup:
+      platform: linux/arm64
+      build:
+        context: .
+        dockerfile: Dockerfile
+      container_name: render-worker-lookup
+      command: celery -A render_rig2.app_v2 worker -n lookup@%h -Q lookup_chart_registry -c 2 --loglevel=info --prefetch-multiplier=1
+      env_file:
+        - .env
+  
+  worker_get_existing_chart:
+      platform: linux/arm64
+      build:
+        context: .
+        dockerfile: Dockerfile
+      container_name: render-worker-get-existing-chart
+      command: celery -A render_rig2.app_v2 worker -n get_existing_chart@%h -Q get_existing_chart -c 2 --loglevel=info --prefetch-multiplier=1
+      env_file:
+        - .env
+
+  worker_lookup_log_registry:
     platform: linux/arm64
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: render-worker
-    command: celery -A render_rig2.app_v2 worker -Q lookup_chart_registry,get_existing_chart,lookup_log_registry,get_log_dispatch_chart,store_log_chart -c 6 --loglevel=info
+    container_name: render-worker-lookup-log-registry
+    command: celery -A render_rig2.app_v2 worker -n lookup_log_registry@%h -Q lookup_log_registry -c 2 --loglevel=info --prefetch-multiplier=1
+    env_file:
+      - .env
+  
+  worker_get_log_dispatch_chart:
+    platform: linux/arm64
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: render-worker-get-log-dispatch-chart
+    command: celery -A render_rig2.app_v2 worker -n get_log_dispatch_chart@%h -Q get_log_dispatch_chart -c 2 --loglevel=info --prefetch-multiplier=1
+    env_file:
+      - .env
+
+  worker_store:
+    platform: linux/arm64
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: render-worker-store
+    command: celery -A render_rig2.app_v2 worker -n store@%h -Q store_log_chart -c 1 --loglevel=info --prefetch-multiplier=1
     env_file:
       - .env
   
@@ -35,7 +75,11 @@ services:
     env_file:
       - .env
     depends_on:
-      - worker
+      - worker_lookup
+      - worker_get_existing_chart
+      - worker_lookup_log_registry
+      - worker_get_log_dispatch_chart
+      - worker_store
 
 networks:
   default:

@@ -59,9 +59,15 @@ def get_existing_chart(self, payload_dict: dict) -> dict:
         status_dict = dict()
         status_dict["task_status"] = "success"
         status_dict["chart_status"] = "cached"
-        status_dict["chart_json"] = decompressed
+        status_dict["chart_json"] = decompressed.decode("utf-8")
 
+        logger.info(
+            f"[{payload.task_id}] Set task to be fired"
+        )
         set_task_status(task_id=payload.task_id, status_dict=status_dict)
+        logger.info(
+            f"[{payload.task_id}] Set task fired"
+        )
         payload.meta["stop_chain"] = True
         logger.success(
             f"[{payload.task_id}] Parsed GZIP JSON for {log_id}, type {str(type(decompressed))}"

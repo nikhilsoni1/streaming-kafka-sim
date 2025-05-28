@@ -66,7 +66,7 @@
         // POST to start the chart task
         try {
           const response = await fetch(`http://localhost:8000/v2/charts/${logId}/${chartName}`, {
-            method: 'POST'
+            method: 'GET'
           });
 
           const { task_id } = await response.json();
@@ -85,7 +85,7 @@
 
   function pollTaskStatus(taskId, chartDiv, chartName) {
     let tries = 0;
-    const maxTries = 10;
+    const maxTries = 15;
 
     const interval = setInterval(async () => {
       tries += 1;

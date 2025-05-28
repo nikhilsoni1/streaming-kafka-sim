@@ -25,7 +25,7 @@ logger.remove()
 # Add rich console sink
 logger.add(
     Console().print,
-    level="DEBUG",  # Can be made dynamic
+    level="INFO",  # Can be made dynamic
     format="[bold cyan]{time:HH:mm:ss}[/] | [bold magenta]{level}[/] | [green]{module}:{function}:{line}[/] - {message}",
 )
 

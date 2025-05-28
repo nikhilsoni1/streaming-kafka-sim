@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Render Rig Chart Viewer</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+      text-align: center;
+    }
+    #controls {
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      width: 45%;
+      padding: 8px;
+      margin: 5px;
+      font-size: 1rem;
+    }
+    #chartContainer {
+      margin-top: 30px;
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Render Rig Chart Viewer</h2>
+
+<div id="controls">
+  <input type="text" id="logId" placeholder="Enter log_id" value="1fc1b7b4-a68a-491b-8984-3234ed71be08" />
+  <input type="text" id="chartName" placeholder="Enter chart_name" value="chart_power" />
+  <button onclick="generateSingleChart()">Generate Chart</button>
+</div>
+
+<div id="chartContainer"><p>Chart will appear here...</p></div>
+
+<script>
+  async function generateSingleChart() {
+    const logId = document.getElementById('logId').value.trim();
+    const chartName = document.getElementById('chartName').value.trim();
+    const chartContainer = document.getElementById('chartContainer');
+    chartContainer.innerHTML = `<p>⏳ Generating ${chartName}...</p>`;
+
+    if (!logId || !chartName) {
+      alert("Please enter both log_id and chart_name.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:8000/v2/charts/${logId}/${chartName}`, {
+        method: 'GET'
+      });
+
+      const { task_id } = await response.json();
+      pollTaskStatus(task_id, chartContainer, chartName);
+    } catch (err) {
+      chartContainer.innerHTML = `<p>❌ Error submitting ${chartName}</p>`;
+      console.error(`POST error for ${chartName}:`, err);
+    }
+  }
+
+  function pollTaskStatus(taskId, container, chartName) {
+    let tries = 0;
+    const maxTries = 15;
+
+    const interval = setInterval(async () => {
+      tries++;
+
+      try {
+        const response = await fetch(`http://localhost:8000/v2/status/${taskId}`);
+        const data = await response.json();
+
+        if (data.task_status === "success") {
+          clearInterval(interval);
+          const plotlyJson = JSON.parse(data.chart_json);
+          Plotly.newPlot(container, plotlyJson.data, plotlyJson.layout || {});
+        } else if (data.task_status === "failed") {
+          clearInterval(interval);
+          container.innerHTML = `<p>❌ ${chartName} failed.</p>`;
+        } else if (tries >= maxTries) {
+          clearInterval(interval);
+          container.innerHTML = `<p>⚠️ ${chartName} timed out after ${maxTries * 3} seconds.</p>`;
+        } else {
+          container.innerHTML = `<p>⏳ ${chartName} in progress... (${tries}/${maxTries})</p>`;
+        }
+      } catch (err) {
+        clearInterval(interval);
+        container.innerHTML = `<p>⚠️ Polling error for ${chartName}</p>`;
+        console.error(`Polling error for ${chartName}:`, err);
+      }
+    }, 3000);
+  }
+</script>
+
+</body>
+</html>

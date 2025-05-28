@@ -14,7 +14,7 @@ from render_rig2.contracts import TaskPayload
 
 router = APIRouter()
 
-@router.post("/{log_id}/{chart_name}")
+@router.get("/{log_id}/{chart_name}")
 async def generate_chart_v2(log_id: str, chart_name: str):
     """
     NEW async-first chart generation endpoint.
@@ -39,4 +39,11 @@ async def generate_chart_v2(log_id: str, chart_name: str):
     log_chart_in_registry.s(),
     )
     pipeline.delay()
-    return JSONResponse(status_code=202, content={"task_id": task_id})
+    content = {
+        "task_id": task_id,
+        "log_id": log_id,
+        "chart_name": chart_name,
+        "status": "202 Accepted",
+        "message": "Chart generation queued successfully.",
+    }
+    return JSONResponse(status_code=202, content=content)
