@@ -3,7 +3,6 @@ from render_rig2.utils.logger import logger
 from render_rig2.chart_engine import Chart
 from ypr_core_logfoundry.parser import ULogParser
 from render_rig2.utils.cache import cache
-from render_rig2.utils.timing import timed_debug_log
 
 
 def generate_chart_for_log(
@@ -25,10 +24,7 @@ def generate_chart_for_log(
     
 
     # Try cache first
-    with timed_debug_log(
-        f"Cache lookup for log_id: {log_id}, chart_name: {chart_name}"
-    ):
-        cached = cache.get(cache_key, default=None, read=True)
+    cached = cache.get(cache_key, default=None, read=True)
     if cached is not None:
         logger.success(f"Cache hit for log_id: {log_id}, chart_name: {chart_name}")
         return cached
@@ -41,10 +37,7 @@ def generate_chart_for_log(
         return None
 
     # Generate chart
-    with timed_debug_log(
-        f"Generating chart for log_id: {log_id}, chart_name: {chart_name}"
-    ):
-        fig = chart_instance.generate(log_data)
+    fig = chart_instance.generate(log_data)
     chart_json = fig.to_json()
     logger.success(f"Chart generated for log_id: {log_id}, chart_name: {chart_name}")
 
