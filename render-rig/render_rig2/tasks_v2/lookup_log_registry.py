@@ -48,6 +48,10 @@ def lookup_log_registry(self, payload_dict: dict) -> dict:
     log_id = payload.log_id
     task_name = self.name
 
+    payload.set_phase(
+        phase="init_lookup_log_registry", task_name=task_name, status="running"
+    )
+
     # Check if the task should be skipped based on meta flags
     if payload.meta.get("stop_chain") is True:
         payload.set_phase("skipped_due_to_meta_flag", status="skipped")

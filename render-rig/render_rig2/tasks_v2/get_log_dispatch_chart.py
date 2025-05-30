@@ -153,7 +153,7 @@ def get_log_dispatch_chart(self, payload_dict: dict) -> dict:
         payload.set_phase("chart_generated", status="success")
         # Line 138 - success
         set_task_status(payload.task_id, {
-            "status": "success",
+            "task_status": "success",
             "chart_status": "generated",
             "chart_json": chart_json
         })

@@ -11,11 +11,12 @@ from render_rig2.tasks_v2 import get_log_dispatch_chart
 from render_rig2.tasks_v2 import store_chart_json_in_s3
 from render_rig2.tasks_v2 import log_chart_in_registry
 from render_rig2.contracts import TaskPayload
+from fastapi import Query
 
 router = APIRouter()
 
-@router.get("/{log_id}/{chart_name}")
-async def generate_chart_v2(log_id: str, chart_name: str):
+@router.get("/{run_id}/{log_id}/{chart_name}")
+async def generate_chart_v2(run_id: str, log_id: str, chart_name: str):
     """
     NEW async-first chart generation endpoint.
     Will support:
@@ -28,6 +29,7 @@ async def generate_chart_v2(log_id: str, chart_name: str):
         "log_id": log_id,
         "chart_name": chart_name,
         "task_id": task_id,
+        "run_id": run_id,
     }
     payload = TaskPayload.model_validate(payload_dict)
     pipeline = chain(
@@ -38,7 +40,7 @@ async def generate_chart_v2(log_id: str, chart_name: str):
     store_chart_json_in_s3.s(),
     log_chart_in_registry.s(),
     )
-    pipeline.delay()
+    pipeline.apply_async()
     content = {
         "task_id": task_id,
         "log_id": log_id,

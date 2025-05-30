@@ -19,6 +19,7 @@ class TaskPayload(BaseModel):
     The standard payload contract for all chart generation tasks.
     """
     task_id: str = Field(default_factory=lambda: str(uuid.uuid4().hex))
+    run_id: str = None
     task_name: Optional[str] = None
     log_id: str
     chart_name: str
