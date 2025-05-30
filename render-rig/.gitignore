@@ -4,3 +4,5 @@
 **/.terraform*
 output/
 **/*.env
+*.csv
+*.txt

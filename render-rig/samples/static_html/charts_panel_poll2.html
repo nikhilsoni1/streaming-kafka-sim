@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Render Rig Chart Grid</title>
+  <script src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      max-width: 1200px;
+      margin: auto;
+      text-align: center;
+    }
+    #controls {
+      margin-bottom: 20px;
+    }
+    #logId {
+      width: 50%;
+      font-size: 1rem;
+      padding: 8px;
+    }
+    #runIdDisplay {
+      margin-top: 10px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      color: #333;
+    }
+    #chartGrid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-top: 30px;
+    }
+    .chartBox {
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Render Rig Chart Viewer</h2>
+<div id="controls">
+  <input type="text" id="logId" placeholder="Enter log_id" value="1fc1b7b4-a68a-491b-8984-3234ed71be08" />
+  <button onclick="generateCharts()">Generate Charts</button>
+  <div id="runIdDisplay"></div>
+</div>
+
+<div id="chartGrid"></div>
+
+<script>
+  async function generateCharts() {
+    const logId = document.getElementById('logId').value.trim();
+    const grid = document.getElementById('chartGrid');
+    const runIdDisplay = document.getElementById('runIdDisplay');
+    grid.innerHTML = ''; // clear old charts
+    runIdDisplay.textContent = ''; // clear old run_id
+
+    if (!logId) {
+      alert("Please enter a log_id.");
+      return;
+    }
+
+    try {
+      const chartListResp = await fetch('http://localhost:8000/charts');
+      const chartNames = await chartListResp.json();
+      const run_id = crypto.randomUUID();
+      runIdDisplay.textContent = `Run ID: ${run_id}`;
+
+      for (const chartName of chartNames) {
+        const chartDiv = document.createElement('div');
+        chartDiv.className = 'chartBox';
+        chartDiv.innerHTML = `<p>⏳ Generating ${chartName}...</p>`;
+        grid.appendChild(chartDiv);
+
+        try {
+          const response = await fetch(`http://localhost:8000/v2/charts/${run_id}/${logId}/${chartName}`, {
+            method: 'GET'
+          });
+
+          const { task_id } = await response.json();
+          pollTaskStatus(task_id, chartDiv, chartName);
+        } catch (err) {
+          chartDiv.innerHTML = `<p>❌ Error submitting ${chartName}</p>`;
+          console.error(`POST error for ${chartName}:`, err);
+        }
+      }
+
+    } catch (err) {
+      console.error("Failed to fetch chart names:", err);
+      alert("Error loading chart list.");
+    }
+  }
+
+  function pollTaskStatus(taskId, chartDiv, chartName) {
+    let tries = 0;
+    const maxTries = 15;
+
+    const interval = setInterval(async () => {
+      tries += 1;
+
+      try {
+        const response = await fetch(`http://localhost:8000/v2/status/${taskId}`);
+        const data = await response.json();
+
+        if (data.task_status === "success") {
+          clearInterval(interval);
+          const plotlyJson = JSON.parse(data.chart_json);
+          Plotly.newPlot(chartDiv, plotlyJson.data, plotlyJson.layout || {});
+        } else if (data.task_status === "failed") {
+          clearInterval(interval);
+          chartDiv.innerHTML = `<p>❌ ${chartName} failed.</p>`;
+        } else if (tries >= maxTries) {
+          clearInterval(interval);
+          chartDiv.innerHTML = `<p>⚠️ ${chartName} timed out after ${maxTries * 3} seconds.</p>`;
+        } else {
+          chartDiv.innerHTML = `<p>⏳ ${chartName} in progress... (${tries}/${maxTries})</p>`;
+        }
+      } catch (err) {
+        clearInterval(interval);
+        chartDiv.innerHTML = `<p>⚠️ Polling error for ${chartName}</p>`;
+        console.error(`Polling error for ${chartName}:`, err);
+      }
+    }, 500); // Poll every 3 seconds
+  }
+</script>
+
+</body>
+</html>
