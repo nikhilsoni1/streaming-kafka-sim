@@ -9,6 +9,7 @@ export async function getChartNames() {
   return await res.json(); // should return: ["accel_xyz", "gyro_raw", ...]
 }
 
+
 // Submit chart generation task
 export async function submitChartTask({ runId, logId, chartName }) {
   const url = `http://localhost:8000/v2/charts/${runId}/${logId}/${chartName}`;
@@ -20,6 +21,7 @@ export async function submitChartTask({ runId, logId, chartName }) {
 
   return await res.json(); // should return: { task_id: "..." }
 }
+
 
 // Poll status of a chart task
 export async function getTaskStatus(taskId) {

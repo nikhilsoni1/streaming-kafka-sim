@@ -3,12 +3,15 @@ import Header from "../components/Header";
 import ChartGrid from "../components/ChartGrid";
 import LogIdInput from "../components/LogIdInput";
 import GenerateButton from "../components/GenerateButton";
+import RunId from "../components/RunId";
+import { useChartTasks } from "../hooks/useChartTasks"; // Assuming it's in hooks/
+
 export default function Dashboard() {
   const [logId, setLogId] = useState("");
+  const { runId, chartStatuses, generateCharts } = useChartTasks(logId);
 
   const handleGenerate = () => {
-    console.log("Generate chart for logId:", logId);
-    // Add chart generation logic here
+    generateCharts();
   };
 
   return (
@@ -16,7 +19,8 @@ export default function Dashboard() {
       <Header />
       <LogIdInput value={logId} onChange={(e) => setLogId(e.target.value)} />
       <GenerateButton onClick={handleGenerate} />
-      <ChartGrid />
+      <RunId runId={runId} />
+      <ChartGrid chartStatuses={chartStatuses} />
     </main>
   );
 }
