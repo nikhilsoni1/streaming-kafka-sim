@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 
 .prettierrc
+!package-lock.json
+!package.json
