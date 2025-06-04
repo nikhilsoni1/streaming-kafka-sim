@@ -1,25 +1,32 @@
 import { useState } from "react";
-import Header from "../components/Header";
 import ChartGrid from "../components/ChartGrid";
-import LogIdInput from "../components/LogIdInput";
-import GenerateButton from "../components/GenerateButton";
-import RunId from "../components/RunId";
 import { useChartTasks } from "../hooks/useChartTasks";
+import GenerateButtonContainer from "../components/GenerateButton/GenerateButtonContainer";
+import HeaderContainer from "../components/Header/HeaderContainer";
+import RunIdContainer from "../components/RunId/RunIdContainer";
+import LogIdInputContainer from "../components/LogIdInput/LogIdInputContainer";
 
 export default function Dashboard() {
   const [logId, setLogId] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
   const { runId, chartStatuses, generateCharts } = useChartTasks(logId);
 
-  const handleGenerate = () => {
-    generateCharts();
-  };
+const handleGenerate = async () => {
+  setIsGenerating(true);
+  try {
+    await generateCharts();
+  } finally {
+    setIsGenerating(false);
+  }
+};
+
 
   return (
     <main className="text-white px-8 space-y-6">
-      <Header />
-      <LogIdInput value={logId} onChange={(e) => setLogId(e.target.value)} />
-      <GenerateButton onClick={handleGenerate} />
-      <RunId runId={runId} />
+      <HeaderContainer />
+      <LogIdInputContainer value={logId} onChange={(e) => setLogId(e.target.value)} placeholder="1fc1b7b4-a68a-491b-8984-3234ed71be08" />
+      <GenerateButtonContainer onGenerate={handleGenerate} isGenerating={isGenerating} />
+      <RunIdContainer runId={runId} />
       <ChartGrid chartStatuses={chartStatuses} />
     </main>
   );
