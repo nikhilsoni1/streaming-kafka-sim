@@ -7,14 +7,15 @@ from plotly.subplots import make_subplots
 
 class ChartAccelRawXYZ(Chart):
     chart_name = "chart_accel_raw_xyz"
+    topic_name = "sensor_combined"
 
     def is_topic_available(self, log_data: dict) -> bool:
-        if "sensor_combined" in log_data.list_topics():
+        if self.topic_name in log_data.list_topics():
             return True
         return False
 
     def generate(self, log_data: dict):
-        df = log_data.get_topic_df("sensor_combined")
+        df = log_data.get_topic_df(self.topic_name)
 
         fig = make_subplots(
             rows=3,

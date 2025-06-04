@@ -4,7 +4,7 @@ import ChartGrid from "../components/ChartGrid";
 import LogIdInput from "../components/LogIdInput";
 import GenerateButton from "../components/GenerateButton";
 import RunId from "../components/RunId";
-import { useChartTasks } from "../hooks/useChartTasks"; // Assuming it's in hooks/
+import { useChartTasks } from "../hooks/useChartTasks";
 
 export default function Dashboard() {
   const [logId, setLogId] = useState("");
